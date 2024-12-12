@@ -1,54 +1,41 @@
 # CodeCompendium
 
-## 簡介
+## Introduction
 
-CodeCompendium 是一個專為開發者設計的項目，旨在收集和整理各種技術知識與筆記。這個項目涵蓋了多種編程語言、框架、工具以及最佳實踐，為開發者提供一個方便查詢和學習的資源庫。
+CodeCompendium is a project designed for developers, aiming to collect and organize various technical knowledge and notes. This project covers multiple programming languages, frameworks, tools, and best practices, providing developers with a convenient resource for inquiry and learning.
 
-## 目標
+## Objectives
 
-- **集中管理**：統一管理各種技術知識，避免信息分散。
-- **知識共享**：促進開發者之間的知識共享和交流。
-- **持續更新**：定期更新和新增內容，保持資料的時效性。
+- **Centralized Management**: Unify the management of various technical knowledge to avoid information dispersion.
+- **Knowledge Sharing**: Promote knowledge sharing and exchange among developers.
+- **Continuous Update**: Regularly update and add new content to maintain the relevance of the information.
 
-## 內容結構
+## Content Structure
 
-### 1. 編程語言
+### 1. Programming Languages
 
-涵蓋常見的編程語言，如 JavaScript、Python、Java、C#、Ruby 等，每種語言包括基礎語法、高級特性、常用設計模式等。
+Covers common programming languages such as JavaScript, Python, Java, C#, and Ruby, including basic syntax, advanced features, and common design patterns for each language.
 
-### 2. 前端開發
+### 2. Frontend Development
 
-包括 HTML、CSS、JavaScript 框架（如 React、Vue.js、Angular）以及前端工具（如 Webpack、Babel）的使用技巧和最佳實踐。
+Includes HTML, CSS, and JavaScript frameworks (such as React, Vue.js, Angular) and frontend tools (such as Webpack, Babel) along with usage tips and best practices.
 
-### 3. 後端開發
+### 3. Backend Development
 
-涵蓋 Node.js、Spring Boot、Django、ASP.NET Core 等後端框架的開發知識，以及 RESTful API、GraphQL 等技術。
+Covers backend frameworks like Node.js, Spring Boot, Django, and ASP.NET Core, as well as technologies like RESTful API and GraphQL.
 
-### 4. 數據庫
+### 4. Databases
 
-包括 SQL 和 NoSQL 數據庫的操作和優化技巧，如 MySQL、PostgreSQL、MongoDB、Redis 等。
+Includes SQL and NoSQL database operations and optimization techniques, such as MySQL, PostgreSQL, MongoDB, and Redis.
 
-### 5. 雲服務與 DevOps
+### 5. Cloud Services and DevOps
 
-介紹 AWS、Azure、Google Cloud 等雲服務平台的使用，以及 CI/CD、容器化（Docker、Kubernetes）等 DevOps 實踐。
+Introduces the use of cloud service platforms like AWS, Azure, Google Cloud, and DevOps practices like CI/CD and containerization (Docker, Kubernetes).
 
-### 6. 安全性
+### 6. Security
 
-提供有關應用程式安全性、認證與授權（如 OAuth2、JWT）、數據加密等方面的知識。
+Provides knowledge on application security, authentication and authorization (like OAuth2, JWT), and data encryption.
 
-### 7. 工具與實用程式
+### 7. Tools and Utilities
 
-推薦和介紹各種開發工具和實用程式，如 Git、VSCode、Postman、Jenkins 等。
-
-## 貢獻指南
-
-歡迎所有開發者貢獻你的知識和經驗！請參閱 [CONTRIBUTING.md](./CONTRIBUTING.md) 了解詳細的貢獻指南。
-
-## 版權信息
-
-本項目的內容基於 [MIT License](./LICENSE) 授權開放，歡迎自由使用和修改。
-
-## 聯繫我們
-
-如有任何問題或建議，請通過 [issues](https://github.com/your-repo/codecompendium/issues) 提出，或發送郵件至 support@codecompendium.io。
-
+Recommends and introduces various development tools and utilities, such as Git, VSCode, Postman, and Jenkins.
