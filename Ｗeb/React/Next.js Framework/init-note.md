@@ -22,43 +22,6 @@ Would you like to customize the default import alias (@/*)? No / Yes
 What import alias would you like configured? @/*
 // alias 預設使用 @ 是否修改
 
-Next.js 路由系統：App Router vs Page Router
-
-## Page Router：基於檔案的路由系統
-└── pages
-    ├── index.tsx
-    ├── login.tsx
-    ├── api
-    │   └── user.tsx
-    ├── posts
-    │   └── [id].tsx
-    └── blog
-        ├── index.tsx
-        └── setting.tsx
-## App Router：基於目錄的路由系統
-
-└── app
-    ├── blog
-    │   └── [slug]
-    │        └── page.tsx
-    ├── login
-    │   └── page.tsx
-    ├── @analytics
-    │   ├── page.tsx
-    │   ├── error.tsx
-    │   └── loading.tsx
-    ├── api
-    │   └── user
-    │       ├── index.ts
-    │       └── route.ts  
-    ├── components
-    │   ├── loading.tsx
-    │   └── button.tsx    
-    ├── globals.css
-    ├── layout.tsx
-    └── page.tsx
-
-
 ## File Convention 檔案規則
 layout.js：定義共用 UI 元件
 template.js：類似 layout，處理需要重新渲染的 Layout UI
