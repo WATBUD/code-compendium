@@ -44,8 +44,6 @@
 4. **Try-Catch (異常捕獲)**
 5. **Error Codes (錯誤碼)**
 
-
-
 ## Design Patterns => Advancement from Junior to Senior
 
 1.  **Singleton Pattern** - 確保類別只有一個實例，並提供全局存取點
