@@ -44,7 +44,9 @@
 4. **Try-Catch (異常捕獲)**
 5. **Error Codes (錯誤碼)**
 
-## Design Patterns
+
+
+## Design Patterns => Advancement from Junior to Senior
 
 1.  **Singleton Pattern** - 確保類別只有一個實例，並提供全局存取點
 2.  **Factory Pattern** - 提供一個創建對象的介面，而不需要指定具體的類別
