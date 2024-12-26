@@ -8,23 +8,19 @@ docker build -t node_express_backend .
 docker-compose up -d
 
 docker-compose -p golang-container-group up -d
+
 # B: Use Dockerfile Cli
 - After the build completes, you can run the following command to start the container:
 
-normal 
-docker run -p 9421:9421 --name NodeServer node_express_backend --legacy-watch
+# normal 
+# docker run -p 9421:9421 --name NodeServer node_express_backend --legacy-watch
 
 bash 
 docker run -p 9421:9421 -v $PWD:/app --name NodeServer node_express_backend 
 
-normal 
-docker run -p 9421:9421 --name NodeServer node_express_backend --legacy-watch
+# windows powershell 
+# docker run -p 9421:1234 -v ${PWD}:/app --name NodeServer node_express_backend npm start -- --legacy-watch
 
-bash 
-docker run -p 9421:9421 -v $PWD:/app --name NodeServer node_express_backend 
-
-windows cmd 
-docker run -p 9421:9421 -v %CD%:/app --name NodeServer node_express_backend npm start -- --legacy-watch
 
 
 - Start the specified images
