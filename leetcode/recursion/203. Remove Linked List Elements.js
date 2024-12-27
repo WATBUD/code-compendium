@@ -20,7 +20,7 @@ function printList(head) {
     let current = head;
     while (current !== null) {
         console.log(
-            "%c  printList(head)",
+            "%c printList(head)",
             "color:#00f;font-family:system-ui;font-size:2rem;font-weight:bold",
             // "head:",
             // head,
@@ -67,12 +67,12 @@ let newHead = removeElements(head, val);
 
 printList(newHead);
 
-console.dir(
+console.log(
     "%c head",
     "color:#f00;font-family:system-ui;font-size:2rem;font-weight:bold",
-    // "newHead:",
-    // newHead,
-    JSON.stringify(newHead),
+    "newHead:",
+    newHead,
+    //JSON.stringify(newHead),
     // "printList(newHead)",
     // printList(newHead)
   );
