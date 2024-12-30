@@ -17,6 +17,8 @@ var recursionPowerOfFour = function(n) {
 };
 
 // 測試用例
+console.log(isPowerOfFour(-4));  // 輸出：false，因為負數不能是四的次方
+console.log(isPowerOfFour(0));   // 輸出：false，因為 0 不是四的次方
 console.log(recursionPowerOfFour(16));  // 輸出：true，因為 16 = 4^2
 console.log(recursionPowerOfFour(1));   // 輸出：true，因為 1 = 4^0
 console.log(recursionPowerOfFour(64));  // 輸出：true，因為 64 = 4^3
