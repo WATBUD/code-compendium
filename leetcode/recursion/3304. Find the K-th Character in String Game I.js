@@ -2,10 +2,6 @@
  * @param {number} k - 目標字符的位置，從 1 開始計算
  * @return {character} - 返回第 k 個字符
  */
-/**
- * @param {number} k - 目標字符的位置，從 1 開始計算
- * @return {character} - 返回第 k 個字符
- */
 var kthCharacter = function(k) {
     // 初始字串為 "a"
     let string = "a";
