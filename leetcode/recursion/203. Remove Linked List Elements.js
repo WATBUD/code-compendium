@@ -33,7 +33,7 @@ function printList(head) {
 
 
 
-
+//迭代（iteration）
 var removeElements = function(head, val) {
     // Create a dummy node that points to the head
     let dummy = new ListNode(0);
@@ -56,23 +56,31 @@ var removeElements = function(head, val) {
     // Return the new head, which is dummy.next
     return dummy.next;
 };
+//遞迴（recursion）
+var recursionRemoveElements = function(head, val) {
+    if (head === null) {
+        return null;
+    }
+    head.next = removeElements(head.next, val);//5.next=6 帶入6 6.next=null val=6 回傳6.next=null
+    return head.val === val ? head.next : head;
+};
 
 
 // Test the function
 let head = arrayToList([1, 2, 6, 3, 4, 5, 6]);
 let val = 6;
-let newHead = removeElements(head, val);
+let iterationResult = removeElements(head, val);//迭代（iteration）
+let recursionResult = recursionRemoveElements(head, val);//遞迴（recursion）
 
 // Print the modified list
 
-printList(newHead);
+//printList(iterationResult);
 
 console.log(
     "%c head",
     "color:#f00;font-family:system-ui;font-size:2rem;font-weight:bold",
-    "newHead:",
-    newHead,
-    //JSON.stringify(newHead),
-    // "printList(newHead)",
-    // printList(newHead)
+    "iterationResult:",
+    iterationResult,
+    "recursionResult:",
+    recursionResult
   );
