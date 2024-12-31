@@ -1,8 +1,8 @@
 # 安裝 git-filter-repo（如果還沒安裝）
 pip install git-filter-repo
 
-# 使用 git-filter-repo 來刪除文件
 git filter-repo --path maitoday-168-dev-fireBase.json --invert-paths 
+# 使用 git-filter-repo 來刪除文件
 # 由於歷史紀錄已經改變，Git 會清理舊的數據並更新 Git 物件。你需要手動將這些修改推送到遠端倉庫，並重新設置遠端 (origin)
 git remote add origin https://github.com/WATBUD/golang-template.git
 
