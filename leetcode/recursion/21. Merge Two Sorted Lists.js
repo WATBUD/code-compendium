@@ -17,12 +17,12 @@ function mergeTwoLists(l1, l2) {
     }
 
     // 比較兩個鏈表的當前節點值
-    if (l1.val <= l2.val) {
-        console.log(`l1:${l1.val} <= l2:${l2.val}值`);
+    if (l1.val < l2.val) {
+        console.log(`l1:${l1.val} < l2:${l2.val}值`);
         l1.next = mergeTwoLists(l1.next, l2); // 遞迴合併剩餘部分
         return l1;
     } else {
-        console.log(`l1:${l1.val} > l2:${l2.val}值`);
+        console.log(`l1:${l1.val} >= l2:${l2.val}值`);
         l2.next = mergeTwoLists(l1, l2.next); // 遞迴合併剩餘部分
         return l2;
     }
