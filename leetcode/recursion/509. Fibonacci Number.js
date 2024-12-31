@@ -11,7 +11,6 @@ function fib(n) {
     // 基礎情況：如果 n 是 0 或 1，直接返回 n
     if (n === 0) return 0;
     if (n === 1) return 1;
-
     // 遞迴情況：F(n) = F(n-1) + F(n-2)
     return fib(n - 1) + fib(n - 2);
 }

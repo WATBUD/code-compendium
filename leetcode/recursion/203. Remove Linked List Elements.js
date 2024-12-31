@@ -61,7 +61,7 @@ var recursionRemoveElements = function(head, val) {
     if (head === null) {
         return null;
     }
-    head.next = removeElements(head.next, val);//5.next=6 帶入6 6.next=null val=6 回傳6.next=null
+    head.next = removeElements(head.next, val);
     return head.val === val ? head.next : head;
 };
 
