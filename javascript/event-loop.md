@@ -18,13 +18,7 @@ Macrotasks 等待主線程空閒後執行
 清空微任務隊列（Microtasks Queue）。
 執行下一個宏任務（Macrotasks Queue）。
 
-
-
 # JavaScript 是單執行緒（single-threaded），事件循環 (Event Loop) 確保執行順序為：同步任務 > 微任務 (Microtasks) > 宏任務 (Macrotasks)
-
-
-
-
 
 ``` javascript
 console.log("begins"); //1
