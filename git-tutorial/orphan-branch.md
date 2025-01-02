@@ -21,10 +21,10 @@ git add .
 git commit -m "Initial commit for the new branch"
 
 # Optionally, delete the old master branch (use with caution)
-git branch -D master
+git branch -D oldBranchName
 
 # Rename the new branch to master
-git branch -m master
+git branch -m newBranchName
 
 # Force push the new branch to the remote repository
-git push origin main --force
+git push origin newBranchName --force
