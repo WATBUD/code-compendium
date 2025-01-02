@@ -1,17 +1,11 @@
 # Critical Rendering Path (CRP)
-refers to the sequence of steps the browser takes to convert HTML, CSS, and JavaScript into pixels on the user's screen. 
-- (CRP 是指瀏覽器將 HTML、CSS 和 JavaScript 轉換為用戶螢幕上像素的一系列步驟。)
+- CRP 是指瀏覽器將 HTML、CSS 和 JavaScript 轉換為用戶螢幕上像素的一系列步驟。
 
 ## Key Steps in the CRP
-
 1. **瀏覽器解析 HTML，建立 Document Object Model (DOM) =>頁面的結構和內容**
-
 2. **瀏覽器解析 CSS，構建 CSS Object Model (CSSOM)，用於表示每個元素的樣式**
-
 3. **瀏覽器結合 DOM 和 CSSOM 生成渲染樹 (Render Tree)，其中僅包含可見的元素及其樣式**
-
 4. **瀏覽器基於渲染樹計算每個元素在螢幕上的位置和大小。**
-
 5. **瀏覽器將像素繪製到螢幕上，使內容對用戶可見。**
 
 ## Performance Impact of the CRP
@@ -28,25 +22,32 @@ refers to the sequence of steps the browser takes to convert HTML, CSS, and Java
 
 ### 2. Optimize JavaScript Loading
 - <script> 使用 `async` 或 `defer` 屬性,控制外部 JavaScript 文件加載執行，提高性能和頁面加載速度。
-### `async` 屬性
-- <script>會異步加載，HTML 文檔同時繼續解析。
-- 當腳本下載完成後，會立即執行，這可能會中斷文檔解析。
+
+### `async(異步)` 屬性
+<script src="example.js" async> </script>
+- 異步加載，HTML同時繼續解析。
+- 下載完成後立即執行中斷HTML解析。
 - 適用於不依賴其他腳本或 DOM 的腳本（例如：分析腳本、第三方集成）。
-### `defer` 屬性
-- <script> 會異步加載，執行會被延遲到 HTML 文檔完全解析完成後，這樣不會阻塞頁面的渲染過程。
-- `defer` 只對外部腳本有效，內部腳本（即直接寫在 `<script>` 標籤內的腳本）無法使用 `defer` 屬性。
+
+### `defer(延遲)` 屬性
+<script src="example.js" defer> </script>
+
+- <script> 異步加載，不會阻塞頁面的渲染過程，延遲到 HTML完全解析後執行。
+- 內部腳本（`<script defer>`）無法延遲內部腳本執行 `defer`。
+<script defer>
+  console.log('這段代碼會立即執行，defer 無效');
+</script>
 - 多個腳本使用 `defer`，預設情況下，`defer` 按照在 HTML 中的出現順序執行腳本。
 
+
 ## 2. `defer` 屬性與 `async` 屬性的區別
-- **`async`**：<script> 下載完後會立即執行，必定會中斷 HTML 文檔的解析，直到腳本執行完畢。
-- **`defer`**：<script> 下載後執行Delay，直到文檔解析完成，ex:有些腳本需要等到頁面內容完全加載後才運行，這時使用 defer 屬性就很合適。
+- **`async`**：<script> 下載完後會立即執行，中斷 HTML 解析，直到腳本執行完畢。
+- **`defer`**：<script> 下載後執行Delay，直到文檔解析完成，ex:需要等到頁面內容完全加載後才運行，這時使用 defer。
 
 ### 使用範例
   ```html
   <script src="example.js" async></script>
-  <script src="example.js" defer></script>
   ```
-
 
 ### 3. Prioritize Critical CSS
 - 將關鍵 CSS 直接內嵌於 HTML 中。
@@ -161,7 +162,7 @@ div {
 div {
   transform: translateY(50px); /* 改變 transform 會觸發Compositing */
 }
-
+```
 
 ### Tools for CRP Optimization
 - **Lighthouse**: (分析頁面性能並提供可操作的建議。).
