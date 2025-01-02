@@ -4,7 +4,7 @@
 ## 整合方法
 
 ### 1. 代理集成
-使用反向代理（如 **Nginx**/**http-proxy-middleware** 在 Node.js 中）
+使用反向代理（如 **Nginx(第三方下載)**/**http-proxy-middleware(Node.js 庫)** 在 Node.js 中）
 請求路由到不同的 SSR 服務。這樣，每個 SSR 項目仍然獨立運行，但通過統一的端點進行訪問。
 
 #### 步驟：
@@ -12,9 +12,20 @@
 - 將請求路由到不同的路徑（例如 `/projectA` 和 `/projectB`）來指向它們各自的 SSR 服務。
 - 這樣兩個項目就可以共享相同的域名和 URL 結構，同時內部邏輯不受影響。
 
-#### 例子（Nginx）：
 
 ```nginx
+// app.js (Node.js 使用 Express 框架)
+const express = require('express');
+const { createProxyMiddleware } = require('http-proxy-middleware');
+const app = express();
+
+// 設置代理，將 /api 路徑的請求代理到後端3001
+app.use('/api', createProxyMiddleware({ target: 'http://localhost:3001', changeOrigin: true }));
+
+app.listen(3000, () => {
+  console.log('Server is running on port 3000');
+});
+
 server {
     listen 80;
     
