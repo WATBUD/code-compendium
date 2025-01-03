@@ -1,27 +1,28 @@
 
 # Cookie 安全性：HttpOnly 和 Secure
-
-當你在網站上使用 Cookies 儲存資料時，**HttpOnly** 和 **Secure** 是兩個非常重要的安全屬性，幫助保護你的資料免受潛在的攻擊。
+使用 Cookies 儲存資料**HttpOnly** 和 **Secure** 幫助保護資料免受潛在的攻擊。
 
 ### 1. **HttpOnly**
 
 - **HttpOnly(Cookies的屬性)** :
 - JavaScript 只能訪問沒有 HttpOnly 屬性的 cookies，
 - 告訴瀏覽器這個 Cookie **只能** 被伺服器訪問，**不能** 被 JavaScript 訪問。
+HttpOnly 的作用：防範 XSS 攻擊
+場景： 如果一個網站存在跨站腳本攻擊（XSS）漏洞，攻擊者可以注入惡意 JavaScript。
 
-#### 為什麼要使用 HttpOnly？
-如果JavaScript 被黑客攻擊，攻擊者無法輕易地竊取敏感的 Cookie 資料（例如，登入認證資訊）。
+惡意 JavaScript 可能嘗試通過 document.cookie 獲取用戶的身份驗證 Token 或 Session ID。
+防禦： 設置 HttpOnly 的 Cookie，惡意腳本無法讀取這些敏感 Cookie，即使網站中有 XSS 漏洞，也可以減少敏感信息被竊取的風險。
 
 #### 如何設置 HttpOnly？
 這樣設置一個 HttpOnly Cookie：
-
-```http
+```js 
 Set-Cookie: sessionId=abc123; HttpOnly
+// Cookie 設置了 HttpOnly 屬性，以下代碼無法讀取
+console.log(document.cookie); // 不會顯示該 Cookie 
+//防止了通過惡意的 JavaScript 竊取用戶的敏感資訊 ex:身份驗證 Token 或 Session ID
 ```
-console.log(document.cookie);
-這個 sessionId cookie 不會出現在 document.cookie 中。JavaScript 只能訪問沒有 HttpOnly 屬性的 cookies。
-
----
+使用開發者工具（例如 Chrome DevTools）查看網頁請求時，可以在 Network 標籤下的請求頭中看到發送的所有 Cookie，包括 HttpOnly 的 Cookie。
+惡意腳本無法透過 document.cookie 或其他 JavaScript 方式存取 Cookie
 
 ### 2. **Secure**
 

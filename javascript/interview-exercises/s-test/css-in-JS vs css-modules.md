@@ -3,7 +3,7 @@
 是兩種常見的解決方案，都旨在解決全域作用域樣式和 CSS 衝突的問題
 
 ## CSS-in-JS:
-CSS寫在 JavaScript檔案中。直接在代碼組件設置樣式，
+CSS-in-JS 就是把樣式直接寫在 JavaScript 的變數或函數裡
 使用像 `styled-components` 或 `emotion` 等庫。
 ```js
 // 安裝 styled-components: npm install styled-components
