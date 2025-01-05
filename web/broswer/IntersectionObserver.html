@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IntersectionObserver Example</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    /* 設定容器的外觀，並使其可滾動 */
+    .container {
+      position: relative;
+      width: 100%;
+      height: 25vh; /* 設定容器高度為視窗的20% */
+      overflow-y: auto; /* 容器內容如果超過高度將可滾動 */
+      background-color: lightgray; /* 設定容器背景顏色 */
+      position: relative;
+    }
+    /* 目標元素的外觀設置 */
+    .target {
+      position: relative;
+      width: 200px;  /* 固定寬度 */
+      height: 100px; /* 固定高度 */
+      background-color: steelblue; /* 背景顏色 */
+      margin: 0px auto; /* 上下外邊距100px，並水平置中 */
+      opacity: 0; /* 初始時為透明 */
+      transition: opacity 0s ease; /* 在透明度變化時加入過渡效果 */
+      border: 5px solid darkblue; /* 邊框顏色和寬度 */
+    }
+    /* 當目標元素進入視窗時，將其顯示 */
+    .in-view {
+      opacity: 1; /* 設定為完全可見 */
+    }
+    /* 空間元素，讓頁面能夠滾動 */
+    .spacer {
+      height: 400px;
+      background-color: lightseagreen;
+    }
+    .line.horizontal {
+      position: absolute;
+      top: 50px; /* 使線條位於高度的 50% */
+      left: 0;
+      width: 100%;
+      height: 1px; /* 線條的厚度 */
+      background-color: black;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="container">
+    <div class="spacer"></div> <!-- 滾動的空白區域 -->
+    <div class="target" id="target">
+      Target Element
+      <div class="line horizontal"></div>
+    </div>
+    <div class="spacer"></div> <!-- 滾動的空白區域 -->
+  </div>
+
+  <script>
+    /* 獲取容器和目標元素 */
+    const container = document.getElementById('container');
+    const target = document.getElementById('target');
+
+    /* 創建 IntersectionObserver 來監視目標元素 */
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          // 當目標元素進入視窗時，添加 'in-view' 類別
+          entry.target.classList.add('in-view');
+        } else {
+          // 當目標元素離開視窗時，移除 'in-view' 類別
+          entry.target.classList.remove('in-view');
+        }
+      });
+    }, {
+      root: container, // 設置自定義容器作為監視區域的根元素
+      rootMargin: '50px', // 設置根元素邊界的額外空間（可視區域外側）
+      threshold: 1 // 元素達到 % 進入視窗時觸發回調
+    });
+
+    /* 開始監視目標元素 */
+    observer.observe(target);
+  </script>
+</body>
+</html>
