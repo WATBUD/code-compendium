@@ -1,20 +1,15 @@
 # React Referential Equality 與 `useEffect` 的無限渲染問題
-
 在 React 中，**`useEffect`** 的依賴陣列（dependency array）用於告訴 React，當陣列中的任一依賴項改變時，應該重新執行 `useEffect` 的回調函數。然而，如果依賴陣列中包含**物件型別（objects, arrays, or functions）**，就會涉及到 **Referential Equality（引用相等性）** 的問題。
-
----
 
 ## **什麼是 Referential Equality？**
 JavaScript 中，物件（包括陣列和函式）的相等性比較依賴於它們的引用，而不是它們的內容。
 ```javascript
 const obj1 = { a: 1 };
 const obj2 = { a: 1 };
-
 console.log(obj1 === obj2); // false，因為引用不同，即使內容相同
 ```
 物件每次渲染重新生成，React 會認為是新的物件，即使內容相同。
 這會導致 `useEffect` 誤判依賴發生變化，從而觸發回調執行。
----
 
 ## **案例：`useEffect` 的無限渲染問題**
 
