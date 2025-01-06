@@ -1,120 +1,65 @@
-# React Referential Equality 與 `useEffect` 的無限渲染問題
 
-在 React 中，**`useEffect`** 的依賴陣列（dependency array）用於告訴 React，當陣列中的任一依賴項改變時，應該重新執行 `useEffect` 的回調函數。然而，如果依賴陣列中包含**物件型別（objects, arrays, or functions）**，就會涉及到 **Referential Equality（引用相等性）** 的問題。
-
----
-
-## **什麼是 Referential Equality？**
-JavaScript 中，物件（包括陣列和函式）的相等性比較依賴於它們的引用，而不是它們的內容。
-
+**Referential Equality(參考相等性)**  
+avaScript 中重要概念，[物件/陣列/函式]的相等性比較依賴於它們的引用，而不是它們的內容。
+[物件/陣列/函式]比較方式=>比較兩個指向的**引用**是否相同，而不是內容是否完全一樣。
+JavaScript 中的物件和陣列是 **引用類型（Reference Types）**，而不是 **值類型（Primitive Types）**。這意味著
+### 例子：
 ```javascript
 const obj1 = { a: 1 };
 const obj2 = { a: 1 };
-
 console.log(obj1 === obj2); // false，因為引用不同，即使內容相同
 ```
+上面的例子中，雖然 `obj1` 和 `obj2` 的內容相同（都是 `{ a: 1 }`），但它們是兩個不同的物件，位於不同的記憶體位置，因此 `obj1 === obj2` 返回 `false`。
 
-物件在每次渲染時被重新生成，React 會認為這是一個新的物件，即使其內容完全相同。這會導致 `useEffect` 誤判依賴發生變化，從而觸發回調執行。
-
----
-
-## **案例：`useEffect` 的無限渲染問題**
+### 參考相等性的例子：
 
 ```javascript
-import React, { useEffect, useState } from 'react';
+const obj1 = { a: 1 }; // 定義一個物件 obj1
+const obj2 = { a: 1 }; // 定義另一個物件 obj2
 
-const App = () => {
-  const [count, setCount] = useState(0);
-
-  const obj = { value: count }; // 每次渲染都會創建一個新的物件
-
-  useEffect(() => {
-    console.log('useEffect triggered');
-  }, [obj]); // obj 的引用每次都改變，導致 useEffect 無限觸發
-
-  return (
-    <div>
-      <p>Count: {count}</p>
-      <button onClick={() => setCount(count + 1)}>Increment</button>
-    </div>
-  );
-};
-
-export default App;
+console.log(obj1 === obj2); // false，因為它們是不同的物件，即使內容相同
 ```
+ `obj1` 和 `obj2` 分別是兩個獨立的物件，它們雖然有相同的屬性和值，但它們的記憶體地址不同，所以 `obj1 === obj2` 會返回 `false`。
 
-### **為什麼會無限觸發？**
-1. 每次組件重新渲染時，`obj` 都是一個新的物件（新的引用）。
-2. React 比較 `useEffect` 的依賴陣列時發現 `obj` 的引用改變（即使內容相同）。
-3. 這導致 `useEffect` 的回調每次都重新執行。
-4. 每次執行後又導致重新渲染，形成無限循環。
-
----
-
-## **解決方法：使用 `useMemo` 或 `useCallback`**
-
-為了避免依賴物件型別的重新生成導致無限觸發，可以使用 `useMemo` 或 `useCallback` 來記住物件或函數的引用，直到其真正的依賴項改變。
-
-### **使用 `useMemo`**
-
-`useMemo` 會記住物件的引用，只有當其依賴項改變時，才會生成新物件。
-
+- **原始值（如數字、字串、布林值等）** 是 **值比較**，即直接比較它們的值。
 ```javascript
-import React, { useEffect, useState, useMemo } from 'react';
+let a = 10;
+let b = a; // b 獲得 a 的副本
+b = 20; // 改變 b 不會影響 a
+console.log(a); // 10
+console.log(b); // 20
 
-const App = () => {
-  const [count, setCount] = useState(0);
-
-  const obj = useMemo(() => ({ value: count }), [count]); // 僅在 count 改變時創建新物件
-
-  useEffect(() => {
-    console.log('useEffect triggered');
-  }, [obj]); // obj 的引用僅在 count 改變時改變
-
-  return (
-    <div>
-      <p>Count: {count}</p>
-      <button onClick={() => setCount(count + 1)}>Increment</button>
-    </div>
-  );
-};
-
-export default App;
 ```
-
----
-
-### **使用 `useCallback`**
-依賴是函數型別（例如事件處理器），可以用 `useCallback`。
-
+- **物件、陣列、函式等引用類型** 是 **引用比較**，比較是否指向相同的記憶體位置。
 ```javascript
-import React, { useEffect, useState, useCallback } from 'react';
-
-const App = () => {
-  const [count, setCount] = useState(0);
-
-  const handleClick = useCallback(() => {
-    console.log(`Count is ${count}`);
-  }, [count]); // 僅在 count 改變時生成新函數
-
-  useEffect(() => {
-    console.log('useEffect triggered');
-  }, [handleClick]); // handleClick 的引用僅在 count 改變時改變
-
-  return (
-    <div>
-      <p>Count: {count}</p>
-      <button onClick={handleClick}>Log Count</button>
-    </div>
-  );
-};
-
-export default App;
+let obj1 = { name: 'Alice' };
+let obj2 = obj1; // obj2 引用與 obj1 相同的物件
+obj2.name = 'Bob'; // 改變 obj2 的屬性也會影響 obj1
+console.log(obj1.name); // 'Bob'
+console.log(obj2.name); // 'Bob'
 ```
-## **總結：防止 Re-render 的核心需要 `useMemo` 和 `useCallback`？**
-兩者的主要目的是減少不必要的重新創建，從而優化 React 應用的性能：
-- **`useMemo`**: 記住[純值、物件、陣列]引用，幫助避免重新計算不必要的值，避免依賴變化無意義渲染。
-- **`useCallback`**: 記住函數引用，避免重新創建函數引用。
- `useEffect` 的依賴陣列中包含物件或函數時，應特別注意是否需要使用 `useMemo` 或 `useCallback`，以防止不必要的依賴變化和無限渲染問題。
+#### 例如：
+```javascript
+let num1 = 10;
+let num2 = 10;
+console.log(num1 === num2); // true，因為原始值相等
 
+let obj1 = { a: 1 };
+let obj2 = obj1; // obj2 參考了 obj1
+console.log(obj1 === obj2); // true，因為它們指向相同的物件
 
+let obj3 = { a: 1 };
+console.log(obj1 === obj3); // false，因為它們指向不同的物件，即使內容相同
+```
+### 參考相等性常見用途：
+1. **避免無意中改變物件**：由於物件是引用類型，將一個物件賦值給另一個變數時，兩者將指向相同的物件，對一個物件的更改會影響到另外一個物件。
+   
+   ```javascript
+   let obj1 = { a: 1 };
+   let obj2 = obj1;  // obj2 參考 obj1
+   obj2.a = 2;
+   console.log(obj1.a); // 2，因為 obj1 和 obj2 參考的是同一個物件
+   ```
+2. **比較物件是否相同**：JavaScript 中，如果你想檢查兩個物件是否相等（包括它們的內容是否相等），需要自行實現一個深度比較函數，因為 `===` 只會檢查引用。
+
+   例如，使用遞歸來進行物件的深度比較。
