@@ -9,7 +9,7 @@ const obj2 = { a: 1 };
 console.log(obj1 === obj2); // false，因為引用不同，即使內容相同
 ```
 物件每次渲染重新生成，React 會認為是新的物件，即使內容相同。
-這會導致 `useEffect` 誤判依賴發生變化，從而觸發回調執行。
+導致 `useEffect` 誤判依賴變化，觸發回調執行。
 
 ## **案例：`useEffect` 的無限渲染問題**
 
@@ -46,7 +46,7 @@ export default App;
 
 ## **解決方法：使用 `useMemo` 或 `useCallback`**
 
-為了避免依賴物件型別的重新生成導致無限觸發，可以使用 `useMemo` 或 `useCallback` 來記住物件或函數的引用，直到其真正的依賴項改變。
+避免依賴物件重新生成導致無限觸發，可以使用 `useMemo` 或 `useCallback` 記住物件或函數的引用，直到其真正的依賴項改變。
 
 ### **使用 `useMemo`**
 
@@ -77,37 +77,42 @@ export default App;
 
 ---
 
-### **使用 `useCallback`**
-依賴是函數型別（例如事件處理器），可以用 `useCallback`。
-
+### **使用 `useCallback` 依賴函數型別（事件處理器）**
+useCallback 主要目的是穩定函數引用，搭配 React.memo 類似邏輯進行性能優化。
+子組件不是React.memo，父組件重渲染子組件一定重新渲染，useCallback 這情況下是多餘的。
 ```javascript
-import React, { useEffect, useState, useCallback } from 'react';
-
-const App = () => {
-  const [count, setCount] = useState(0);
-
+const Parent = () => {
   const handleClick = useCallback(() => {
-    console.log(`Count is ${count}`);
-  }, [count]); // 僅在 count 改變時生成新函數
+    console.log('Button clicked');
+  }, []);
 
-  useEffect(() => {
-    console.log('useEffect triggered');
-  }, [handleClick]); // handleClick 的引用僅在 count 改變時改變
-
-  return (
-    <div>
-      <p>Count: {count}</p>
-      <button onClick={handleClick}>Log Count</button>
-    </div>
-  );
+  return <ChildButton onClick={handleClick} />;
 };
 
-export default App;
+const ChildButton = React.memo(({ onClick }) => {
+  console.log('ChildButton rendered');
+  return <button onClick={onClick}>Click Me</button>;
+});
+```
+### **依賴於函數的 useEffect 或其他 Hook**
+```javascript
+const Example = () => {
+  const [count, setCount] = useState(0);
+
+  const logCount = useCallback(() => {
+    console.log(`Count: ${count}`);
+  }, [count]);
+
+  useEffect(() => {
+    logCount();
+  }, [logCount]); // 如果不用 useCallback，每次渲染都會重新執行 logCount
+};
+
 ```
 ## **總結：防止 Re-render 的核心需要 `useMemo` 和 `useCallback`？**
 兩者的主要目的是減少不必要的重新創建，從而優化 React 應用的性能：
-- **`useMemo`**: 記住[純值、物件、陣列]引用，幫助避免重新計算不必要的值，避免依賴變化無意義渲染。
-- **`useCallback`**: 記住函數引用，避免重新創建函數引用。
- `useEffect` 的依賴陣列中包含物件或函數時，應特別注意是否需要使用 `useMemo` 或 `useCallback`，以防止不必要的依賴變化和無限渲染問題。
+- **`useMemo`**: 記住[純值、物件、陣列]引用，避免因重新渲染而導致進行了不必要的重新計算。
+- **`useCallback`**: 記住函數引用，避免因為重新渲染導致之函式被重新被建立。
+ `useEffect` 的依賴陣列中包含物件或函數時，需要使用 `useMemo` 或 `useCallback`，以防止不必要的依賴變化和無限渲染問題。
 
 
