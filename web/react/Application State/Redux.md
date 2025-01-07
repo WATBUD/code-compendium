@@ -7,14 +7,14 @@
 - 例如：dispatch({ type: 'ADD_ITEM', payload: { id: 1, name: 'Item' } })
 
 # Store: 應用狀態中央管理器:
-- 當 Action 被 dispatch 發送到 Store 時，Store 會根據 Action 的 type 將它傳遞給對應的 Reducer。
+- Action 被 dispatch 發送到 Store 時，Store 會根據 Action 的 type 將它傳遞給對應的 Reducer。
 
 # Reducer: 根據 Action 更新狀態的純函數，決定如何處理每個 Action 並返回新的狀態。
 - 例如：根據 Action 的 type，Reducer 會更新對應的狀態，如新增一個項目到清單中。
 
-# State Access: 使用 useSelector 獲取當前狀態，從 Redux Store 中讀取資料並觸發組件的重新渲染。
+# State Access: useSelector 獲取當前狀態，Redux Store 中讀取資料並觸發組件的重新渲染。
 - 例如：const items = useSelector(state => state.items);
-- useSelector 會返回 Store 中的狀態，並且當狀態變化時，組件會重新渲染。
+- useSelector 會返回 Store 狀態，並且當狀態變化時，組件會重新渲染。
 
 
 
