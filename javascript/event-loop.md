@@ -1,3 +1,5 @@
+# JavaScript 是單執行緒（single-threaded），事件循環 (Event Loop) 確保執行順序為：同步任務 > 微任務 (Microtasks) > 宏任務 (Macrotasks)
+
 # 微任務 (Microtasks) (異步(asynchronous))
 Microtasks 上下文結束後立即執行的任務，通常>Macrotasks。
 例子：
@@ -13,12 +15,10 @@ Macrotasks 等待主線程空閒後執行
 * I/O 操作
 * setImmediate（Node.js 特有）
 
-工作流程（Event Loop）
-每次事件循環都會：
-清空微任務隊列（Microtasks Queue）。
-執行下一個宏任務（Macrotasks Queue）。
-
-# JavaScript 是單執行緒（single-threaded），事件循環 (Event Loop) 確保執行順序為：同步任務 > 微任務 (Microtasks) > 宏任務 (Macrotasks)
+# 工作流程
+每次[事件循環](Event Loop)都會：
+清空[微任務隊列]（Microtasks Queue）。
+執行下個[宏任務]（Macrotasks Queue）。
 
 ``` javascript
 console.log("begins"); //1
@@ -30,11 +30,11 @@ setTimeout(() => {
   });
 }, 0);
 
-new Promise(function (resolve, reject) {
+new Promise(function (resolve, reject) { //屬於同步=>因為 new Promise() 建構函數內的程式碼在同步程式碼階段立即執行，微任務會是 then()、catch()、finally() 的回調
   console.log("promise 2"); //2
   setTimeout(function () {
     console.log("setTimeout 2"); //5 
-    resolve("resolve 1"); //作用是將 Promise 的 .then() 回調加入 Microtask 隊列 
+    resolve("resolve 1"); //call then("resolve 1")
   }, 0);
 }).then((res) => {
   console.log("dot then 1");//6
@@ -43,13 +43,13 @@ new Promise(function (resolve, reject) {
   }, 0);
 });
 //OutPut:
-begins
-promise 2
-setTimeout 1
-promise 1
-setTimeout 2
-dot then 1
-resolve 1
+begins 1(同步程式碼)
+promise 2 (來自 new Promise() 的同步程式碼)
+setTimeout 3 (來自第一個 setTimeout，在Macrotasks隊列)
+promise 4 (來自 Promise.resolve().then()，在Microtask隊列)
+setTimeout 5 (來自第二個 setTimeout，在Macrotasks隊列)
+dot then 6 (來自 then，在Microtask隊列)
+resolve 7 (來自第二個 setTimeout 裡的回調，印出 resolve 1)
 
 async function async1() {
   console.log("async1 start"); //2
