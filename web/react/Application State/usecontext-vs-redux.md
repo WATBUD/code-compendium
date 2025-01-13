@@ -5,8 +5,9 @@
 
 
 ### **`useContext`**
-`useContext` React Context API `Provider` 傳遞狀態：
-`useReducer` React 16.8 
+`useContext`/`useReducer` 
+React 版本：16.8.0
+發布日期：2019 年 2 月 6 日
 ```javascript
 import React, { createContext, useContext, useState } from 'react';
 
@@ -135,7 +136,7 @@ const authReducer = (state = { isLoggedIn: false }, action) => {
 
 ```
 # combineReducers
-當應用中有多個狀態（如主題、認證、語言等）時，可以使用 combineReducers 將多個 Reducer 合併為一個總的 Reducer，而不需要為每個狀態分配一個獨立的 Provider。
+當應用中有多個狀態（如主題、認證、語言等）時，combineReducers 將多個 Reducer 合併為一個總的 Reducer，而不需要為每個狀態分配一個獨立的 Provider。
 ```javascript
 import { combineReducers, createStore } from 'redux';
 
@@ -149,30 +150,31 @@ const store = createStore(rootReducer);
 ```
 
 ### Provider Hell 
-combineReducers 可以將管理邏輯拆分，每個 reducer 只負責處理自己的部分，當該部分狀態改變時，只有相關的組件會重新渲染。
-合併的 Context 中的任何一部分數據（如 auth）改變時，整個 AppContext.Provider 的值會更新，這會導致所有使用 useContext(AppContext) 的組件重新渲染，即使它們只需要其中的某一部分數據（如 theme）
+combineReducers:可以將管理邏輯拆分，每個 reducer 只負責處理自己的部分，部分狀態改變時，只有相關的組件會重新渲染。
+useContext:合併的Context的任何部分數據（如 auth）改變時，整個 AppContext.Provider值會更新，導致所有使用 useContext(AppContext) 的組件重新渲染，即使它們只需要其中的某一部分數據（如 theme）
 
 ### **`useContext`**
 
-[優勢]:內建於 React，輕量無需額外安裝 適合小型應用少量共享狀態。
-[劣勢]:狀態頻繁更新可能導致所有使用該 Context 的組件重渲染
-       缺乏[結構化/擴展性]，難以處理大型、複雜的狀態管理需求              
-       無法方便地進行狀態追踪或調試（不像 Redux 有 DevTools）
+[優勢]:
+React內建Api，無需額外安裝 適合小型應用少量共享狀態。
+[劣勢]:
+狀態頻繁更新可能導致所有使用該 Context 的組件重渲染
+使用 useContext 時，如果 Context 的值更新，所有使用該 Context 的子組件都會重新渲染，即使它們實際上並不需要更新的數據
+解決方案：可以通過將 Context 的值拆分為更細的粒度，或者搭配 useMemo、useReducer 等方式減少不必要的渲染。
+無法方便地進行狀態追踪或調試（不像 Redux 有 DevTools）
 
 ### **`Redux`**
-| 優勢                              | 劣勢                                                                 |
-|-----------------------------------|----------------------------------------------------------------------|
-| 適合大型應用，支持複雜的全局狀態管理。 | 配置較為繁瑣，尤其對於小型應用來說可能過於複雜。                              |
-| Redux DevTools 提供強大的調試功能。| 需要學習額外概念（如 actions, reducers, middleware）。               |
-| 狀態結構清晰，支持不可變數據管理。   | boilerplate（樣板程式碼）較多，對簡單場景顯得笨重。                                |
-| 支持中間件（如 Thunk, Saga）處理異步邏輯。| 外部依賴多（需額外安裝 Redux 和相關工具庫）。                          |
+[優勢]:
+適合大型應用，支持複雜的全局狀態管理
+Redux DevTools 提供強大的調試功能
+支持中間件（如 Thunk, Saga）處理異步邏輯
+不可變數據（Immutable Data）。每次狀態更新時，會創建一個新的狀態樹，舊的狀態樹保持不變。
+淺比較（shallow equality check）確定哪部分狀態改變，從而觸發相關組件的重渲染。
+選擇性訂閱（Selective Subscription） useSelector 或 connect 會讓組件僅訂閱它需要的狀態片段，而非整個狀態樹。
 
-## 適用場景對比
-| 使用場景                        | 適合使用 `useContext`                                | 適合使用 `Redux`                                      |
-|--------------------------------|----------------------------------------------------|-----------------------------------------------------|
-| **狀態共享規模**                | 小型應用，狀態共享簡單，且無需頻繁更新。                   | 中大型應用，需要管理多個模塊的複雜全局狀態。                 |
-| **狀態更新頻率**                | 更新頻率較低，對性能要求不高。                          | 高頻更新，需要控制細粒度的狀態變更（如部分組件重渲染）。       |
-| **數據流管理需求**              | 簡單的數據傳遞（主題、語言、用戶狀態）。                 | 需要明確的狀態管理流程（如數據表單、認證、應用全局設置）。      |
-| **學習曲線**                    | 適合初學者，開箱即用。                               | 需要熟悉 Redux 概念，適合熟練的開發者。                    |
-| **異步邏輯**                    | 適合簡單場景，如用 React 的 useState 配合處理。           | 適合處理複雜的異步操作（如 API 請求隊列、任務流程）。          |
-中型應用使用`useReducer` 搭配 `useContext` 作為輕量級替代方案，結合兩者的優勢。
+[劣勢]: 
+外部依賴多（需額外安裝 Redux 和相關工具庫）
+boilerplate（樣板程式碼）較多，對簡單場景顯得笨重。 
+需要學習額外概念（如 actions, reducers, middleware）。
+配置繁瑣對於小型過於複雜
+

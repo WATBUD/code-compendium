@@ -1,24 +1,31 @@
 # Redux Core Concepts (Simplified)
 [Action/dispatch/Reducer/useSelector/Store]
 
-# Action: 描述狀態變更的動作，包含 type 和可選的 payload。
-{ type: 'ADD_ITEM', payload: { id: 1, name: 'Item' } }
-  
+# Action: Object[type/可選payload]
+```javascript
+// 定義 Action Types 和 Payload
+export const increment = { type: 'increment_counter' };
+export const setUser = (name) => ({ type: 'user/set', payload: { name } });
+```
 # Dispatch: useDispatch hook 發送 Action 到 Store。
-dispatch({ type: 'ADD_ITEM', payload: { id: 1, name: 'Item' } })
+```javascript
+import { useDispatch } from 'react-redux';
 
-# Store: 應用狀態中央管理器:
-- dispatch 發送Action到 Store ，Store 會根據 Action 的 type 將它傳遞給對應的 Reducer。
+import { increment, setUser } from './actions'; // 導入 Action
 
-# Reducer: 根據 Action 更新狀態的純函數，決定如何處理每個 Action 並返回新的狀態。
-- 根據 Action 的 type，Reducer 會更新對應的狀態，ex:新增一個項目到清單。
+const Component = () => {
+  const dispatch = useDispatch();
 
-# useSelector 獲取當前狀態，Redux Store 讀取資料並觸發組件的重新渲染。
-- const items = useSelector(state => state.items);
-- items = Store 狀態，當狀態變化組件會重新渲染。
+  const incrementCounter = () => {
+    dispatch(increment);//直接引用定義好的Action
+    dispatch({ type: 'increment_counter' });//直接帶入Action Object
+  };
+  return <button onClick={incrementCounter}>Increment</button>;
+};
+```
 
-# 1. Store: 中央化狀態容器
-存儲所有狀態，透過 `configureStore` 創建。
+# Store: 中央管理器存儲所有狀態，接收dispatch 發送的Action:
+- 根據 Action Type 傳遞給對應的 Reducer。透過 `configureStore` 創建。
 ```javascript
 import { configureStore } from '@reduxjs/toolkit';
 
@@ -26,13 +33,7 @@ const store = configureStore({
   reducer: counterReducer,
 });
 ```
-# 2. Action: 指令物件，通常包含 type 屬性，有時候會包含其他資料 (payload)。
-```javascriptincrement_counter
-const increment = { type: 'increment_counter' };
-const setUser = { type: 'user/set', payload: { name: 'Alice' } };
-```
-
-# 3. Reducer(純函數):傳入 Action 更新狀態。
+# Reducer(純函數):傳入 Action 更新狀態，決定如何處理每個 Action 並返回新的狀態。
 ```javascript
 const counterReducer = (state = 0, action) => {
   switch (action.type) {
@@ -44,22 +45,9 @@ const counterReducer = (state = 0, action) => {
 };
 ```
 
-# 4. Dispatch: useDispatch hook 發送 Action 到 Store。
-```javascript
-import { useDispatch } from 'react-redux';
-
-const Component = () => {
-  const dispatch = useDispatch();
-
-  const incrementCounter = () => {
-    dispatch({ type: 'increment_counter' });
-  };
-
-  return <button onClick={incrementCounter}>Increment</button>;
-};
-```
-
-# 45. useSelector 獲取當前狀態。
+# useSelector 獲取當前狀態，Redux Store 讀取資料並觸發組件的重新渲染。
+- const items = useSelector(state => state.items);
+- items = Store 狀態，當狀態變化組件會重新渲染。
 ```javascript
 import { useSelector } from 'react-redux';
 const Component = () => {
@@ -67,4 +55,9 @@ const Component = () => {
   return <div>Counter: {counter}</div>;
 };
 ```
+
+
+
+
+
 
