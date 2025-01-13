@@ -46,7 +46,7 @@ const counterReducer = (state = 0, action) => {
 };
 ```
 
-# 4. Dispatch: 使用 useDispatch hook 發送 Action 到 Store。
+# 4. Dispatch: useDispatch hook 發送 Action 到 Store。
 ```javascript
 import { useDispatch } from 'react-redux';
 
@@ -61,7 +61,7 @@ const Component = () => {
 };
 ```
 
-# 45. State Access: 獲取當前的狀態。
+# 45. State Access: 獲取狀態。
 ```javascript
 import { useSelector } from 'react-redux';
 
