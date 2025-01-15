@@ -1,25 +1,27 @@
 
 # RabbitMQ 消息持久化(Message Persistence)
 
-這個範例展示了如何在 Go 項目中使用 RabbitMQ，並保證消息不會丟失，即使消費者斷線。主要通過以下機制實現：
-1. **消息持久化**：將消息標記為持久化，保證 RabbitMQ 服務重啟後不會丟失未處理的消息。
-2. **手動確認**：消費者在成功處理消息後發送確認，避免在消費者斷線時丟失消息。
-3. **持久化隊列**：確保隊列在 RabbitMQ 重啟後依然存在。
+1. **消息持久化(Message Persistence)**：消息標記[持久化]將被寫入磁碟中，重啟後不會丟失未處理消息。
+2. **手動確認 (Manual Acknowledgment)**：消費者在成功處理消息後發送確認，避免在消費者斷線時丟失消息。
 
-### 需求
+3. **持久化隊列 (Persistent Queue)**：隊列設置持久化。
+_, err := ch.QueueDeclare(
+	"task_queue", // 队列名
+	true,         // 持久化（這裡設為 true 讓隊列持久化）
+	false,        // 自動刪除
+	false,        // 排他性
+	false,        // 不等候
+	nil,          // 額外參數
+)
+
+### Test
+`pika` Go 客戶端（`github.com/streadway/amqp`）。
 - Go 1.18 及以上版本
 - RabbitMQ 服務
-
-### 安裝依賴
-
-首先，安裝 `pika` Go 客戶端（`github.com/streadway/amqp`）。
 
 ```bash
 go get github.com/streadway/amqp
 ```
-
-### 代碼範例
-
 #### `main.go`
 
 ```go
@@ -139,9 +141,5 @@ func consumeMessages(ch *amqp.Channel) {
 
 ### 重要提示
 
-1. 消息持久化：RabbitMQ 會將消息持久化到磁碟，這樣即使 RabbitMQ 重啟，消息也不會丟失。
-2. 手動確認：當消費者成功處理完消息後，必須顯式確認（`msg.Ack(false)`）。如果消費者斷線，消息不會丟失，RabbitMQ 會將未確認的消息重新排入隊列。
-
-### 結論
-
-這個範例展示了如何使用 Go 和 RabbitMQ 保證消息的可靠性，即使在消費者斷線的情況下，消息仍然不會丟失。
+1. 消息持久化：持久化到磁碟，RabbitMQ 重啟消息不會丟失。
+2. 手動確認：消費者成功處理完消息後，必須顯式確認（`msg.Ack(false)`）。如果消費者斷線消息不會丟失，RabbitMQ 會將未確認的消息重新排入隊列。
