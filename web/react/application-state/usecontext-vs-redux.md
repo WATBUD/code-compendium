@@ -2,8 +2,6 @@
 `useContext` 和 `Redux` 是在 React 管理狀態的方式
 
 ### useContext [React 16.3] 引入，組件能夠訂閱 React Context
-
-
 ### **`useContext`**
 `useContext`/`useReducer` 
 React 版本：16.8.0
