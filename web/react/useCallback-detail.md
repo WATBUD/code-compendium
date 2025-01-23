@@ -1,25 +1,16 @@
 
 ## useCallback 記錄函數的引用，避免每次渲染重新創建函數**
-
-當使用 `useCallback` 時，React 的執行過程如下：
-
+執行過程如下：
 1. 每次渲染時，React 會**執行傳入 `useCallback` 的匿名函式並創建一個新的函式**。
-2. 然後，React 會**將新函式的引用與之前渲染時存儲的函式引用進行比較**（依賴陣列用於判斷是否需要更新）。
-3. 如果依賴陣列中的值沒有改變，React **回傳之前存儲的函式引用**，而不是回傳剛創建的新函式。
+2. 然後，React **將新函式的引用與之前渲染時存儲的函式引用進行比較**（依賴陣列用於判斷是否需要更新）。
+3. 依賴陣列中的值沒有改變，React **回傳之前存儲的函式引用**，而不是回傳剛創建的新函式。
 
-## 1. 與 `React.memo` 配合使用
+## 1. 使用`React.memo高階組件（Higher Order Component）` 避免不必要渲染，
+- **`子元件用[memo]包住 + 父層[useCallback] 才「可能」優化子元件[Re-render]效能`**:
 子組件包裝 `React.memo` ，父組件每次重新渲染都會生成新的函數，子組件誤以為傳遞的 props 改變了，導致不必要的重渲染。
-使用 `useCallback` 可以穩定函數引用，避免子組件重渲染。
-
-React.memo 是一個高階組件（Higher Order Component）避免不必要渲染，
 對傳遞給子組件的 props 淺比較，如果 props 沒有改變，React.memo 可以跳過子組件的重新渲染。
 
-- **為什麼需要 `useCallback`**：
-  不使用 `useCallback`，
-  `handleClick` 每次父組件渲染會重新創建，
-  `Child` 內容沒變也會重新渲染。
-
-### 範例：防止子組件重渲染
+### React.memo範例：防止子組件重渲染
 ```jsx
 import React, { useState, useCallback } from 'react';
 
@@ -48,9 +39,7 @@ export default Parent;
 ```
 ## 2. 函數作為 `useEffect` 依賴
 如果函數每次重新創建，會導致 `useEffect` 不斷觸發。使用 `useCallback` 可以避免這個問題。
-
-- **為什麼需要 `useCallback`**：
-  如果不使用 `useCallback`，每次渲染會創建一個新 `fetchData`，導致 `useEffect` 依賴被認為改變而重複執行。
+如果不使用 `useCallback`，每次渲染會創建一個新 `fetchData`，導致 `useEffect` 依賴被認為改變而重複執行。
 
 ### 範例：避免不必要的 `useEffect` 重複執行
 ```jsx
@@ -75,6 +64,3 @@ function App() {
 
 export default App;
 ```
-
-- **`子元件用[memo]包住 + 父層[useCallback] 才「可能」優化子元件[Re-render]效能`**:
-- **`hook 的 deps array 需要包含 function`**:function 包進 useCallback，確保不同渲染之間的 reference 的判斷是正確的
