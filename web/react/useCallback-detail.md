@@ -7,8 +7,8 @@
 
 ## 1. 使用`React.memo高階組件（Higher Order Component）` 避免不必要渲染，
 - **`子元件用[memo]包住 + 父層[useCallback] 才「可能」優化子元件[Re-render]效能`**:
-子組件包裝 `React.memo` ，父組件每次重新渲染都會生成新的函數，子組件誤以為傳遞的 props 改變了，導致不必要的重渲染。
-對傳遞給子組件的 props 淺比較，如果 props 沒有改變，React.memo 可以跳過子組件的重新渲染。
+因父組件每次重新渲染都生成新函數，Child以為傳遞的 props 改了會導致重渲染。
+透過子組件包裝 `React.memo` ，對傳遞給子組件的 props 淺比較，props 沒有改變，`React.memo`跳過子組件重新渲染。
 
 ### React.memo範例：防止子組件重渲染
 ```jsx
@@ -64,3 +64,12 @@ function App() {
 
 export default App;
 ```
+
+
+## 總結
+
+- **useCallback 不比較函數=>比較依賴陣列的值。** 
+- **使用空依賴陣列 ([]) 來創建穩定的函數reference。** 
+- **JavaScript 即使函數邏輯相同，reference是不同的。** 
+- **子元件用[memo]包住 + 父層[useCallback] 才「可能」優化子元件[Re-render]效能** 
+
