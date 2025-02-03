@@ -33,21 +33,6 @@ RabbitMQ [AMQP（Advanced Message Queuing Protocol）實現]
 | **語言支持**     | 通過 Redis 客戶端庫提供廣泛支持。                
 | **Requirement** | 需要快速數據訪問、緩存和簡單消息傳遞的應用程序。  
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 面試回答場景
 ### 問題：聊天室為什麼用 Redis 而不是 RabbitMQ？
 - **Redis 優勢**：

@@ -1,3 +1,4 @@
+```js
 class TreeNode {
     constructor(data) {
         this.data = data;
@@ -55,3 +56,4 @@ bst.insert(15);
 bst.insert(3);
 bst.insert(7);
 bst.inorder(); // Output: 3 5 7 10 15
+```
