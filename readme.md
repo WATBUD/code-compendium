@@ -2,7 +2,7 @@
 
 ## Introduction
 
-CodeCompendium is a project designed for developers, aiming to collect and organize various technical knowledge and notes. This project covers multiple programming languages, frameworks, tools, and best practices, providing developers with a convenient resource for inquiry and learning.
+CodeCompendium is a project designed for developers, aiming to collect and organize various technical knowledge and notes. This project covers multiple programming languages, frameworks, tools, providing developers with a convenient resource for inquiry and learning.
 
 ## Objectives
 
