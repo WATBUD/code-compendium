@@ -15,8 +15,8 @@ CRP（關鍵渲染路徑）是瀏覽器將 **HTML、CSS 和 JavaScript 轉換為
 3. **合併 DOM 與 CSSOM，生成渲染樹（Render Tree）**  
    - 只包含可見元素及其樣式，忽略 `display: none`，但保留 `visibility: hidden`。
 
-4. **計算佈局（Layout）**  
-   - 決定每個元素的確切位置與大小（又稱 Reflow）。
+4. **計算佈局（Layout/Reflow）**  
+   - 決定每個元素的確切位置與大小。
 
 5. **繪製（Paint）與合成（Compositing）**  
    - **Paint**：將顏色、邊框、陰影等繪製到位圖。
