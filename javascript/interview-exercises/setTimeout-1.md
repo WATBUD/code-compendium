@@ -1,5 +1,6 @@
 ```javascript
-JavaScript 是「異步/非同步」語言，因此在等待執行 function() { console.log( i ) ; } 前的這 0.1 秒內，會先執行完已經能執行的 for 迴圈。
+JavaScript 是「異步/非同步」語言
+等待執行 function() { console.log( i ) ; } 前的這 0.1 秒內，會先執行完已經能執行的 for 迴圈。
 
 setTimeout中的函數是在循環結束後才被調用的
 for (var i = 0; i < 5; i++) {
@@ -7,6 +8,7 @@ for (var i = 0; i < 5; i++) {
     console.log(i); 
     }, 1000); 
 } 
+
 *a. 為什麼結果會顯示 5 顯示五次？
 var 是函數作用域導致變量共享。 
 let 是塊作用域每次迭代創建新的變量
