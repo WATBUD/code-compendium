@@ -20,7 +20,7 @@ Serverless（無伺服器架構）不代表完全沒有伺服器，而是指開�
 - AWS AppSync（GraphQL API）  
 
 ## Serverless 與 Google Cloud Run
-Google Cloud Run 也是一種 Serverless 解決方案，它允許使用 Docker 容器來部署應用程式，並根據請求自動擴展，沒有請求時會停用實例。這與傳統的 FaaS（如 Lambda）不同，Cloud Run 支援完整的 Web 服務，而不僅僅是執行單個函數。
+Google Cloud Run 也是 Serverless 解決方案，它允許使用 Docker 容器來部署應用程式，並根據請求自動擴展，沒有請求時會停用實例。這與傳統的 FaaS（如 Lambda）不同，Cloud Run 支援完整的 Web 服務，而不僅僅是執行單個函數。
 
 ## Serverless 的優缺點
 ### **優點**
