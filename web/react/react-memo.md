@@ -5,10 +5,9 @@
 `React.memo` 適用於優化不常變更的組件，但不適用於會頻繁更新 props 的情況
 
 #### **React.memo 的工作原理**
-- **淺比較（Shallow Compare）**：React 預設使用 shallow comparison（淺比較），即僅比較外層 props 的記憶體參考（reference），而不是進行 deep comparison（深度比較）。
-  - 預設情況下，`React.memo` 會對 props 進行 **淺比較（Shallow Compare）**，而不是**進行 deep comparison（深度比較）**
-  淺比較也就是比較 props 物件的 **記憶體位置（reference）**。 
-  
+
+  - 預設情況下，`React.memo` 會對 props 進行 **淺比較（Shallow Comparison）**，而不是**進行 deep comparison（深度比較）** 淺比較也就是比較 props 物件的 **記憶體位置（reference）**。 
+
   - 如果 props 的記憶體位置沒有變化，則跳過重新渲染。
   - 例如：
     ```javascript
@@ -16,13 +15,15 @@
         return <div>{props.value}</div>;
     });
     ```
-
-- **自定義比較函式（Custom Compare Function）**：
+    
+- **React.memo 提供了一個可選的 自定義比較函式（Custom Compare Function）**：
   - 如果需要更精確的控制，可以傳入一個自定義的比較函式作為第二個參數。
   - 例如：
     ```javascript
     const areEqual = (prevProps, nextProps) => {
-        return prevProps.value === nextProps.value;
+          // 返回 true 表示 props 相同，跳過重新渲染
+          // 返回 false 表示 props 不同，觸發重新渲染
+          return prevProps.value === nextProps.value;
     };
 
     const MyComponent = React.memo((props) => {
