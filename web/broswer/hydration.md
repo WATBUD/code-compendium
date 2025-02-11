@@ -2,21 +2,20 @@
 
 ## **什麼是 Hydration**
 
-**Hydration（注水/注入/水合）** 
-📌 一般前端（純 HTML + JS），就沒有 Hydration 這個步驟，因為 HTML 本來就是靜態的，JS 直接操作 DOM 就可以讓它變動態。
-📌 在 React/Vue 這類框架中，Hydration 是讓伺服器渲染的 HTML 被前端框架「接管」，變成可互動的應用。
-指 **客戶端生成的虛擬 DOM** 接管由 **SSR/SSG 生成的靜態 HTML** 並將其轉化為可互動的 React 應用。
-📌 簡單來說，就是讓靜態 HTML「激活」，變成可動態更新的 React 應用。
+**Hydration（注水/注入/水合）讓靜態 HTML「激活」，變成可動態更新的 React 應用** 
+📌 一般前端（純 HTML + JS），沒有 Hydration ，HTML 本來就是靜態的，JS 直接操作 DOM 就可以讓它變動態。
+📌 Hydration 指 **client生成的虛擬 DOM** 接管由 **伺服器(SSR/SSG) 生成的靜態 HTML** 
+被前端框架載入 JavaScript並綁定靜態 HTML 變成動態 UI。
 
-1️⃣ 伺服器（SSR/SSG）先傳回靜態 HTML，加速首屏渲染。
-2️⃣ 前端 React 下載 JavaScript，開始 Hydration（綁定事件 & 變成動態 UI）。
+1️⃣ 伺服器（SSR/SSG）先生成靜態 HTML 首屏渲染。
+2️⃣ 前端 React 載入 JavaScript，開始 Hydration（綁定靜態 HTML 變成動態 UI）。
 3️⃣ 完成 Hydration 之後，頁面才能完全可互動。
 ---
 
 ## **詳細解釋**
 
 1. **服務端渲染 (SSR)：**
-   - 當用戶打開一個網站時，伺服器會先生成一個靜態的 HTML 結構，這些 HTML 通常包含了內容，但沒有任何行為（如點擊事件、動態數據更新等）。
+   - 用戶打開一個網站時伺服器會先生成靜態的 HTML 結構，但沒有任何行為（如點擊事件、動態數據更新等）。
 
 2. **靜態 HTML 的問題：**
    - 靜態 HTML 是「死的」，用戶與頁面的交互（例如點擊按鈕、表單提交）無法直接運行，因為瀏覽器中尚未有 JavaScript 提供這些交互功能。
@@ -31,7 +30,7 @@
 ## **Hydration 的關鍵點/優點**
 
 - **注入虛擬 DOM：**
-  Hydration 是客戶端虛擬 DOM 與服務端渲染的 HTML 結構進行同步。
+  Hydration 是client虛擬 DOM 與服務端渲染的 HTML 結構進行同步。
   都是將伺服器端生成的靜態 HTML 轉換成動態、可交互的組件，使得頁面能夠支持用戶交互和狀態更新
 
 - **性能優化：**
