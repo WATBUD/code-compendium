@@ -1,0 +1,71 @@
+你的回答已經很接近正確答案了，但可以進一步優化和補充細節，讓回答更完整且精確。以下是改進後的版本：
+
+---
+
+### **Q: React.memo 是什麼，何時不該用？**
+
+#### **React.memo 是什麼？**
+`React.memo` 是一個 **高階元件（Higher-Order Component, HOC）**，用於優化函式型元件（Functional Component）的渲染效能。它會記住（memoize）元件的渲染結果，並在下次渲染時，如果 **props 沒有變化**，則直接返回上次的渲染結果，避免不必要的重新渲染。
+
+#### **React.memo 的工作原理**
+- **淺比較（Shallow Compare）**：
+  - 預設情況下，`React.memo` 會對 props 進行 **淺比較**，也就是比較 props 物件的 **記憶體位置（reference）**。
+  - 如果 props 的記憶體位置沒有變化，則跳過重新渲染。
+  - 例如：
+    ```javascript
+    const MyComponent = React.memo((props) => {
+        return <div>{props.value}</div>;
+    });
+    ```
+
+- **自定義比較函式（Custom Compare Function）**：
+  - 如果需要更精確的控制，可以傳入一個自定義的比較函式作為第二個參數。
+  - 例如：
+    ```javascript
+    const areEqual = (prevProps, nextProps) => {
+        return prevProps.value === nextProps.value;
+    };
+
+    const MyComponent = React.memo((props) => {
+        return <div>{props.value}</div>;
+    }, areEqual);
+    ```
+
+#### **何時不該用 React.memo？**
+1. **props 經常變化**：
+   - 如果子元件的某個 props 在每次父元件重新渲染時都會變化（例如傳遞一個新的物件或函式），則 `React.memo` 無法發揮作用，因為每次 props 的記憶體位置都會不同。
+   - 例如：
+     ```javascript
+     <MyComponent value={{ key: 'value' }} />
+     ```
+     每次渲染時，`value` 都會是一個新的物件，`React.memo` 的淺比較會失效。
+
+2. **props 比較成本高**：
+   - 如果使用自定義比較函式，且比較邏輯非常複雜（例如深度比較一個大型物件），則可能會導致效能問題。
+   - 例如：
+     ```javascript
+     const areEqual = (prevProps, nextProps) => {
+         return JSON.stringify(prevProps) === JSON.stringify(nextProps);
+     };
+     ```
+     這種深度比較的成本很高，可能會抵消 `React.memo` 帶來的效能優勢。
+
+3. **元件本身很輕量**：
+   - 如果元件本身非常簡單，重新渲染的成本很低，則使用 `React.memo` 可能會帶來額外的記憶體開銷（記住上次的 props 和渲染結果），反而得不償失。
+
+#### **面試官回饋與回應**
+- **面試官的回饋**：
+  - 面試官提到「執行效率會比較低，因為還要跟前次的 props 進行比較」，這部分不完全正確。
+  
+- **你的回應**：
+  - 你提到「React 預設是進行 shallow-compare 而不是 deep-compare」，這是正確的。
+  - 你還提到「只比較一次外層 props 物件的 reference 基本上執行效率可以忽略」，這也是正確的。
+  - 但可以補充說明：只有在使用自定義比較函式且比較邏輯複雜時，才會有明顯的效能問題。
+
+#### **改進後的回答**
+`React.memo` 是一個用於優化函式型元件渲染效能的工具，它會記住元件的渲染結果，並在 props 沒有變化時跳過重新渲染。預設情況下，`React.memo` 使用 **淺比較**，只比較 props 的記憶體位置，因此執行效率非常高。
+
+然而，以下情況不適合使用 `React.memo`：
+1. **props 經常變化**：如果 props 在每次渲染時都會變化（例如傳遞新的物件或函式），則 `React.memo` 無法發揮作用。
+2. **props 比較成本高**：如果使用自定義比較函式且比較邏輯複雜，可能會導致效能問題。
+3. **元件本身很輕量**：如果元件重新渲染的成本很低，使用 `React.memo` 可能會帶來額外的記憶體開銷。
