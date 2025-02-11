@@ -54,13 +54,13 @@
 # ヒ ザ が   震  え る   時
 # hi za ga fu ru e ru  to ki
 
-# キ ミ の コ ト  信 じ る  瞳 感じて
-# ki mi no ko to shi n ji ru hi to mi kan ji te
+# キ ミ の コ ト    信  じ る    瞳      感  じ て
+# ki mi no ko to shi n ji ru hi to mi  kan ji te
 
-# 手渡すように勇気をくれた
+# 手    渡 す よ う に  勇気   を  く れ た
 # te wa ta su yo u ni yu u ki wo ku re ta
 
-# 仲間たちがいるよ
+# 仲間     た  ち が い る よ
 # na ka ma ta chi ga i ru yo
 
 # 風の中 キミの名前を 呼んでる

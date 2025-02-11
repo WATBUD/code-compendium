@@ -1,5 +1,5 @@
 ###-----------------------1------------------------###
-# ゴ キ ゲン     な 蝶(chou)に  な っ て　
+# ゴ キ ゲン     な 蝶(chou)に  な って　
 # Go ki gen.    na         ni.na  tte
 
 # き ら め く風(ka ze)に 乗 って
@@ -23,7 +23,7 @@
 # 無限大(Mu gen dai)な   夢(yu me) の あ と の    何(na ni)も  ない    世 の 中(na ka)じゃ　
 #                  na.            no a  to no~            mo nai.    yo no          ja
  
-# そ うさ    愛(i to) し  い   想い(o mo i)も  負け(ma. ke)  そ う  に な る け ど
+# そ うさ    愛(i to) し  い   想い(o mo i)も  負け(ma. ke) そ う  に な る け ど
 # So u sa.            shi i~              mo              so u.  ni na ru ke do~
  
 # Stay し   が  ち  なイ  メー  ジ  だ ら け の   頼(ta yo)り ない   翼(tsu ba sa)で も　

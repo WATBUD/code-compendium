@@ -42,7 +42,7 @@
 # ho ra            ni           shi te ru
 
 # 果 て な い 暗闇（やみ）   か ら 飛 び  出 そ う　   Hold your hand
-# ha te na i      ya mi    ka ra to bi da so u      Hold your hand
+# ha te na i      ya mi    ka ra to bi da so u     
 
 ###-----------------------2------------------------###
 
