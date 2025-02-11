@@ -19,16 +19,16 @@
 # wa ra i  a  u ko to.  na ni ge na i   ka i wa
 # 彼此微笑著　輕鬆地聊天
 # 　
-# 毎      日  の 暮  ら  し  の   中  で　  どうだっていい事
-# ma i ni chi no ku ra  shi no na ka de.   do u da tte i i ko to
+# 毎      日  の 暮  ら  し  の   中  で　  ど う だ って いい  事
+# ma i ni chi no ku ra  shi no na ka de.   do u da tte i i  ko to
 # 每天的生活　都是快樂的
 # 　
 #   何   も  考      え    ず  に　浮 かん  で く る   言葉
 # na ni  mo ka n ga  e    zu/ ni  u kan  de ku ru ko to ba
 # 什麼也沒多想　浮現出的言語
 # 　
-# “フ” と  し た  瞬      間 が　   大       切   だ っ て
-# "Fu" to shi ta syu n ka n ga.    ta i se tsu  da  t te
+# フ と  し た  瞬      間 が　   大       切   だ っ て
+# Fu to shi ta syu n ka n ga.    ta i se tsu  da  t te
 # 那樣的一瞬間　是最重要的
 
 
@@ -69,17 +69,17 @@
 # ki mi shi ka i na  i  n  da t te.  wa ka tte ku ya shi ka  ttan  da ke do
 # 就因為只有你　我才感到懊悔
 # 　
-# 先    入  観 って　自    分  に も あ る ね
-# sen  nyu kan tte. ji bu n  ni mo a ru ne
+# 先    入  観  って　自    分  に も あ る ね
+# sen  nyu ka n tte. ji bu n  ni mo a ru ne
 # 先入之見　連我自己都有呢
 # 　
 # ど う せ ダ メ さ な ん て　  自    爆   も  せ ず に
 # do u se da me sa na n  te.  ji ba ku   mo  se zu ni
-# 反正不行什麼的　也未曾如此自爆過
+# 反正不行什麼的　             也未曾如此自爆過
 # 　
 # 振 り 出  し  に 立 っ て 途   方    に く れ て も
 # fu ri da shi ni ta t  te to ho u   ni ku re te mo
-# 搖搖晃晃地站著　就算是束手無策
+# 搖搖晃晃地站著　                   就算是束手無策
 # 　
 #  始    め の  一歩  で　 救    わ   れ て み る
 # ha zi  me no i ppo de. su ku  wa  re/ te mi ru
@@ -134,8 +134,8 @@
 # ma ta yu me o   mi    se te
 # 再做一個美夢
 # 　
-# 今日も   元    気で   過 ご せ  た ら イイ よ ね
-# kyo u mo ge n ki de~ su go se ta ra i i yo ne
+# 今  日 も  元   気  で   過 ご せ  た ら イイ よ ね
+# kyo u  mo  ge n ki de~  su go se ta ra i i yo ne
 # 今天也充滿活力地度過吧
 # 　
 # こん な  に 単      純  で 当 た  り 前   な こ と  が
