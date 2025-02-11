@@ -21,7 +21,7 @@ su u se n. chi no zu re wo                 te
 
 偶然就可以變成命運 
 偶然(gu u ze n)は    運命(u n me i)に な る  
-               wa~~ .             ni na ru~~
+               wa~                ni na ru~~
 
 放棄那爽朗的笑聲
 屈 託     な  く 笑(wa ra).う聲(ko e)に      免  じ て   

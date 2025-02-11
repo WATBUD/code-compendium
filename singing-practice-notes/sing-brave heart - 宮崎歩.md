@@ -1,11 +1,11 @@
-# 逃 げ た り     あ  き ら め る コ ト は　誰(da re)も
-# Ni ge ta ri.    a  ki ra me ru ko to wa.         mo~
+# 逃 げ た り     あ  き ら め る コ ト は　誰(da re) も
+# Ni ge ta ri.    a  ki ra me ru ko to wa.          mo~
 # 
 # 一    瞬    あ れ ば で き る か  ら　    歩(a ru)き  続(tsu zu)け  よ う
 # Is   shu n. a  re ba de ki ru ka ra.             ki.           ke yo u
 # 
-# 君(Ki mi)に  し か  で き な い   コ ト が あ る　 青(a o)い 星(ho shi)に
-#          ni shi ka. de ki na i~  ko to ga a ru.         i.          ni
+# 君(Ki mi) に  し か  で き な い   コ ト が あ る　 青(a o)い 星(ho shi)に
+#           ni shi ka. de ki na i~  ko to ga a ru.         i.          ni
 # 
 # 光(Hikari) が な く せ ぬ    よう に
 #            ge na ku se nu~  you  ni~~

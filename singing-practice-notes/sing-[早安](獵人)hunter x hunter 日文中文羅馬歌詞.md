@@ -65,8 +65,8 @@
 # bo ku yo ri mo bo ku no ko too.  u ma ku  a i se ru no wa
 # 比我還要更愛著我的人
 # 　
-#  君    し か い な い  ん だ っ て　 分 か っ て く や し  か  ったん だ け ど
-# ki mi shi ka i na  i  n  da t te.  wa ka t te ku ya shi ka  ttan  da ke do
+#  君    し か い な い  ん だ っ て　 分 か って く や し  か  ったん だ け ど
+# ki mi shi ka i na  i  n  da t te.  wa ka tte ku ya shi ka  ttan  da ke do
 # 就因為只有你　我才感到懊悔
 # 　
 # 先    入  観 って　自    分  に も あ る ね
@@ -117,8 +117,8 @@
 # da i zi na ko to ba  ka ku to. shi n se n ni mi e ru
 # 不過一寫到重要的話語　就讓我感到特別新鮮
 # 　
-# 素 直   に な  れ な い   素直    さ な ん か じゃ
-# su na o ni na re na i   su na o sa na n  ka zya
+# 素    直  に な  れ な い  素   直  さ な ん か じゃ
+# su na o   ni na re na i   su na o  sa na n  ka zya
 # 什麼無法坦率的天真
 # 　
 #   君  に  な ん に  も　  伝    わ ら な い
@@ -138,8 +138,8 @@
 # kyo u mo ge n ki de~ su go se ta ra i i yo ne
 # 今天也充滿活力地度過吧
 # 　
-#  こん な  に 単      純  で 当 た  り 前   な こ と  が
-# ko n  na ni ta n zyu n  de a  ta ri ma e na ko to ga
+# こん な  に 単      純  で 当 た  り 前   な こ と  が
+# kon  na ni ta n zyu n  de a  ta ri ma e na ko to ga
 # 這種簡單又理所當然的事情
 # 　
 # 本当は、一番見失いがちだからね   事實 是，這是最容易被忽視的
