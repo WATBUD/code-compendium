@@ -4,11 +4,11 @@
 # そ の  眩(ma bu)し い 笑顔(e ga o) に
 # so no          shi i              ni
 
-# 果 て ない  暗闇（やみ） か ら飛び    出そ う　  Hold my hand
-# ha te na i ya mi       ka ra to bi da so u    Hold my hand
+# 果 て ない  暗闇（やみ）      か ら飛び    出そ う　  Hold my hand
+# ha te na i      ya mi       ka ra to bi da so u    Hold my hand
 
-# 君(ki mi)と出会    った  と き
-#         to dea     tta  to ki
+# 君(ki mi)と  出会    った  と き
+#          to  dea     tta  to ki
 
 # 子供(ko do mo)の こ ろ　 大切に          想(o mo)って い た  （ばしょ）を 思(o mo) い 出  し  た ん だ
 #              no ko ro   ta i se tsu ni          t te i ta   ba sho  wo         i  de  shi ta n da
@@ -25,7 +25,7 @@
 # 愛と      勇気と           誇(ho ko)り  を 持    って   闘(ta ta ka)うよ
 # a i to   yu u ki to                ri  wo mo(O) tte               u yo
  
-
+###-----------------------1-2------------------------###
 # DAN DAN　心魅かれてく
 # DAN DAN　 ko ko ro hi ka re te ku
 
@@ -35,24 +35,24 @@
 # き っと誰(da    re)もが　  永遠(e i e n)を  手 に 入     れたい
 # ki tto            mo ga               wo   te ni i      re ta i
 
-# ZEN ZEN　気(ki)に し   な  い フ リ し  て も
-# ZEN ZEN        ni shi na   i fu ri shi te mo
+# ZEN ZEN　気(ki) に し   な  い フ リ し  て も
+# ZEN ZEN         ni shi na   i fu ri shi te mo
 
-# ほ ら   君(ki mi)に恋(ko     i)し  て る
+# ほ ら   君(ki mi) に 恋(ko i)  し  て る
 # ho ra            ni           shi te ru
 
-# 果てない暗闇（やみ）  か ら 飛 び  出 そ う　   Hold your hand
-# ha te na i ya mi    ka ra to bi da so u      Hold your hand
+# 果 て な い 暗闇（やみ）   か ら 飛 び  出 そ う　   Hold your hand
+# ha te na i      ya mi    ka ra to bi da so u      Hold your hand
 
-### -----------------2-----------------
+###-----------------------2------------------------###
 
 # 怒    った   顔(ka o)も    疲     れ て る
 # o ko  tta           mo   tsu ka re te ru 
 
-# 君(ki mi)も 好 き     だ け ど  あんなに
-#          mo su ki    da ke do  a n na ni 
+# 君(ki mi) も 好 き     だ け ど  あん な に
+#           mo su ki    da ke do  a n na ni 
 
-# 飛ば   し  て生   き て　大丈夫            か な と     思  う
+# 飛 ば  し て 生   き て　大   丈   夫      か な と     思  う
 # to ba shi te i   ki te  dai jo u bu      ka na to    o mo u
  
 # 僕(bo ku)は…   何気(na ni ge)   ない 行動  （しぐさに     
@@ -73,7 +73,7 @@
 # は ば ま れ    て  通   り       に  舞うよ
 # ha ba ma re    te to o ri       ni ma u yo
  
-### -----------------3-----------------
+###-----------------------3------------------------###
 # DAN DAN　     心魅        か れ て く
 # DAN DAN　 ko ko ro hi     ka re te ku
 

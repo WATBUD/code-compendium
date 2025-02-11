@@ -1,3 +1,5 @@
+###-----------------------1------------------------###
+
 # あらら... ららら...
 # a ra ra... ra ra ra...
 
@@ -9,6 +11,8 @@
 
 # 強がって 立ち向かうしか ないんだ
 # tsu yo ga tte ta chi mu ka u shi ka na i n da
+
+###-----------------------1-2------------------------###
 
 # 誰でもないさ キミの番だよ
 # da re de mo na i sa ki mi no ban da yo
@@ -25,11 +29,10 @@
 # 強く握りしめたら
 # tsu yo ku ni gi ri shi me ta ra
 
-# ココロに チカラが流れ出す
+# コ コ ロ に  チ  カ ラ が  流    れ 出 す
 # ko ko ro ni chi ka ra ga na ga re da su
 
 # Get break up! to break up!
-# (英文保持原樣)
 
 # 新しいFighter 本当のハジマリさ
 # a ta ra shi i Fighter hon tou no ha ji ma ri sa
@@ -41,7 +44,9 @@
 # ko no ba sho ka ra
 
 # It's time to go!!
-# (英文保持原樣)
+
+
+###-----------------------2------------------------###
 
 # これ以上もう ムリだよなんて
 # ko re i jou mou mu ri da yo na n te
@@ -71,7 +76,6 @@
 # to bi ra wa hi ra ki ha ji me te i ru
 
 # Get break up! to break up!
-# (英文保持原樣)
 
 # 沸き上がるPower キミはもう気づいている
 # wa ki a ga ru Power ki mi wa mou ki dzu i te i ru
