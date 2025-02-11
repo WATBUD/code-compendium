@@ -45,7 +45,7 @@ var reverseList = function(head) {
 };
 
 // Test the function
-let head = arrayToList([1,2,3]);
+let head = arrayToList([1,2,3,4]);
 
 let recursionResult = reverseList(head);//遞迴（recursion）
 

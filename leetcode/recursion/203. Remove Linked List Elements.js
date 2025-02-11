@@ -61,7 +61,7 @@ var recursionRemoveElements = function(head, val) {
     if (head === null) {
         return null;
     }
-    head.next = removeElements(head.next, val);
+    head.next = recursionRemoveElements(head.next, val);
     return head.val === val ? head.next : head;
 };
 
@@ -70,7 +70,10 @@ var recursionRemoveElements = function(head, val) {
 let head = arrayToList([1, 2, 6, 3, 4, 5, 6]);
 let val = 6;
 let iterationResult = removeElements(head, val);//迭代（iteration）
-let recursionResult = recursionRemoveElements(head, val);//遞迴（recursion）
+
+let head2 = arrayToList([1, 2, 6, 3, 4, 5, 6]);
+let val2 = 6;
+let recursionResult = recursionRemoveElements(head2, val2);//遞迴（recursion）
 
 // Print the modified list
 
