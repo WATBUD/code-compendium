@@ -40,8 +40,15 @@
      每次渲染時，`value` 都會是一個新的物件，`React.memo` 的淺比較會失效。
 
 2. **props 比較成本高**：
-   - 如果使用自定義比較函式，且比較邏輯非常複雜（例如深度比較一個大型物件），則可能會導致效能問題。
-   - 例如：
+   - React.memo 預設是 shallow comparison，但自訂 areEqual 之後，React 只會依賴 areEqual 來決定是否重新渲染。
+     # 沒有 areEqual 時行為:
+     React 只會比較 prevProps 和 nextProps 的記憶體參考（shallow comparison）。
+     如果 prevProps !== nextProps（即使內部值相同），就會重新渲染。
+     # 有 areEqual 時行為:
+     React 會完全依賴 areEqual(prevProps, nextProps) 的回傳值：
+     回傳 true → 不重新渲染
+     回傳 false → 重新渲染
+     React 會略過預設的 shallow comparison，不會額外幫你做比較。
      ```javascript
      const areEqual = (prevProps, nextProps) => {
          return JSON.stringify(prevProps) === JSON.stringify(nextProps);
