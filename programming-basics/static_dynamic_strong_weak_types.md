@@ -1,4 +1,4 @@
-* [靜強] 型別：[Java、Go、C#、Swift]。
+* [靜強] 型別：[Java、Go、C#、Swift、TypeScript]。
 * [靜弱] 型別：[C、C++]。
 * [動強] 型別：[Python、Ruby、Kotlin]。
 * [動弱] 型別：[JavaScript、PHP、Perl]。
