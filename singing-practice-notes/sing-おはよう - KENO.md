@@ -3,28 +3,28 @@
 # ta no mi mo shi na i no ni~        a sa wa ya tte  ku ru
 # 明明沒有拜託　早晨還是來了
 # 　
-# 窓を開     け て  ちょ っと  深く      深    呼吸
-# ma do wo a ke te chyo tto. fu ka ku shi n ko kyu
-# 打開了窗戶　稍微深呼吸
+#  窓    を開  け て  ちょ っと   深   く   深   呼吸
+# ma do wo a  ke te  chyo tto. fu ka ku shi n ko kyu
+# 打開了窗戶　 稍微深呼吸
 # 　
 # ふ く れ っツ  ラ の   君　    思 い 出 し  て   笑  う
 # fu ku re ttsu ra no ki mi   o mo i da shi te wa ra u
 # 一想到噘著嘴的你　便忍不住地笑了
 # 　
-# ケ ンカ  し  た  翌  日      は　  留守   電  に  し  っ放   し  だ ろ
-# ke n ka shi ta yo ku zi tsu wa.  ru su de n ni shi ppa na shi da rou
+# ケ ンカ  し  た    翌      日   は　  留守   電  に  し  っ放   し  だ ろ
+# ke n ka shi ta   yo ku zi tsu  wa.  ru su de n ni shi ppa na shi da rou
 # 吵架後的隔天  一定都是進入語音留言吧
 # 　
 #   笑  い あ う コ ト　   何  気 な い    会 話
 # wa ra i  a  u ko to.  na ni ge na i   ka i wa
 # 彼此微笑著　輕鬆地聊天
 # 　
-# 毎      日  の 暮  ら  し  の   中  で　  ど う だ って いい  事
-# ma i ni chi no ku ra  shi no na ka de.   do u da tte i i  ko to
+# 毎       日   の 暮  ら  し  の   中  で　  ど う だ って いい  事
+# ma i ni chi   no ku ra  shi no na ka de.   do u da tte i i  ko to
 # 每天的生活　都是快樂的
 # 　
-#   何   も  考      え    ず  に　浮 かん  で く る   言葉
-# na ni  mo ka n ga  e    zu/ ni  u kan  de ku ru ko to ba
+#   何   も  考      え    ず  に　浮  かん  で く る   言葉
+# na ni  mo ka n ga  e/   zu  ni  u  kan   de ku ru ko to ba
 # 什麼也沒多想　浮現出的言語
 # 　
 # フ と  し た  瞬      間 が　   大       切   だ っ て
@@ -52,7 +52,11 @@
 # 電   話 し  て く  る    君  の  声    が 好 き  な ん だ
 # de n wa shi te ku ru. ki mi no ko e  ga su ki  na n da
 # 喜歡你打電話給我　說話的聲音
-# 　
+
+
+
+
+----------------------1-3----------------------
 # 不 器 用   に  な って い た　       何    か が  邪 魔  し て
 # bu ki yo u ni na  tte i  ta.      na ni  ka ga  ja ma shi te
 # 曾那樣地笨拙　打擾到了什麼
@@ -86,7 +90,7 @@
 # 也要踏出一步　尋求挽回
 # 　
 
-----------------------1-3repeat----------------------
+----------------------1-4repeat----------------------
 # 君    と   肩  を  組ん で　  君    と 手  を   繋    い で
 # ki mi to ka ta o  kun  de. ki mi  to te  o tsu. na   i de
 # 與你肩並肩　與你手牽手
@@ -107,7 +111,7 @@
 # shi   ze n   na so no~  yu ki  ka ta de i.  i~i  ka ra sa
 # 自然而然                  的生活 方式             就很好
 　
-----------------------1-3-2----------------------
+----------------------1-5----------------------
 
 # 見 慣 れ て い た　  君     の  変   な 字 も
 # mi na re te i ta  ki. mi   no hen  na zi mo
@@ -125,7 +129,7 @@
 # ki mi ni na  n  ni mo tsu ta   wa ra na i
 # 卻也什麼都沒有傳達給你
 
-----------------------1-4----------------------
+----------------------1-6----------------------
 # ま た“ お   は よう   って 言 って　
 # ma ta  o    ha you   tte i tte
 # 再說一聲早安
@@ -138,18 +142,18 @@
 # kyo u  mo  ge n ki de~  su go se ta ra i i yo ne
 # 今天也充滿活力地度過吧
 # 　
-# こん な  に 単      純  で 当 た  り 前   な こ と  が
-# kon  na ni ta n zyu n  de a  ta ri ma e na ko to ga
+# こん な  に 単      純  で   当 た  り 前   な こ と  が
+# kon  na ni ta n zyu n  de   a  ta ri ma e na ko to ga
 # 這種簡單又理所當然的事情
 # 　
-# 本当は、一番見失いがちだからね   事實 是，這是最容易被忽視的
-# ho n to u wa, i chi ba n~     mi u shi na i ga. chi da ka ra ne
+# 本   当   は、  一     番  見       失 い が   ちだ  か ら ね
+# ho n to u wa,  i chi ban~ mi u shi na i ga. chi da ka ra ne
 # 其實才是最容易迷失的
 # 　
-# 目 を  開  け た  ま ま　  見  る    夢
-# me wo a   ke ta  ma ma    mi ru    yu me
+# 目 を  開  け た  ま ま　    見  る    夢
+# me wo  a   ke ta  ma ma.    mi ru    yu me~
 # 睜開眼　所看見的夢想
 # 　
 # 知  ら な い  明     日   へ   運   ぶ
-# shi ra na i   a shi ta   e.  ha ko bu Merry-go-round-goes(旋轉木馬)~~~~~ =>1-3repeat 
+# shi ra na i   a shi ta   e.  ha ko bu Merry-go-round-goes(旋轉木馬)~~~~~ =>1-4repeat 
 # 就朝著未知的   明天前進                 
