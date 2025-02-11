@@ -1,7 +1,6 @@
 ###-----------------------1------------------------###
 
-# あらら... ららら...
-# a ra ra... ra ra ra...
+# la la la... la la la...
 
 # 負けたくないと 叫んだ胸の
 # ma ke ta ku na i to sa ke n da mu ne no
@@ -16,9 +15,9 @@
 
 # 誰でもないさ キミの番だよ
 # da re de mo na i sa ki mi no ban da yo
-
-# 逃げ出しちゃいけない
-# ni ge da shi cha i ke na i
+ 
+#   逃 げ出 し ちゃ い け な い
+# ni ge da shi cha i  ke na i
 
 # 譲れない 明日をかけて やるんだ
 # yu zu re na i a shi ta wo ka ke te ya ru n da
@@ -26,35 +25,36 @@
 # 手のひらを見つめて
 # te no hi ra wo mi tsu me te
 
-# 強く握りしめたら
+#  強    く  握   り  し  め た ら
 # tsu yo ku ni gi ri shi me ta ra
 
 # コ コ ロ に  チ  カ ラ が  流    れ 出 す
 # ko ko ro ni chi ka ra ga na ga re da su
 
+
+###-----------------------repeat-1------------------------###
 # Get break up! to break up!
 
-# 新しいFighter 本当のハジマリさ
-# a ta ra shi i Fighter hon tou no ha ji ma ri sa
+#   新     し い Fighter   本当    の ハ ジ マ リ  さ
+# a ta ra shi i  Fighter  hon tou no ha ji ma ri sa
 
-# キミを キミを 越えてゆくんだ
-# ki mi wo ki mi wo ko e te yu ku n da
+# キ ミ を キ  ミ を   越 え て  ゆ く ん だ
+# ki mi wo ki mi wo   ko e  te yu ku n  da
 
-# この場所から
+# こ の 場  所  か ら
 # ko no ba sho ka ra
 
 # It's time to go!!
 
-
 ###-----------------------2------------------------###
 
-# これ以上もう ムリだよなんて
-# ko re i jou mou mu ri da yo na n te
+# こ れ  以上 もう ム リ だ よ  な ん て
+# ko re i jou mou mu ri da yo na n  te
 
-# ヒザが震える時
-# hi za ga fu ru e ru to ki
+# ヒ ザ が   震  え る   時
+# hi za ga fu ru e ru  to ki
 
-# キミのコト 信じる瞳 感じて
+# キ ミ の コ ト  信 じ る  瞳 感じて
 # ki mi no ko to shi n ji ru hi to mi kan ji te
 
 # 手渡すように勇気をくれた
@@ -69,12 +69,13 @@
 # 違う物語が
 # chi ga u mo no ga ta ri ga
 
-# キミたちからはじまる
+# キ ミ た ち   か ら は じ ま  る
 # ki mi ta chi ka ra ha ji ma ru
 
-# 扉は 開きはじめている
+# 扉 は 開きはじめている
 # to bi ra wa hi ra ki ha ji me te i ru
 
+###-----------------------repeat-2------------------------###
 # Get break up! to break up!
 
 # 沸き上がるPower キミはもう気づいている
@@ -87,4 +88,3 @@
 # ka na e na ku cha
 
 # It's time to go!!
-# (英文保持原樣)

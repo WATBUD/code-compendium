@@ -37,8 +37,8 @@
 # ウ カ レ  タ 蝶(cho u)に   な って  一 途(i chi zu) な 風(ka. ze)に 乗って
 # U  ka re ta         ni.  na tte.                   na           ni no tte
  
-# ど こ ま で  も  キ ミ に   会い に 行 こ う
-# Do ko ma de mo~ ki mi ni~  a i ni yu ko u
+# ど こ ま で  も   キ ミ に   会い に 行 こ う
+# Do ko ma de mo~  ki mi ni.  a i ni yu ko u
  
 # 曖昧(A i ma i)な  言葉     って    意外(i ga i)に  便利(ben. ri)だ って
 #               na ko to ba tte~                ni             da tte
@@ -75,13 +75,13 @@
 #                  na.            no a  to no~            mo nai.    yo no          ja
  
 # そ うさ    愛(i to) し  い   想い(o mo i)も  負け(ma. ke)  そ う  に な る け ど
-# So u sa.            shi i~              mo              so u.  ni na ru ke do~
+# So u sa.            shi i~              mo               so u.  ni na ru ke do~
  
-# Stay し   が  ち  なイ  メー  ジ  だ ら け の   頼(ta yo)り ない   翼(tsu ba sa)で も　
-# Stay shi (ga) chi nai.  mee  ji da ra ke no~           ri nai~               de mo
+# Stay し   が  ち  なイ  メー  ジ  だ ら け の   頼(ta yo) り ない   翼(tsu ba sa) で も　
+# Stay shi (ga) chi nai.  mee  ji da ra ke no~            ri nai~                de mo
  
 # き   っ     と    飛 べ る さ　     Oh Yeah～
-# Ki (tsu)i   to.  to be ru sa.     oh yeah～
+# Ki (tsu)i   to.  to be ru sa.     
 
 ###-----------------------repeat*2-2------------------------###
 
@@ -94,9 +94,9 @@
 # そ う さ 常識(jo u shi ki).   は     ず れ も 悪(wa~阿(ru))  く ?  ない か な
 # So u sa~                     ha~阿 zu re mo.              ~ku wa nai  ka na
  
-# Stay  し  そう なイ メージ  を 染 め た   ぎ こ  ち  ない  翼(tsu ba sa)で も
-# Stay (shi) sou nai  mee ji wo so me ta~  gi ko chi  nai~               de mo
+# Stay  し  そう なイ メージ  を 染 め た    ぎ こ  ち  ない  翼(tsu ba sa)で も
+# Stay (shi) sou nai  mee ji wo so me ta~  gi ko chi  nai~             de mo
  
-# き   っ     と    飛 べ る さ     On My Love
-# Ki (tsu)i   to.  to be ru sa.    on my love~~~~~~~~~~~~~~~~~
+# き   っ     と    飛 べ る さ     On My Love~~~~~~~~~~~~~~~~~
+# Ki (tsu)i   to.  to be ru sa.    
 
