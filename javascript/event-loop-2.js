@@ -28,19 +28,6 @@ new Promise(function (resolve) {
 
 console.log("script end");
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 //comment
 
 // async function async1() {
@@ -66,9 +53,6 @@ console.log("script end");
 //   resolve();                    // 同步呼叫 resolve()，使 .then 回調被加入微任務隊列
 // }).then(function () {
 //   console.log("promise2");      // 微任務：Promise resolve 後的 .then 回調，會在同步程式碼執行完後立即執行
-//   setTimeout(() => {
-//     console.log(res);           // 宏任務：此 setTimeout 的回調，延遲執行
-//   }, 0);
 // });
 
 // console.log("script end");      // 同步任務：全域程式碼後續執行

@@ -36,27 +36,27 @@ new Promise(function (resolve, reject) {
 
 //comment
 
-console.log("begins");                     // 同步任務：立即執行
+// console.log("begins");                     // 同步任務：立即執行
 
-setTimeout(() => {                         // 宏任務：定時器任務 (0 毫秒延遲)
-  console.log("setTimeout 1");              // 宏任務內的同步執行
-  Promise.resolve().then(() => {           // 微任務：在當前宏任務結束後立即執行
-    console.log("promise 1");               // 微任務內的同步執行
-  });
-}, 0);
+// setTimeout(() => {                         // 宏任務：定時器任務 (0 毫秒延遲)
+//   console.log("setTimeout 1");              // 宏任務內的同步執行
+//   Promise.resolve().then(() => {           // 微任務：在當前宏任務結束後立即執行
+//     console.log("promise 1");               // 微任務內的同步執行
+//   });
+// }, 0);
 
-new Promise(function (resolve, reject) {   // 同步任務：Promise 建構式執行器 (立即執行)
-  console.log("promise 2");                 // 同步任務：立即執行
-  setTimeout(function () {                  // 宏任務：定時器任務 (0 毫秒延遲)
-    console.log("setTimeout 2");            // 宏任務內的同步執行
-    resolve("resolve 1");                   // 同步執行：改變 Promise 狀態，觸發 .then 微任務
-  }, 0);
-}).then((res) => {                          // 微任務：Promise resolve 後的 .then 回調被加入微任務隊列
-  console.log("dot then 1");                // 微任務內的同步執行
-  setTimeout(() => {                        // 宏任務：定時器任務 (0 毫秒延遲)
-    console.log(res);                       // 宏任務內的同步執行
-  }, 0);
-});
+// new Promise(function (resolve, reject) {   // 同步任務：Promise 建構式執行器 (立即執行)
+//   console.log("promise 2");                 // 同步任務：立即執行
+//   setTimeout(function () {                  // 宏任務：定時器任務 (0 毫秒延遲)
+//     console.log("setTimeout 2");            // 宏任務內的同步執行
+//     resolve("resolve 1");                   // 同步執行：改變 Promise 狀態，觸發 .then 微任務
+//   }, 0);
+// }).then((res) => {                          // 微任務：Promise resolve 後的 .then 回調被加入微任務隊列
+//   console.log("dot then 1");                // 微任務內的同步執行
+//   setTimeout(() => {                        // 宏任務：定時器任務 (0 毫秒延遲)
+//     console.log(res);                       // 宏任務內的同步執行
+//   }, 0);
+// });
 
 
 
