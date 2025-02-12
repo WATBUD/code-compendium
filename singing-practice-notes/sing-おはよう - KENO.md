@@ -3,8 +3,8 @@
 # (ta no)  mi. mo shi  na i no ni~        (a sa)  wa ya. t(a) te   (ku ru)
 # 明明沒有拜託　早晨還是來了
  　
-#    窓    を 開  け  て  ちょ っと   深   く   深     呼   吸
-# (ma do)  o a  ke  te  chyo tto. fu ka ku shi n   (ko kyu)
+#    窓    を 開  け  て     ちょ っと    深    く   深       呼   吸
+# (ma do)  o  a   ke  te    chyo tto. (fu ka) ku (shi n)   (ko kyu)
 # 打開了窗戶　 稍微深呼吸
  　
 # ふ く れ っ    ツ  ラ の   君　      思   い 出 し  て      笑   う
@@ -23,12 +23,12 @@
 # (ma i ni chi)   no  ku ra shi no  (na ka)  de.   dou da tte  (i~)  (ko to)
 # 每天的生活　都是快樂的
  　
-#   何     も    考      え    ず  に　浮  かん   で く る    言    葉
-# (na ni)  mo (kan ga)   e/   zu  ni  u   kan   de ku ru   (ko to ba)
+#   何     も    考       え    ず  に　浮  かん   で く る    言    葉
+# (na ni)  mo (kan ga).   e/   zu  ni  u   kan   de ku ru   (ko to ba)
 # 什麼也沒多想　浮現出的言語
  　
-# フ と  し た  瞬       間 が　   大       切   だ  っ   て
-# Fu to shi ta (syu n kan) ga.    ta i se tsu  da  t(a) te
+# フ と  し た  瞬       間 が　    大       切    だ  っ   て
+# Fu to shi ta (syu n kan) ga.    (ta i se tsu)  da  t(a) te
 # 那樣的一瞬間　是最重要的
 
 ----------------------1-2----------------------
@@ -48,8 +48,8 @@
 # ma ru de (na ni) mo~ na ka t(a) ta  mi  ta i  ni
 # 彷彿什麼也沒發生過似的
  　
-#  電   話   し  て く  る    君    の   声    が  好 き  な ん だ
-# (de n wa) shi  te ku ru. (ki mi) no (ko e)  ga su ki  na n da
+#  電   話   し  て く  る    君    の   声     が  好 き  な ん だ
+# (de n wa) shi  te ku ru. (ki mi) no (ko e)  ga. su ki  na n da
 # 喜歡你打電話給我　說話的聲音
 
 ----------------------1-3----------------------
@@ -77,8 +77,8 @@
 # do u. se da me sa nan  te.  (ji ba ku)   mo  se zu ni
 # 反正不行什麼的　             也未曾如此自爆過
 　
-# 振 り 出  し  に 立  っ   て  途    方    に く れ て も
-# fu ri da shi ni ta t(a)  te  to ho u    ni ku re te mo
+# 振 り 出  し  に 立  っ   て   途    方     に く れ て も
+# fu ri da shi ni ta t(a)  te  (to ho u)    ni ku re te mo
 # 搖搖晃晃地站著　                   就算是束手無策
  　
 #   始     め の  一歩  で　  救     わ   れ て み る
