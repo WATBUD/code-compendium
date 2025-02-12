@@ -136,8 +136,8 @@
 # (kyo u)  mo  (gen ki) de~  su go se ta ra i i yo ne
 # 今天也充滿活力地度過吧
  　
-# こん な  に  単   純    で    当 た  り 前   な こ と  が
-# kon  na ni (tan zyun)  de.   a  ta ri ma e na ko to ga
+# こん な  に  単   純    で    当 た  り    前   な こ と  が
+# kon  na ni (tan zyun)  de.   a  ta ri. (ma e) na ko to ga
 # 這種簡單又理所當然的事情
  　
 #  本   当   は、   一     番    見       失  い が   ちだ   か   ら  ね
