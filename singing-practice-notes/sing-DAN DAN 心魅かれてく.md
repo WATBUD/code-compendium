@@ -1,5 +1,5 @@
-# DAN DAN　心魅(ko ko ro hi)   か  れ て く
-# DAN DAN　                    ka re te ku
+# DAN DAN　心        魅     か  れ て く
+# DAN DAN  ko ko ro hi 　   ka re te ku
 
 # そ の  眩(ma bu)し い 笑顔(e ga o) に
 # so no          shi i              ni
