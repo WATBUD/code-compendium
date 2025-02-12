@@ -77,17 +77,17 @@
 # DAN DAN　心        魅     か  れ て く
 # DAN DAN  ko ko ro hi 　   ka re te ku
 
-# 自分(ji bu n) でも          不思議(fu shi gi ) な        ん だ け ど
-#               de mo                           na        n da ke do
+# 自     分   で  も   不   思  議  な  ん だ け ど
+# (ji bu n)   de mo   (fu shi gi)  na  n da ke do
 # 
-# 何(na ni)か あ     る と す ぐ に　     君(ki mi)に   電話(de n wa)  し  た く な  る
-#          ka (a)   ru to su gu ni                ni                 shi ta ku na ru
+#    何   か  あ   る と す ぐ に　  君     に   電    話  し    た く な  る
+# (na ni) ka (a)   ru to su gu ni (ki mi) ni   (de n wa) shi  ta ku na ru
 # 
 # ZEN ZEN　 気  の な い     フ リ      し て も
 # ZEN ZEN   ki no na i      fu ri (一) shi te mo
 # 
-# 結局(ke kkyo ku)　 君(ki mi) の こ    とだ  け 見 てい た
-#                             no ko    to da ke mi te i ta
+# 結        局　  君    の こ    と だ け 見 て い た
+# (ke kkyo ku) (ki mi) no ko    to da ke mi te i ta
 # 
-# 海(u mi)の彼方(ka     nata)へ　  飛 び 出 そ う よ　  Hold my hand
-#         no                he    to bi da so u yo    Hold my hand
+#   海    の  彼      方  へ　  飛 び 出 そ う よ　  Hold my hand
+# (u mi)  no  (ka na ta) he    to bi da so u yo    Hold my hand
