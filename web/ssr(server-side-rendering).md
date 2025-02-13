@@ -48,6 +48,11 @@
 
 步驟 3: Hydration 完成
    [<button onClick={...}>點擊次數：0</button>]  <- 按鈕現在可以點擊了
+
+* 首屏渲染CSS還沒載入畫面會不完整怎麼辦?:
+* 提前加載：預載 CSS 會在 HTML 解析時立刻請求，這樣可以提前開始下載，減少等待時間。
+<link rel="preload" href="styles.css" as="style">
+
 ```
 時間軸：
 [瀏覽器請求] → [接收 HTML+ 預渲染內容] → [渲染預渲染內容] → [下載 JS/CSS/圖片等資源] 

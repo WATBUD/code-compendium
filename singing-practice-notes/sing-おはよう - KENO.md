@@ -11,8 +11,8 @@
 # fu ku re t(a) tsu ra no (ki mi)   (o mo) i da shi te   (wa ra) u
 # 一想到噘著嘴的你　便忍不住地笑了
  　
-# ケ ン カ  し  た  翌       日     は　  留 守    電   に  し   っ 放    し  だ   ろ
-# ke n ka  shi ta-(yo ku ji tsu).  wa.  ru su  (de n) ni shi   pa na   shi da  rou
+# ケ ン カ  し  た  翌       日     は　  留 守    電   に  し     っ 放    し  だ   ろ
+# ke n ka  shi ta-(yo ku ji tsu).  wa.  ru su   (den) ni sh i   pa na   shi da  rou
 # 吵架後的隔天  一定都是進入語音留言吧
  　
 #   笑    い あ う コ ト　 何      気   な い    会 話
@@ -23,8 +23,8 @@
 # (ma i ni chi)   no  ku ra shi no  (na ka)  de.   dou da tte  (i~)  (ko to)
 # 每天的生活　都是快樂的
  　
-#   何     も    考       え    ず  に　浮  かん   で く る    言    葉
-# (na ni)  mo (kan ga).   e/   zu  ni  u   kan   de ku ru   (ko to ba)
+#   何     も     考       え    ず  に　浮  かん   で く る    言    葉
+# (na ni)  mo (ka n ga).   e/   zu  ni  u   kan   de ku ru   (ko to ba)
 # 什麼也沒多想　浮現出的言語
  　
 # フ と  し た  瞬       間 が　    大       切    だ  っ   て
@@ -36,12 +36,12 @@
 # ki mi ni o ha  yo  u tte  i  tte
 # 對你道聲早安
  　
-# メ ッセー ジ   を  残    し  て
-# me  sse  ji   o  no ko  shi te
+# メ ッセー ジ   を   残      し  て
+# me  sse  ji   o  (no ko)  shi  te
 # 留言給你
 　
-#   僕    の    一    日　    始    め  に   出 掛  け な きゃ
-# (bo ku) no   (i chi ni)  (ha ji) me  ni  de ka  ke na kya
+#   僕    の    一    日　     始    め  に   出 掛  け な きゃ
+# (bo ku) no   (i chi ni).  (ha ji) me  ni  de ka  ke na kya
 # 我的一天　必須開始啟程了
  　
 # ま る で    何    も　な か っ   た  み   た い に
@@ -57,24 +57,24 @@
 # (bu ki yo u)    ni na  tte  i  ta.      (na ni)  ka ga   (ja ma) shi te
 # 曾那樣地笨拙　打擾到了什麼
  　
-# 当 た  り     前   な こ と が　 不   透    明   に な  っ    て
-# (a ta ri)  (ma e) na ko to ga. fu   tou   mei  ni na t(a)  te
+# 当 た  り     前   な こ と が　  不   透    明   に な  っ    て
+# (a ta ri)  (ma e) na ko to ga. (fu   tou  mei)  ni na t(a)  te
 # 理所當然的事　              卻變得不可預測
  　
 #   僕    よ り  も      僕    の コ トを　 上 手  く   愛  せ  る の は
 # (bo ku) yo ri  mo   (bo ku) no ko too.  (u ma) ku  a i  se  ru no wa
 # 比我還要更愛著我的人
  　
-#   君    し  か い な い  ん だ って　 分 か  っ   て  く や し  か  ったん だ け ど
-# (ki mi) shi ka i na  i  n  da tte.  wa ka t(a) te. ku ya shi ka  ttan  da ke do
+#   君    し  か い な いん だ って　 分 か  っ   て  く や し  か  ったん だ け ど
+# (ki mi) shi ka i na  in  da tte.  wa ka t(a) te. ku ya shi ka  ttan  da ke do
 # 就因為只有你　我才感到懊悔
  　
-#  先    入  観  って　  自    分  に も あ る ね
-# (sen  nyu) ka n tte. (ji bu n)  ni mo a ru ne
+#  先    入  観  って　  自    分   に も あ る ね
+# (sen  nyu) ka n tte. (ji bu n)   ni mo a ru ne
 # 先入之見　連我自己都有呢
  　
 # ど う  せ ダ メ さ なん て　  自     爆    も  せ ず に
-# do u. se da me sa nan  te.  (ji ba ku)   mo  se zu ni
+# do u  se da me sa nan  te.  (ji ba ku)   mo  se zu ni
 # 反正不行什麼的　             也未曾如此自爆過
 　
 # 振 り 出  し  に 立  っ   て   途    方     に く れ て も

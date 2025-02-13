@@ -36,7 +36,7 @@ const map={
 
 const stack = ["("];
 
-console.log("map[plants.pop()]",map[stack.pop()]);
+console.log("stack.pop()=>",stack.pop());
 
 console.log(stack);
 
