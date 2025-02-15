@@ -33,8 +33,8 @@
 ###-----------------------1-2------------------------###
 # Get break up! to break up!
 
-#    新     し い   Fighter    本   当    の ハ ジ マ リ  さ
-# (a ta ra) shi i  Fighter   (hon tou)  no ha ji ma ri  sa
+#    新     し い   Fighter    本     当   の ハ ジ マ リ  さ
+# (a ta ra) shi i  Fighter   (ho n to u)  no ha ji ma ri  sa
 
 # キ ミ を キ  ミ を   越 え て  ゆ く ん だ
 # ki mi wo ki mi wo   ko e  te yu ku n  da
@@ -52,11 +52,11 @@
 # ヒ ザ が    震   え る     時
 # hi za ga (fu ru) e ru  (to ki)
 
-# キ ミ の コ ト    信  じ る    瞳      感  じ て
-# ki mi no ko to shi n ji ru hi to mi  kan ji te
+# キ ミ の コ ト     信   じ る      瞳      感    じ  て
+# ki mi no ko to (shi n) ji ru hi to mi.  (ka n)  ji te
 
-# 手    渡 す よ う に  勇気   を  く れ た
-# te wa ta su yo u ni yu u ki wo ku re ta
+# 手      渡 す よ う に  勇   気  を  く れ た
+# (te wa ta) su yo u ni (yu u ki) wo ku re ta
 
 # 仲     間   た  ち  が い る よ
 # (na ka ma)  ta chi  ga i ru yo
@@ -89,3 +89,30 @@
 
 
 ###-----------------------*repeat=>1-2=>2-2
+###-----------------------1-2------------------------###
+# Get break up! to break up!
+
+#    新     し い   Fighter    本     当   の ハ ジ マ リ  さ
+# (a ta ra) shi i  Fighter   (ho n to u)  no ha ji ma ri  sa
+
+# キ ミ を キ  ミ を   越 え て  ゆ く ん だ
+# ki mi wo ki mi wo   ko e  te yu ku n  da
+
+# こ の  場   所  か ら
+# ko no (ba sho) ka ra
+
+# It's time to go!!
+
+###-----------------------2-2------------------------###
+# Get break up! to break up!
+
+# 沸 き 上  が  る Power キ ミ は   もう    気   づいて   い  る
+# wa ki a  ga  ru Power ki mi wa   mou   (ki)   dzu i te i  ru
+
+#  夢     を    夢   で  ほ  っと け な い よ
+# (yu me) wo (yu me) de ho  tto  ke na i yo
+
+#  叶     え な  く  ちゃ
+# (ka na) e  na ku  cha
+
+# It's time to go!!
