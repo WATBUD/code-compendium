@@ -35,8 +35,8 @@
 # 捜(sa ga)  し   物を       探    し  に 行  く の  さ
 #            shi mo n no o sa ga shi  ni yu  ku no sa
 
-# ポ ケ  ツ    ト   の    コ イ ン、  そ れ と
-# po ke (tsu恩)to   no    ko i n     so re to
+# ポ ケ  ツ    ト   の    コ イン、   そ れ と
+# po ke (tsu恩)to   no    ko in.     so re to
  
 # You wanna be my Friend?
  
