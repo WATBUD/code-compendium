@@ -1,102 +1,114 @@
-###-----------------------1------------------------###
-# ゴ キ ゲン     な 蝶(chou)に  な って　
-# Go ki gen.    na         ni.na  tte
+###-----------------------1-1------------------------###
+# ゴ キ ゲン     な    蝶   に  な  って　
+# Go ki gen.    na  (chou) ni. na  tte
 
-# き ら め く風(ka ze)に 乗 って
-# ki ra me ku        ni no tte~
+# き ら め く      風    に 乗 って
+# ki ra me ku   (ka ze) ni no tte~
 
-# 今(い ま) す ぐ    キ ミ に  会(あ)い に   行 こ う
-#    i  ma su gu~   ki mi ni~    a  i ni~  yu ko u~
+# 今(い ま)  す ぐ    キ ミ に   会(あ)  い に   行 こ う
+# i     ma  su gu~   ki mi ni~  (  a)  i  ni~  yu ko u~
 
-# 余 計    な  事(ko to)なん て    忘(wa su)れ た   方    が マ  シ  さ
-# Yo ke i na.          na n te~            re ta  hou~  ga ma shi sa
+# 余     計  な     事     なん  て       忘   れ た    方     が マ  シ  さ
+# (Yo ke i) na.  (ko to)  nan   te~   (wa su) re ta  (hou).  ga ma shi sa
  
-# こ れ以上(i jou)~   シャ(sha)レ て る時間(ji. kan)は な い
-# Ko re          ~            re te ru             wa na i
+# こ れ  以  上    シャ   レ て る   時    間  は な い
+# Ko re (i jou).  (sha)  re te ru  (ji. kan) wa na i
  
-# 何(Na ni) が　 WOW　WOW～ こ  の空(so ra) に届(to do) く の  だ ろう
-#           ga.　WOW~*5　   ko no          ni          ku no da rou
+#    何     が　 WOW ~*5 こ  の    空     に    届    く の  だ ろう
+#  (Na ni)  ga. (WOW~*5) ko  no (so ra)  ni (to do)  ku no da rou
 
-# だ け ど　  WOW　WOW～    明日(a shi ta)  の   予定(yo tei). も わ か ら な い
-# Da ke do　  WOW~*5                       no.               mo wa ka. ra na i~~....
+# だ け ど　  WOW~* 5     明     日  の    予    定  も わ  か  ら な い
+# Da ke do　 (WOW~*5).   (a shi ta) no.   (yo tei). mo wa ka. ra na i~~
  
-# 無限大(Mu gen dai)な   夢(yu me) の あ と の    何(na ni)も  ない    世 の 中(na ka)じゃ　
-#                  na.            no a  to no~            mo nai.    yo no          ja
- 
-# そ うさ    愛(i to) し  い   想い(o mo i)も  負け(ma. ke) そ う  に な る け ど
-# So u sa.            shi i~              mo              so u.  ni na ru ke do~
- 
-# Stay し   が  ち  なイ  メー  ジ  だ ら け の   頼(ta yo)り ない   翼(tsu ba sa)で も　
-# Stay shi (ga) chi nai.  mee  ji da ra ke no~           ri nai~               de mo
- 
-# き   っ     と    飛 べ る さ　    
-# Ki (tsu)i   to.  to be ru sa.     on~ my~ love~
+###-----------------------1-2------------------------###
 
-###-----------------------2------------------------###
+# 無  限   大   な     夢    の あ と の      何    も  ない    世 の    中   じゃ　
+# (Mu gen dai) na.  (yu me) no a  to no~  (na ni) mo  nai.    yo no (na ka) ja
+ 
+# そ うさ     愛    し  い     想い      も    負け    そ う  に な る け  ど
+# So u sa.  (i to) shi i~   (o mo i)   mo   (ma. ke) so u.  ni na ru ke do.
+ 
+# Stayし  が  ち  なイ  メー  ジ  だ ら け の     頼    り ない       翼      で も　
+# (Stay) (ga) chi nai.  mee  ji da ra ke no~  (ta yo) ri nai~  (tsu ba sa) de mo
+ 
+# き っ  と    飛  べ  る さ  on~ my~ love~
+# Ki i   to.  (to be) ru sa. on~ my~ love~
 
-# ウ カ レ  タ 蝶(cho u)に   な って  一 途(i chi zu) な 風(ka. ze)に 乗って
-# U  ka re ta         ni.  na tte.                   na           ni no tte
+###-----------------------2-1------------------------###
+
+# ウ カ レ  タ   蝶    に   な って  一    途       な    風     に 乗 って
+# U  ka re ta (cho u) ni.  na tte.    (i chi zu)  na (ka. ze)  ni no tte
  
 # ど こ ま で  も   キ ミ に   会い に 行 こ う
 # Do ko ma de mo~  ki mi ni.  a i ni yu ko u
  
-# 曖昧(A i ma i)な  言葉     って    意外(i ga i)に  便利(ben. ri)だ って
-#               na ko to ba tte~                ni             da tte
+# 曖      昧  な  言    葉  って   意    外  に  便    利  だ って
+# (A i ma i)  na (ko to b) tte~   (i ga i) ni  (ben. ri) da tte
  
-# 叫(Sa ke) んで る   ヒ ツト ソン グ 聴 き な が ら
-#           n de ru~ hi tto  son gu ki~ ki na ga ra
+#    叫   ん で  る   ヒ ツト ソン グ 聴 き な が ら
+# (Sa ke) n de  ru.  hi tto  son gu ki~ ki na ga ra
  
-# 何(Na ni)が WOW　WOW～   こ の街(ma chi)に 響(hi bi)  く の  だ ろう
-#          ga  WOW*5~     ko no          ni.           ku no da rou
+#   何     が   WOW ~*5   こ の     街    に   響    く の  だ ろう
+# (Na ni)  ga  (WOW~*5).   ko no (ma chi) ni.(hi bi) ku no da rou
  
-# だ け ど.　WOW　WOW～  期待(ki ta i)し  て て  も仕方(shi ka ta) な  い
-# Da ke do　  WOW~*5    　           shi te te. mo               na. i~~....
+# だ け ど.　 WOW ~*5    期    待  し  て て  も   仕      方  な  い
+# Da ke do　 (WOW~*5). 　(ki ta i) shi te te. mo (shi ka ta) na. i~~
 
 ###-----------------------2-2------------------------###
 
-# 無限大(Mu gen dai)な   夢(yu me) の あ と の
-#                  na.            no a  to no~
+# 無   限   大  な    夢    の  あ と の
+# (Mu gen dai) na. (yu me) no  a  to no.
 
-# や る せ な い  世 の中(na ka)じゃ
-# ya ru se nai. yo no         ja
+# や る せ な い  世 の   中    じゃ
+# ya ru se nai.  yo no (na ka) ja
  
-# そ う さ 常識(jo u shi ki).   は     ず れ も 悪(wa~阿(ru))  く ?  ない か な
-# So u sa.                     ha~阿 zu re mo.              ~ku wa nai  ka na
+# そ う さ  常        識      は   ず れ も    悪    く      ない か な
+# So u sa. (jo u shi ki)   (ha a) zu re mo. (wa a. ku wa)  nai  ka na
  
-# Stay  し  そう なイ メージ  を 染 め た    ぎ こ  ち  ない  翼(tsu ba sa)で も
-# Stay (shi) sou nai  mee ji wo so me ta~  gi ko chi  nai~               de mo
- 
-# き っ と 飛 べ  る さ　   On My Love
-# Ki i to  to be ru sa~~~ on my love~~~~~~~~~~~~~~~~~
+# Stayし  そう なイ メー ジ  を  染 め た  
+# (Stay)  sou  nai  mee ji  wo so me ta~  
+
+# ぎ こ  ち  ない      翼       で も
+# gi ko chi  nai. (tsu ba sa)  de mo
+
+# き  っ と   飛  べ  る  さ　  On My Love
+# Ki  i  to  to be  ru  sa.   On My Love
 
 ###-----------------------repeat*1-2------------------------###
 
-# 無限大(Mu gen dai)な   夢(yu me) の あ と の    何(na ni)も  ない    世 の 中(na ka)じゃ　
-#                  na.            no a  to no~            mo nai.    yo no          ja
+# 無  限   大   な     夢    の あ と の      何    も  ない    世 の    中   じゃ　
+# (Mu gen dai) na.  (yu me) no a  to no~  (na ni) mo  nai.    yo no (na ka) ja
  
 # そ うさ    愛(i to) し  い   想い(o mo i)も  負け(ma. ke)  そ う  に な る け ど
 # So u sa.            shi i~              mo               so u.  ni na ru ke do~
  
-# Stay し   が  ち  なイ  メー  ジ  だ ら け の   頼(ta yo) り ない   翼(tsu ba sa) で も　
-# Stay shi (ga) chi nai.  mee  ji da ra ke no~            ri nai~                de mo
+
  
-# き   っ     と    飛 べ る さ　     Oh Yeah～
-# Ki (tsu)i   to.  to be ru sa.     
+# Stayし  が  ち  なイ  メー  ジ  だ ら け の     頼    り ない       翼      で も　
+# (Stay) (ga) chi nai.  mee  ji da ra ke no~  (ta yo) ri nai~  (tsu ba sa) de mo
+ 
+# き っ  と    飛  べ  る さ  Oh Yeah～
+# Ki i   to.  (to be) ru sa. Oh Yeah～
+  
 
 ###-----------------------repeat*2-2------------------------###
 
-# 無限大(Mu gen dai)な   夢(yu me) の あ と の
-#                  na.            no a  to no~
+# 無   限   大  な    夢    の  あ と の
+# (Mu gen dai) na. (yu me) no  a  to no.
 
-# や る せ ない  世 の中(na ka)じゃ
-# ya ru se nai. yo no         ja
+# や る せ な い  世 の   中    じゃ
+# ya ru se nai.  yo no (na ka) ja
  
-# そ う さ 常識(jo u shi ki).   は     ず れ も 悪(wa~阿(ru))  く ?  ない か な
-# So u sa~                     ha~阿 zu re mo.              ~ku wa nai  ka na
+# そ う さ  常        識    は ず れ も    悪    く      ない か な
+# So u sa. (jo u shi ki)   ha zu re mo. (wa a. ku wa)  nai  ka na
  
-# Stay  し  そう なイ メージ  を 染 め た    ぎ こ  ち  ない  翼(tsu ba sa)で も
-# Stay (shi) sou nai  mee ji wo so me ta~  gi ko chi  nai~             de mo
+# Stayし  そう  なイ メージ  を 染 め た  
+# (Stay)  sou  nai  mee ji wo so me ta~  
+
+# ぎ こ  ち  ない      翼       で も
+# gi ko chi  nai. (tsu ba sa)  de mo
  
-# き   っ     と    飛 べ る さ     On My Love~~~~~~~~~~~~~~~~~
-# Ki (tsu)i   to.  to be ru sa.    
+# き  っ と  飛  べ  る  さ　   On My Love
+# Ki  i  to  to  be  ru  sa.   On My Love
+
 
