@@ -36,7 +36,7 @@
 
 ###-----------------------2-1------------------------###
 
-# ウ カ レ  タ   蝶    に   な って  一    途       な    風     に 乗 って
+# ウ カ レ  タ   蝶    に   な って     一    途   な     風     に 乗 って
 # U  ka re ta (cho u) ni.  na tte.    (i chi zu)  na (ka. ze)  ni no tte
  
 # ど こ ま で  も   キ ミ に   会い に 行 こ う
@@ -48,8 +48,8 @@
 #    叫   ん で  る   ヒ ツト ソン グ 聴 き な が ら
 # (Sa ke) n de  ru.  hi tto  son gu ki~ ki na ga ra
  
-#   何     が   WOW ~*5   こ の     街    に   響    く の  だ ろう
-# (Na ni)  ga  (WOW~*5).   ko no (ma chi) ni.(hi bi) ku no da rou
+#   何     が   WOW ~*5    こ  の   街     に    響    く の  だ ろう
+# (Na ni)  ga  (WOW~*5).   ko no (ma chi) ni. (hi bi) ku no da rou
  
 # だ け ど.　 WOW ~*5    期    待  し  て て  も   仕      方  な  い
 # Da ke do　 (WOW~*5). 　(ki ta i) shi te te. mo (shi ka ta) na. i~~
@@ -76,13 +76,11 @@
 
 ###-----------------------repeat*1-2------------------------###
 
-# 無  限   大   な     夢    の あ と の      何    も  ない    世 の    中   じゃ　
-# (Mu gen dai) na.  (yu me) no a  to no~  (na ni) mo  nai.    yo no (na ka) ja
+# 無   限   大   な     夢    の あ と の      何    も  ない    世 の    中   じゃ　
+# (Mu gen dai)  na.  (yu me) no a  to no~  (na ni) mo  nai.    yo no (na ka) ja
  
-# そ うさ    愛(i to) し  い   想い(o mo i)も  負け(ma. ke)  そ う  に な る け ど
-# So u sa.            shi i~              mo               so u.  ni na ru ke do~
- 
-
+# そ うさ     愛    し  い     想い      も    負け    そ う  に な る け  ど
+# So u sa.  (i to) shi i~   (o mo i)   mo   (ma. ke) so u.  ni na ru ke do.
  
 # Stayし  が  ち  なイ  メー  ジ  だ ら け の     頼    り ない       翼      で も　
 # (Stay) (ga) chi nai.  mee  ji da ra ke no~  (ta yo) ri nai~  (tsu ba sa) de mo
