@@ -1,4 +1,4 @@
-###-----------------------1------------------------###
+###-----------------------1-1------------------------###
 
 # la la la... la la la...
 
@@ -11,48 +11,46 @@
 #   強     が って  立ち  向    か う  し  か な い  ん  だ
 # (tsu yo) ga tte ta chi mu    ka  u  shi ka na i   n  da
 
-###-----------------------1-2------------------------###
-
-#  誰   で も な い さ   キ ミ の  番 だ よ
-# da re de mo na i sa   ki mi no ban da yo
+#   誰   で も な い さ    キ ミ の   番   だ よ
+# (da re) de mo na i sa   ki mi no (ban) da yo
  
-# 逃 げ  出 し ちゃ   い け な い
-# ni ge da shi cha   i  ke na i
+#  逃 げ  出  し  ちゃ   い け な い
+# (ni ge da) shi  cha   i  ke na i
 
-#   譲    れ な い   明     日  を か け て  や る ん だ
-# (yu zu) re na i   (a shi ta) wo ka ke te ya ru n  da
+#   譲    れ な い   明     日  を か け て   や る ん だ
+# (yu zu) re na i   (a shi ta) wo ka ke te. ya ru n  da
 
-# 手 の ひ  ら を  見 つ  め  て
-# te no hi ra wo  mi tsu me te
+# 手 の ひ  ら を  見  つ  め  て
+# te no hi ra wo  mi. tsu me te
 
 #    強    く    握   り  し  め た ら
 # (tsu yo) ku (ni gi) ri shi me ta ra
 
-# コ コ ロ に  チ  カ ラ が    流    れ 出 す
-# ko ko ro ni chi ka ra ga (na ga) re da su
+# コ コ ロ に   チ  カ ラ が    流    れ 出 す
+# ko ko ro ni. chi ka ra ga (na ga) re da su
 
 
-###-----------------------repeat-1------------------------###
+###-----------------------1-2------------------------###
 # Get break up! to break up!
 
-#    新     し い Fighter    本   当    の ハ ジ マ リ  さ
-# (a ta ra) shi i  Fighter  (hon tou)  no ha ji ma ri sa
+#    新     し い   Fighter    本   当    の ハ ジ マ リ  さ
+# (a ta ra) shi i  Fighter   (hon tou)  no ha ji ma ri  sa
 
 # キ ミ を キ  ミ を   越 え て  ゆ く ん だ
 # ki mi wo ki mi wo   ko e  te yu ku n  da
 
-# こ の 場  所  か ら
-# ko no ba sho ka ra
+# こ の  場   所  か ら
+# ko no (ba sho) ka ra
 
 # It's time to go!!
 
-###-----------------------2------------------------###
+###-----------------------2-1------------------------###
 
-# こ れ  以上 もう ム リ だ よ  な ん て
-# ko re i jou mou mu ri da yo na n  te
+# こ れ  以  上  も う ム リ だ よ  な ん て
+# ko re (i jou) mo u  mu ri da yo na n  te
 
-# ヒ ザ が   震  え る   時
-# hi za ga fu ru e ru  to ki
+# ヒ ザ が    震   え る     時
+# hi za ga (fu ru) e ru  (to ki)
 
 # キ ミ の コ ト    信  じ る    瞳      感  じ て
 # ki mi no ko to shi n ji ru hi to mi  kan ji te
@@ -60,8 +58,8 @@
 # 手    渡 す よ う に  勇気   を  く れ た
 # te wa ta su yo u ni yu u ki wo ku re ta
 
-# 仲間     た  ち が い る よ
-# na ka ma ta chi ga i ru yo
+# 仲     間   た  ち  が い る よ
+# (na ka ma)  ta chi  ga i ru yo
 
 #  風     の    中     キ   ミ の   名   前   を   呼ん  で る
 # (ka ze) no (na ka)   ki  mi no  (na ma e)  wo   yo n  de ru
@@ -75,7 +73,7 @@
 #     扉     は    開     き   は じ め て い る
 # (to bi ra) wa (hi ra)   ki  ha ji me te i ru
 
-###-----------------------repeat-2------------------------###
+###-----------------------2-2------------------------###
 # Get break up! to break up!
 
 # 沸 き 上  が  る Power キ ミ は   もう    気   づいて   い  る
@@ -88,3 +86,6 @@
 # (ka na) e  na ku  cha
 
 # It's time to go!!
+
+
+###-----------------------*repeat=>1-2=>2-2
