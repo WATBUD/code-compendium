@@ -37,7 +37,7 @@
 ###-----------------------2-1------------------------###
 
 # ウ カ レ  タ   蝶    に   な って     一    途   な     風     に 乗 って
-# U  ka re ta (cho u) ni.  na tte.    (i chi zu)  na (ka. ze)  ni no tte
+# U  ka re ta (chou)  ni.  na tte.    (i chi zu)  na (ka. ze)  ni no tte
  
 # ど こ ま で  も   キ ミ に   会い に 行 こ う
 # Do ko ma de mo~  ki mi ni.  a i ni yu ko u
@@ -72,7 +72,7 @@
 # gi ko chi  nai. (tsu ba sa)  de mo
 
 # き  っ と   飛  べ  る  さ　  On My Love
-# Ki  i  to  to be  ru  sa.   On My Love
+# Ki  i  to  to  be  ru  sa.   On My Love
 
 ###-----------------------repeat*1-2------------------------###
 
