@@ -102,7 +102,8 @@ const s = { x: 1, y: 2 }; // 必須是相同類型，否則報錯
 ```
 
 ### 6. 性能（Performance）
-在 TypeScript 中，interface 被認為在編譯時的性能上略優於 type，特別是在有大量類型操作的情況下。這是因為 interface 是設計來專門描述物件結構的，並且通常更高效地處理。
+TypeScript 中interface 在編譯時性能上略優於 type，特別是在有大量類型操作的情況下。
+因為 interface 是專門描述物件結構的。
 
 ### 7. 支援的語法特性
 interface 支援 extends 和 implements 關鍵字，用於類型的繼承和實現。
