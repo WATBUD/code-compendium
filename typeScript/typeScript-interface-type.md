@@ -1,13 +1,12 @@
-# TypeScript `interface` vs `type` 都是用來定義類型的工具
+# TypeScript `interface` vs `type` 都是用來定義類型
 
-## 1. 擴展能力 (Extending / Merging)
-- **interface** 支援結構擴展，並且可以被多次聲明合併。
-- **type** 不能合併重複的定義。
-- **使用 interface**：主要處理物件結構，並且需要擴展、合併功能時。
-- **使用 type**：需要更多的靈活性，並且處理複雜類型（如聯合類型、交叉類型）或為基本類型創建別名時。
+## 1. `interface` vs `type`差異
+- **1.聲明合併（declaration merging）**
+- **複雜類型 (Complex Types)** 
+- **類型別名 (Type Aliases)**
+- **性能（Performance）**
 
-### 範例：
-
+### 1.聲明合併（declaration merging）：
 ```typescript
 // interface 會合併
 interface Person {
@@ -37,7 +36,6 @@ interface 限制較少，但更適合用於定義物件結構。
 
 // type 可以使用聯合類型
 type Status = 'success' | 'error';
-
 const status1: Status = 'success'; // valid
 const status2: Status = 'failure'; // error
 
@@ -45,10 +43,9 @@ const status2: Status = 'failure'; // error
 // interface Status { 'success' | 'error' } // error
 ```
 
-
 ### 3. 類型別名 (Type Aliases) 與字面量類型的區別
-interface 主要用來描述物件的結構，並且被設計來支持擴展和繼承。
-type 不僅可以用來定義物件類型，還可以為其他任何類型（如基本類型、聯合類型、元組等）創建類型別名。
+interface 描述物件結構，設計支持擴展和繼承。
+type 定義物件類型，還可以為其他任何類型（如基本類型、聯合類型、元組等）創建類型別名。
 
 ```typescript
 // interface 主要用於描述物件結構
@@ -63,28 +60,9 @@ type SuccessResponse = { success: boolean };
 type StringOrNumber = string | number;
 ```
 
-### 4. 泛型的不同表達方式
-interface 和 type 都可以用於定義泛型，但 interface 在表達泛型時有些特定的語法和慣用法。
-```typescript
-// interface 泛型定義
-interface Box<T> {
-  value: T;
-}
-
-const box1: Box<number> = { value: 42 };
-
-// type 泛型定義
-type BoxType<T> = {
-  value: T;
-};
-
-const box2: BoxType<string> = { value: 'Hello' };
-```
-
-
-### 5. 結構化類型 vs 名稱類型
-interface 會強調結構化類型，也就是說，兩個物件如果有相同結構，它們是兼容的，即使它們的名稱不同。
-type 更加靈活，會進行名稱匹配，不會像 interface 那樣自動進行結構化兼容。
+### 4. 結構化類型 vs 名稱類型
+interface 會強調結構化類型，兩個物件如果有相同結構是兼容的，即使名稱不同。
+type 更加靈活會進行名稱匹配，不會像 interface 那樣自動進行結構化兼容。
 ```typescript
 // interface 用結構化類型
 interface Point {
@@ -101,32 +79,80 @@ const r: PointType = { x: 1, y: 2 };
 const s = { x: 1, y: 2 }; // 必須是相同類型，否則報錯
 ```
 
-### 6. 性能（Performance）
-TypeScript 中interface 在編譯時性能上略優於 type，特別是在有大量類型操作的情況下。
-因為 interface 是專門描述物件結構的。
+### 5. 性能（Performance）
+interface 在 TypeScript 內部的最佳化程度較高，適合物件的結構描述，處理時不需要展開型別，編譯速度較快。
+type 支援聯合 (|)、交集 (&) 等操作，這些運算需要 TypeScript 先解析並展開類型，可能導致編譯速度變慢。
+當物件結構複雜、型別組合過多時，type 可能會導致更高的記憶體使用量和編譯時間。
+但 type 在某些場景（例如聯合型別或函式簽名）會比 interface 更靈活，因此應該根據實際需求選擇。
 
-### 7. 支援的語法特性
-interface 支援 extends 和 implements 關鍵字，用於類型的繼承和實現。
-type 使用 &（交叉類型）和 |（聯合類型）來進行類型組合，但它不支援 extends 和 implements 關鍵字。
+以下是對標題 **「6. 支援的語法特性」** 的細化和改進版本，使其更清晰且更具描述性：
 
+---
+
+### 6. **語法特性與擴展能力的差異**
+
+`interface` 和 `type` 在語法特性上有顯著差異，主要體現在類型的繼承、實現以及組合方式上：
+
+- **`interface`**：
+  - 支援 `extends` 關鍵字，用於繼承其他介面或類型。
+  - 支援 `implements` 關鍵字，用於類別（class）實現介面。
+  - 適合用於物件導向設計中的類型定義。
+
+- **`type`**：
+  - 使用 `&`（交叉類型）來組合多個類型。
+  - 使用 `|`（聯合類型）來定義多種類型的可能性。
+  - 不支援 `extends` 和 `implements` 關鍵字，但可以通過交叉類型實現類似的功能。
+  - 更適合用於複雜的類型操作，如聯合類型、條件類型等。
+
+---
+
+#### **`interface` 的繼承與實現**
 ```typescript
-// interface 可以繼承另一個 interface
-interface A {
+// 使用 extends 繼承
+interface Animal {
   name: string;
 }
 
-interface B extends A {
-  age: number;
+interface Dog extends Animal {
+  breed: string;
 }
 
-const obj: B = { name: "John", age: 30 };
+// 使用 implements 實現
+class Labrador implements Dog {
+  name: string;
+  breed: string;
 
-// type 不能使用 extends，但可以使用交叉類型
-type AType = { name: string };
-type BType = AType & { age: number };
-
-const obj2: BType = { name: "John", age: 30 };
+  constructor(name: string, breed: string) {
+    this.name = name;
+    this.breed = breed;
+  }
+}
 ```
 
+#### **`type` 的組合與靈活性**
+```typescript
+// 使用交叉類型組合
+type Animal = {
+  name: string;
+};
 
+type Dog = Animal & {
+  breed: string;
+};
+
+// 使用聯合類型
+type Result<T> = T | Error;
+
+// 無法使用 implements
+class Labrador implements Dog { // 錯誤：'Dog' 是一個類型別名，無法被實現
+  name: string;
+  breed: string;
+}
+```
+
+---
+
+### 總結
+- **`interface`**：適合用於物件導向設計，支援 `extends` 和 `implements`，適合定義清晰的物件結構。
+- **`type`**：適合用於複雜的類型操作，如聯合類型、交叉類型等，但不支援 `extends` 和 `implements`。
 
