@@ -1,4 +1,11 @@
-# React 的種更新方式
+# React 有幾種更新方式
+1. **State** 更新（`useState` / `setState`）。
+2. **Props** 更新。
+3. **Context** 更新。
+4. **強制更新**（`forceUpdate`）。
+5. **Refs 更新**（結合其他方式觸發重渲染）。
+6. **Reducer 更新**（`useReducer`）。
+7. **外部觸發更新**。
 
 ## 1. **State 更新**
 通過使用 `useState` 或 `this.setState`（在 class 組件中），來更新組件的狀態。
@@ -145,15 +152,3 @@
   用於確保多個更新操作合併執行（通常不需要手動使用）。
 
 ---
-
-## 總結
-React 提供以下主要的更新方式：
-1. **State** 更新（`useState` / `setState`）。
-2. **Props** 更新。
-3. **Context** 更新。
-4. **強制更新**（`forceUpdate`）。
-5. **Refs 更新**（結合其他方式觸發重渲染）。
-6. **Reducer 更新**（`useReducer`）。
-7. **外部觸發更新**。
-
-在開發中，應優先選擇狀態驅動的更新方式，確保組件的渲染邏輯清晰和可預測。
