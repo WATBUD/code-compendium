@@ -1,4 +1,6 @@
 # TypeScript `interface` vs `type` 都是用來定義類型
+- **`interface`**：適合用於物件導向設計，支援 `extends` 和 `implements`，適合定義清晰的物件結構。
+- **`type`**：適合用於複雜的類型操作，如聯合類型、交叉類型等，但不支援 `extends` 和 `implements`。
 
 ## 1. `interface` vs `type`差異
 - **1.聲明合併（declaration merging）**
@@ -85,22 +87,17 @@ type 支援聯合 (|)、交集 (&) 等操作，這些運算需要 TypeScript 先
 當物件結構複雜、型別組合過多時，type 可能會導致更高的記憶體使用量和編譯時間。
 但 type 在某些場景（例如聯合型別或函式簽名）會比 interface 更靈活，因此應該根據實際需求選擇。
 
-以下是對標題 **「6. 支援的語法特性」** 的細化和改進版本，使其更清晰且更具描述性：
-
----
-
 ### 6. **語法特性與擴展能力的差異**
 
 `interface` 和 `type` 在語法特性上有顯著差異，主要體現在類型的繼承、實現以及組合方式上：
 
-- **`interface`**：
-  - 支援 `extends` 關鍵字，用於繼承其他介面或類型。
-  - 支援 `implements` 關鍵字，用於類別（class）實現介面。
-  - 適合用於物件導向設計中的類型定義。
+- **`interface` 適合於物件導向設計類型定義**：
+  - `extends` 用於繼承其他介面或類型。
+  - `implements` 用於類別（class）實現介面。
 
 - **`type`**：
-  - 使用 `&`（交叉類型）來組合多個類型。
-  - 使用 `|`（聯合類型）來定義多種類型的可能性。
+  - 使用 `&`[交叉(Intersection)]來組合多個類型。
+  - 使用 `|`[聯合(Union)]來定義多種類型的可能性。
   - 不支援 `extends` 和 `implements` 關鍵字，但可以通過交叉類型實現類似的功能。
   - 更適合用於複雜的類型操作，如聯合類型、條件類型等。
 
@@ -141,7 +138,23 @@ type Dog = Animal & {
 };
 
 // 使用聯合類型
-type Result<T> = T | Error;
+fetchData 函數可能返回 string 類型的成功消息，也可能返回 Error 類型的錯誤對象。
+function fetchData(): string | Error {
+  // 假設這裡有一些邏輯來獲取數據
+  if (Math.random() > 0.5) {
+    return "Data fetched successfully";
+  } else {
+    return new Error("Failed to fetch data");
+  }
+}
+
+const result = fetchData();
+
+if (result instanceof Error) {
+  console.error(result.message);
+} else {
+  console.log(result);
+}
 
 // 無法使用 implements
 class Labrador implements Dog { // 錯誤：'Dog' 是一個類型別名，無法被實現
@@ -152,7 +165,4 @@ class Labrador implements Dog { // 錯誤：'Dog' 是一個類型別名，無法
 
 ---
 
-### 總結
-- **`interface`**：適合用於物件導向設計，支援 `extends` 和 `implements`，適合定義清晰的物件結構。
-- **`type`**：適合用於複雜的類型操作，如聯合類型、交叉類型等，但不支援 `extends` 和 `implements`。
 
