@@ -97,8 +97,8 @@ type 在遇到 [交集] (&) 或 [聯合] (|) 時，TypeScript 需要計算[展�
 type 物件結構複雜、型別組合過多會導致更高[記憶體使用量]和[編譯時間]。
 
 ```javascript
-type Nested<T> = { value: T } & Nested<T>;  // 遞歸交集
-//Type instantiation is excessively deep and possibly infinite. 
+type Nested<T> = { value: T } & Nested<T>; // 遞歸交集
+// 錯誤：Type instantiation is excessively deep and possibly infinite.
 ```
 
 ### 6. 類型的[繼承/實現/組合]
@@ -195,10 +195,10 @@ type ReadonlyOptional<T> = {
 };
 type ReadonlyOptionalUser = ReadonlyOptional<User>;
 //這會展開為：
-type ReadonlyOptionalUser = {
-  readonly name?: string;
-  readonly age?: number;
-};
+// type ReadonlyOptionalUser = {
+//   readonly name?: string;
+//   readonly age?: number;
+// };
 //實際運用：
 const user1: ReadonlyOptionalUser = { name: "Alice" };
 // `name` 是可選的，可以不設置
