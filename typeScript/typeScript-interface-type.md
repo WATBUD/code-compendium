@@ -8,7 +8,7 @@
 - **類型別名 (Type Aliases)**：type 可以為物件結構外其他任何類型（如基本類型、聯合類型、元組等）創建類型別名。
 - **性能（Performance）**
 - **類型的繼承、實現以及組合**
-- **`type`支援映射型別(Mapped Types) interface 不支援**
+- **泛型（Generics）和映射型別（Mapped Types）**:interface 本身不直接支持映射型別的語法
 
 ### 1.聲明合併（declaration merging）：
 ```typescript
@@ -70,23 +70,17 @@ interface Point {
   x: number;
   y: number;
 }
-
 const p: Point = { x: 1, y: 2 }; // 正確，符合 Point 結構
 const q = { x: 1, y: 2 }; //q 沒有顯式標註為 Point 類型，但結構與 Point 類型的結構完全匹配， q 被自動推斷為 Point 類型
-
 // 使用 type 進行名稱匹配，通常用於複雜的類型
 type PointType = { x: number; y: number };
 const r: PointType = { x: 1, y: 2 }; // 正確，符合 PointType 結構
 const t = { x: 1, y: 2 }; // 類似於 q，這裡也能賦值，但可以帶來錯誤
-
 // type 可以用來處理聯合類型或字面量類型（interface 無法做到）
 type Status = "success" | "error";  // 字面量類型
 type Response = { status: Status; message: string };
-
 const successResponse: Response = { status: "success", message: "Operation succeeded" };
-
 // interface 無
-
 ```
 
 ### 5. 性能（Performance）
@@ -100,6 +94,7 @@ type Nested<T> = { value: T } & Nested<T>;  // 遞歸交集
 //Type instantiation is excessively deep and possibly infinite. 
 ```
 ### 6. 類型的[繼承/實現/組合]
+
 - **`interface` 適合於物件導向設計類型定義**：
   - `extends` 用於繼承其他介面或類型。
   - `implements` 用於類別（class）實現介面。
@@ -133,7 +128,7 @@ type Nested<T> = { value: T } & Nested<T>;  // 遞歸交集
     }
     ```
 
-- **`type` 的組合與靈活性**
+- **`type` 的組合**
 ```typescript
 // 使用交叉類型組合
 type Animal = {
@@ -170,30 +165,38 @@ class Labrador implements Dog { // 錯誤：'Dog' 是一個類型別名，無法
 }
 ```
 
-### 7. **`type`支援映射型別(Mapped Types) interface不支援**
-🚀 總結
-
+### 7. 泛型（Generics）和映射型別（Mapped Types）**
 ✅ 映射型別（Mapped Types） 允許我們 基於現有型別批量修改屬性。
 ✅ 常見應用：
-- 新增 readonly、? 修飾符
-- 改變屬性型別
-- 過濾屬性
-- 使用 keyof 進行鍵名遍歷
+- 新增 [readonly、?] 修飾符
+- 改變[屬性型別/過濾屬性]
+- 使用 keyof 遍歷鍵名
 ```typescript
-// type 能使用映射型別
 // 因為 type 支援型別運算，因此可以進行 映射型別轉換：
-type ReadonlyOptional<T> = {
-  readonly [K in keyof T]?: T[K];
+// [K in keyof T]：這是一種 映射類型（Mapped Type）
+type User = {
+  name: string;
+  age: number;
 };
 
+type ReadonlyOptional<T> = {
+  //[K in keyof T] 的 K 就是 User 類型的每個屬性名，分別為 name 和 age
+  //T[K] 就是 User 類型中每個屬性對應的類型，分別是 string 和 number。
+  //? 表示該屬性是可選的，你可以選擇是否設置該屬性。如果不設置，該屬性就是 undefined
+  readonly [K in keyof T]?: T[K];
+};
 type ReadonlyOptionalUser = ReadonlyOptional<User>;
-
-/*
-結果：
+//這會展開為：
 type ReadonlyOptionalUser = {
   readonly name?: string;
   readonly age?: number;
-}
-*/
+};
+//實際運用：
+const user1: ReadonlyOptionalUser = { name: "Alice" };
+// `name` 是可選的，可以不設置
+const user2: ReadonlyOptionalUser = { name: "Alice", age: 30 };
+
+// 如果設置了 `name` 或 `age`，它們是 readonly 的，不能再修改
+user1.name = "Bob";  // Error: Cannot assign to 'name' because it is a read-only property.
 ```
 
