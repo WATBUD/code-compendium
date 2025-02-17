@@ -6,6 +6,7 @@
 - **聲明合併（declaration merging）** :type 無法合併，會報錯
 - **複雜類型 (Complex Types)** :interface 不能使用聯合類型
 - **類型別名 (Type Aliases)**：type 可以為物件結構外其他任何類型（如基本類型、聯合類型、元組等）創建類型別名。
+- **結構性類型（Structural Typing）**
 - **性能（Performance）**
 - **類型的繼承、實現以及組合**
 - **泛型（Generics）和映射型別（Mapped Types）**:interface 本身不直接支持映射型別的語法
@@ -61,22 +62,29 @@ type StringOrNumber = string | number;   // 聯合類型
 type Point = [number, number];           // 元組
 ```
 
-### 4. 結構化類型 vs 名稱類型
-interface 強調結構化類型，兩個物件相同結構是兼容的，即使名稱不同。
-type 會進行名稱匹配，不會像 interface 自動結構化兼容。
+### 4. 結構性類型（Structural Typing）
+interface 和 type 都基於結構性類型：只要兩個物件具有相同的結構（屬性和方法），它們就可以互相兼容，即使它們的類型名稱不同。
+interface 和 type 沒有名稱匹配的限制：不同類型名稱的兩個物件，只要它們的結構相同，依然是相容的
+
 ```typescript
-// 使用 interface 進行結構化類型描述
-interface Point {
-  x: number;
-  y: number;
-}
-const p: Point = { x: 1, y: 2 }; // 正確，符合 Point 結構
-const q = { x: 1, y: 2 }; //q 沒有顯式標註為 Point 類型，但結構與 Point 類型的結構完全匹配， q 被自動推斷為 Point 類型
-// 使用 type 進行名稱匹配，通常用於複雜的類型
-type PointType = { x: number; y: number };
-const r: PointType = { x: 1, y: 2 }; // 正確，符合 PointType 結構
-const t = { x: 1, y: 2 }; // 類似於 q，這裡也能賦值，但可以帶來錯誤
-// type 可以用來處理聯合類型或字面量類型（interface 無法做到）
+  interface Point {
+    x: number;
+    y: number;
+  }
+
+  let point_1: Point = { x: 1, y: 2 }; // 正確，符合 Point 結構
+  const point_2 = { c:9,x: 1, y: 2 ,s:4 };// 匹配 x: 1, y: 2 被推斷具有 Point 類型結構。
+  //const point_2 = { c:9,x: "1", y: 2 ,s:4 }; // 跳錯 Type 'string' is not assignable to type 'number'
+  point_1 = point_2; 
+  
+  type PointType = { x: number; y: number };
+  let typePoint_1: PointType = { x: 1, y: 2 }; // 正確，符合 PointType 結構
+  let typePoint_2 = { x: 1, y: 2 }; 
+  
+  point_1=typePoint_1;//匹配 point_1 被推斷具有 Point 類型結構。
+  point_1=typePoint_2;//匹配 point_1 被推斷具有 Point 類型結構。
+
+// type 可以處理聯合類型或字面量類型(Literal Types)（interface 無法做到）
 type Status = "success" | "error";  // 字面量類型
 type Response = { status: Status; message: string };
 const successResponse: Response = { status: "success", message: "Operation succeeded" };
@@ -85,14 +93,14 @@ const successResponse: Response = { status: "success", message: "Operation succe
 
 ### 5. 性能（Performance）
 interface 在 TypeScript 內部最佳化程度較高，處理時不需要展開型別，編譯速度較快。
-type [聯合型別/函式簽名]會比 interface 更靈活，因此應該根據實際需求選擇。
 type 在遇到 [交集] (&) 或 [聯合] (|) 時，TypeScript 需要計算[展開類型] (Type Expansion)，導致編譯速度變慢。
-type 物件結構複雜、型別組合過多時會導致更高[記憶體使用量]和[編譯時間]。
+type 物件結構複雜、型別組合過多會導致更高[記憶體使用量]和[編譯時間]。
 
 ```javascript
 type Nested<T> = { value: T } & Nested<T>;  // 遞歸交集
 //Type instantiation is excessively deep and possibly infinite. 
 ```
+
 ### 6. 類型的[繼承/實現/組合]
 
 - **`interface` 適合於物件導向設計類型定義**：
