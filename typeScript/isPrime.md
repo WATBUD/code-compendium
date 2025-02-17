@@ -1,20 +1,3 @@
-你目前的 TypeScript 代碼似乎有一些錯誤，我可以幫你修正。
-
----
-
-### **問題點**
-1. **`find_primes` 函數似乎沒有實作**：
-   - 你需要撰寫 `find_primes(start, end)` 來返回 `start` 和 `end` 之間的所有質數。
-
-2. **缺少 `isPrime` 函數**：
-   - 需要一個輔助函數來判斷某個數是否為質數。
-
-3. **輸出格式應該匹配測試案例**：
-   - `n`（質數數量）
-   - `res`（質數列表，空格分隔）
-
----
-
 ### **修正後的 TypeScript 代碼**
 ```typescript
 import * as readline from 'readline';
@@ -69,23 +52,6 @@ rl.question('Enter start: ', (startInput) => {
     });
 });
 ```
-
----
-
-### **改進的地方**
-1. **修正 `isPrime` 判斷邏輯**
-   - 只檢查 `2` 以上的數。
-   - 只檢查到 `sqrt(num)`，提升效能。
-
-2. **新增 `find_primes` 函式**
-   - 遍歷 `start` 到 `end`。
-   - 使用 `isPrime` 找出質數並存入陣列。
-
-3. **修正 `console.log` 輸出格式**
-   - 先輸出 `質數數量`。
-   - 再輸出 `質數列表`（用空格分隔）。
-
----
 
 ### **測試**
 輸入：
