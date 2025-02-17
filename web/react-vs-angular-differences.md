@@ -42,19 +42,70 @@
   - 提供強制性的依賴注入（Dependency Injection, DI），用於管理服務與元件之間的關係。
 
 ---
+| 框架 | 變更檢測機制 | 運作方式 | 優勢 | 劣勢 |
+|------|------------|--------|------|------|
+| **React** | **Virtual DOM** | `diffing` 演算法比較新舊 DOM | 更新最小範圍，效能高 | 記憶體開銷較大 |
+| **Angular** | **Zone.js + Change Detection** | 監聽變數變化，自動執行變更檢測 | 原生支援雙向綁定，開發體驗好 | 預設會檢查整棵組件樹，可能影響效能 |
+
 
 ## 5. 性能優化
-- **React**:  
+- **React Virtual DOM**:  
   - 基於虛擬 DOM（Virtual DOM）。  
   - React 使用 `diffing` 演算法比較虛擬 DOM 樹，僅更新需要變動的部分。  
   - 手動優化方法：`React.memo`、`useMemo`、`useCallback`。  
 
-- **Angular**:  
+- **Angular [沒有] Virtual DOM**:  
   - 使用 **髒檢查機制（Dirty Checking）**。  
   - 借助 Zone.js 監聽數據變化並更新視圖。  
-  - 提供了 `OnPush` 更改檢測策略來優化性能。
+  - 變更檢測方式用 `OnPush` 和 `TrackBy` 等技巧來手動優化效能。
 
----
+### **1. Virtual DOM 的運作方式（React）只更新必要的 UI，減少不必要的 DOM 操作，提高效能。**
+- **React 會先建立一個 Virtual DOM**，當狀態改變時，它會：
+  1. **重新計算新的 Virtual DOM**。
+  2. **對比舊的 Virtual DOM**（`diffing` 演算法）。
+  3. **找出變更的部分，最小化 DOM 操作**。
+
+### **2. Angular 的變更檢測（Change Detection）**
+- 預設情況下，Angular 會 **遍歷整個組件樹** 來檢查變更，可能會影響效能。
+- **Angular 使用 "Zone.js" 來監測變數變化**，當變數變更時，會：
+  1. **觸發變更檢測（Change Detection）**。
+  2. **重新渲染整個組件樹**（但可用 `OnPush` 優化）。
+
+## **Angular 如何優化變更檢測？**
+### **1. 使用 `OnPush` 更改檢測策略**
+```typescript
+@Component({
+  selector: 'app-example',
+  templateUrl: './example.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class ExampleComponent {
+  @Input() data: any;
+}
+```
+**OnPush 只會在 `@Input` 變更時觸發變更檢測，減少不必要的計算。**
+
+### **2. 使用 `TrackBy` 減少 DOM 重新渲染**
+在 `*ngFor` 迴圈中，Angular 預設會 **全部重新渲染**，即使只有一個元素改變。
+```html
+<div *ngFor="let item of items; trackBy: trackByFn">
+  {{ item.name }}
+</div>
+```
+```typescript
+trackByFn(index: number, item: any) {
+  return item.id; // 只更新 id 變更的項目
+}
+```
+
+### **3. 使用 `DetactChanges` 手動控制變更檢測**
+```typescript
+constructor(private cd: ChangeDetectorRef) {}
+
+someMethod() {
+  this.cd.detectChanges(); // 只觸發當前元件的變更檢測
+}
+```
 
 ## 6. 學習曲線
 - **React**:  
