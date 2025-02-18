@@ -62,30 +62,30 @@
 #      ma n ka  i  no    ha na ga　     ni a   i no Catastrophe
 
 # 任誰都一邊期望　一邊不相信永遠
-# 誰(だ れ) も が 望(の ぞ) み な が ら　永遠(え い え ん) を 信(し ん) じ な い
-#    da re  mo ga   no zo  mi na ga ra　    e  i  e n   o    shi n  ji na i
+# 誰(だ れ) も が 望(の ぞ) み な が ら　永遠(え い え ん) を  信(し ん) じ な い
+#    da re  mo ga   no zo  mi na ga ra　    e  i  e n   wo    shi n  ji na i
 
 # …可為何　一定會　做夢夢到明天
 # …な の に　 き っ  と　明日(あ し   た) を 夢見(ゆ め み) て  る
 # …na no ni　ki  i  to　     a  shi ta  o      yu me mi  te  ru
 
 # 虛幻的日子與　這場悲劇之夜
-# は か な  き 日々(ひ び)  と　こ  の  Tragedy Night
-# ha ka na ki      hi bi  to　ko  no  Tragedy Night
+# は か な  き 日々(ひ び)  と　 こ  の  Tragedy Night
+# ha ka na ki      hi bi  to.　ko  no  Tragedy Night
 
 ###-----------------------3------------------------###
 
 # 直到世界終結為止　都不會離開
-# 世界(せ か い) が 終(お わ) る ま で は　 離(は な) れ る 事(こ と) も な い
-#      se ka i  ga    o wa  ru ma de wa　    ha na re ru    ko to mo na i
+# 世界(せ か い) が 終(お わ) る ま で は　  離(は な) れ る 事(こ と) も な い
+#      se ka i  ga    o wa  ru ma de wa.　    ha na re ru    ko to mo na i
 
 # 那樣請託著　只有數千的夜晚與
-# そ う 願(ね が) っ  て い た　幾 千(い く せ ん) の 夜(よ る) と
-# so o    ne  ga  a  te i  ta　     i  ku se n  no    yo ru  to
+# そ う 願(ね が) っ  て い た　 幾 千(い く せ ん) の 夜(よ る) と
+# so o    ne  ga  a  te i  ta.　     i  ku se n  no    yo ru  to
 
 # 回不去的時光　不知為何閃耀著
-# 戻(も ど) ら な い 時(と き)  だ け が　何故輝(な ぜ か が や) い て は
-#    mo do ra na i     to ki  da ke ga　      na ze ka ga ya  i te wa
+# 戻(も ど) ら な い 時(と き)  だ け が　 何故輝(な ぜ か が や) い て は
+#    mo do ra na i     to ki  da ke ga.　      na ze ka ga ya  i te wa
 
 # 直到完全憔悴　的內心　崩壞了…
 # や つ  れ 切(き) っ た　心(こ こ ろ) ま で も　壊(こ わ) す…

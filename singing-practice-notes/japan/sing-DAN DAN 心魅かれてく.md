@@ -36,8 +36,8 @@
 # この   ほ  し   の    希   望   の か け  ら
 # ko no  ho shi  no   (ki.  bo)  no ka ke ra
 
-# き っと    誰      も が　    永遠    を   手 に 入     れ た い
-# ki tto  (da  re)  mo ga.    e i e n  wo   te ni i      re ta i
+# き っと    誰      も が　   永    遠 を 手 に 入 れ た い
+# ki tto  (da  re)  mo ga.    e i e n wo te ni i  re ta i
 
 # ZEN ZEN　 気    に  し   な   い フ リ し  て も
 # ZEN ZEN  (ki)   ni shi  na    i fu ri shi te mo
@@ -65,7 +65,7 @@
 # 振 り   回        さ れ て る   sea side blue
 # fu ri ma wa      sa re te ru   sea side blue
  
-# そ れ で も　   あ い つ   に      夢中      な の？
+# そ れ で も　   あ い   つ に    夢     中    な の？
 # so re de mo.    a  i  tsu ni   (mu chu u)   na no ?
  
 # も っと  聞 き      た い   こ と が     あ った のに
