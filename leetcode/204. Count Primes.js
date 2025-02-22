@@ -16,6 +16,7 @@ var countPrimes = function (n) {
         if (num < 2) {
             return false; // 小於2的數都不是質數
         }
+        console.log(`isPrime:`,`num:`,num); 
         for (let i = 2; i * i <= num; i++) {
             console.log(`num:`,num,` i:`,i,` i * i:`,i * i,`=> ${num} % ${i}`,num % i);
             if (num % i === 0) {
@@ -36,8 +37,8 @@ var countPrimes = function (n) {
 };
 // Test the function
 console.log("countPrimes(10):",countPrimes(10));
-console.log("countPrimes(0):",countPrimes(0));
-console.log("countPrimes(1):",countPrimes(1));
+// console.log("countPrimes(0):",countPrimes(0));
+// console.log("countPrimes(1):",countPrimes(1));
 
 
 
