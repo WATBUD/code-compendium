@@ -43,7 +43,7 @@
 #     涙     は 「  强    さ」に な る？
 # (na mi da) wa (tsu yo) sa  ni na ru
 
-#  季      节 は    巡   り    森   は 染 め ら れ
+#  季      节 は    巡   り    森    は 染 め ら れ
 # (ki se tsu) wa (me gu) ri (mo ri) wa so me ra re
 
 #    风   は   奏  で て    想  い   溢   れ て
@@ -87,8 +87,8 @@
 # 逢 い  た く  て   爱    お し  く て
 # a  i  ta  ku te (i to)  o shi ku te
 
-# 触 れ  た く て   苦    し  く て
-# hu re ta ku te (ku ru) shi ku te
+# 触 れ  た く て     苦    し く て
+# hu re  ta ku te (ku ru) shi ku te
 
 #   届    か な い   伝     わ ら な い
 # (to do) ka na i (tsu ta) wa ra na i
