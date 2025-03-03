@@ -29,6 +29,17 @@ let z = x + y;    // 弱型別: 不會報錯，JavaScript 會將整數 y 隱式�
 console.log(z);   // 輸出: "105" (這是弱型別的特徵，進行了隱式型別轉換)
 ```
 
+[TypeScript(靜弱(只檢查部分類型))=>strict=>靜強] 更多範例請看[React 更新 state 是異步還是同步](../typeScript/ts-static-strong-typing-check.md) 
+```TypeScript  
+// - TypeScript 在沒有開啟 strict 模式時 不同於其他語言會像是[靜態弱型別]語言，因為TS編譯期間檢查類型不會對某些隱式轉換進行限制 
+let x = 10;        // x 是 number 類型
+let y = "5";       // y 是 string 類型
+
+let z = x + y;     // 隱式將 number 轉換為 string
+console.log(z);    // 輸出: "105" (這是 JavaScript 風格的隱式類型轉換)
+```
+
+
 # ex：Python[動強]
 ```python
 x = 10       # 動態型別: 變數型別在運行時決定，x 是整數型別
