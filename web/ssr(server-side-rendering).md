@@ -1,6 +1,5 @@
 ### 什麼是 Server-Side Rendering (SSR)？
 一種網頁渲染技術，將網頁內容在伺服器端完成渲染後，再將完整的 HTML 發送給客戶端。
-與傳統的 Client-Side Rendering (CSR) 形成對比，後者是客戶端通過 JavaScript 動態生成內容。
 
 ### **CSR（Client-Side Rendering，客戶端渲染）**
 - **特點**：需要先下載並執行 JavaScript 才能渲染內容，初次渲染速度較慢。
