@@ -1,5 +1,3 @@
-# Styled Components 效能分析與最佳實踐
-
 ## 什麼是 Styled Components？
 Styled Components 是CSS-in-JS 庫，它允許你在 JavaScript 文件中編寫實際的 CSS 代碼來樣式化你的組件。
 
