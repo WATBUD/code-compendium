@@ -12,8 +12,8 @@ testA();  // 輸出 "ray"
 const test = () => {
     console.log(this.name);  // 箭頭函數繼承外部的 `this`
 };
-test();  // 輸出 "ray"（這裡 `this` 會指向全域物件）
+test();  // 輸出 undefined（這裡 `this` =此層）
 
 let b = { ee: 12, test, testA };
-b.test();  // 輸出 "ray"（箭頭函數繼承全域 `this`）
-b.testA();  // 輸出 "ray"（常規函數會依照呼叫的上下文，指向 `b`，但是 `this` 繼承了全域 `this`）
+b.test();  // 輸出 undefined"（箭頭函數繼承全域 `this`）
+b.testA();  // 輸出 undefined"（常規函數會依照呼叫的上下文，指向 `b`，但是 `this` 繼承了全域 `this`）

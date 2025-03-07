@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript `this` Example</title>
+</head>
+<body>
+    <script>
+        // Set a global variable on the window object
+        window.name = "ray";
+
+        // Function to demonstrate `this` in a regular function
+        function testA() {
+            console.log(this.name);  // `this` refers to `window` in the global context
+        }
+
+        // Call testA, should print "ray"
+        testA();
+
+        // Function to demonstrate `this` in an arrow function
+        const test = () => {
+            console.log(this.name);  // Arrow function inherits `this` from surrounding context (global)
+        };
+
+        // Call test, should print "ray"
+        test();
+
+        // Object with its own `name`, and methods `test` and `testA`
+        let b = { 
+            name: "Alice", 
+            test,   // Arrow function inherits `this` from the global context
+            testA   // Regular function, `this` will refer to the object `b`
+        };
+
+        // Call `test` method from object `b`, should print "ray" (because `test` is an arrow function)
+        b.test();
+
+        // Call `testA` method from object `b`, should print "Alice" (because `testA` is a regular function)
+        b.testA();
+    </script>
+</body>
+</html>
