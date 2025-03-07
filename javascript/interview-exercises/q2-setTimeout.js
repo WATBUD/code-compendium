@@ -1,6 +1,6 @@
-// 不，每次顯示的時間不一定完全為 1000ms，雖然 `setTimeout` 設定的是 1000ms，但實際顯示的時間可能會略有不同。
+// No, the time displayed each time may not be exactly 1000ms. Although the `setTimeout` is set to 1000ms, the actual display time might slightly differ.
 
-// ### 解釋：
+// ### Explanation:
 
 var start = Date.now();
 setTimeout(() => {
@@ -8,14 +8,25 @@ setTimeout(() => {
 }, 1000);
 
 
-// - 這段程式碼的目的是在 `start` 記錄當前時間後，延遲 1000ms（即 1 秒）後執行回調，並顯示與 `start` 之間的時間差。
+// - The purpose of this code is to record the current time with `start`, then execute a callback after a delay of 1000ms (1 second), and display the time difference between `start` and the callback execution time.
   
-// - **`setTimeout`** 是非同步的，表示在 1000ms 之後，回調函數才會執行。但是，由於 JavaScript 的事件循環機制，當 1000ms 到達時，回調函數不一定會立即執行，而是會被放入隊列中，等待 JavaScript 主執行緒空閒時處理。因此，實際上可能會有輕微的延遲。
+// - **`setTimeout`** is asynchronous (non-blocking), meaning the callback function will execute after 1000ms. However, due to JavaScript's event loop mechanism (event loop mechanism), when the 1000ms passes, the callback function may not execute immediately. It will be placed in the task queue (task queue), waiting for the JavaScript main thread (main thread) to be idle to process it. Therefore, there may be a slight delay in the actual execution time.
 
-// - **具體情況**：
-//   - 假設 `setTimeout` 設定為 1000ms，但回調函數的執行可能會有一些額外的時間延遲，因為事件循環機制和其他程式的執行可能影響到它的觸發時間。
-//   - 在較繁重的系統或有大量異步操作時，回調函數的執行時間可能會延遲幾毫秒。
 
-// ### 結論：
 
-// 每次顯示的時間應該接近 1000ms，但不保證每次都完全是 1000ms，實際上可能會有小幅的差異。
+
+// - **Specific situation**:
+//   - Even if `setTimeout` is set to 1000ms, the execution of the callback function might have some additional delay because the event loop (event loop mechanism) and other tasks in the program may affect the trigger time of the callback.
+//   - In systems with heavy load or many asynchronous operations, the callback execution time could be delayed by a few milliseconds.
+
+
+// ### Conclusion:
+
+// The displayed time should be close to 1000ms, but it is not guaranteed to always be exactly 1000ms. In practice, there may be small differences.
+
+
+// Here, the English terms are included in parentheses for clarity:
+// - **asynchronous** (`非同步`)
+// - **event loop mechanism** (`事件循環機制`)
+// - **task queue** (`隊列`)
+// - **main thread** (`主執行緒`)
