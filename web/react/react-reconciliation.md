@@ -31,7 +31,8 @@ React 協調算法（Reconciliation）如何進行新舊虛擬 DOM 比較：
 #### 3.相同 key 和不同元素類型:
 ```jsx
 <div key="1">Hello</div>
-<span key="1">World</span> 會留下的只有 span
+<input key="1">World</span> 換成 input
+<span key="1">World</span> 換成 span
 ```
 
 在這些情況下，React 比較的 **類型** 是 `div` 或 `MyComponent`，而不是元素內的內容或其他屬性。如果 `key` 相同且類型相同，React 會重用現有的 DOM 元素並更新屬性。如果 `key` 或類型不同，React 會進行重新渲染。
