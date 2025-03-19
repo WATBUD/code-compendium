@@ -34,7 +34,7 @@ const map={
     '{':'}',
 };
 
-const stack = ["("];
+const stack = ["(",'}'];
 
 console.log("stack.pop()=>",stack.pop());
 
