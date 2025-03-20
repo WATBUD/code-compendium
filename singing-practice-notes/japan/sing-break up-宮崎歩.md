@@ -11,8 +11,8 @@
 #   強     が っ て  立 ち  向    か う  し  か  な い  ん  だ
 # (tsu yo) ga a te. ta chi mu    ka u  shi ka. na i   n  da
 
-#   誰    で も な い さ    キ ミ の   番   だ よ
-# (da re) de mo na i sa.   ki mi no (ban) da yo
+#   誰    で も な い さ    キ ミ の   番    だ よ
+# (da re) de mo na i sa.   ki mi no (ba n) da yo
  
 #  逃 げ  出  し  ちゃ   い け な い
 # (ni ge da) shi  cha   i  ke na i
@@ -36,8 +36,8 @@
 #    新     し い   Fighter    本     当   の ハ ジ マ リ  さ
 # (a ta ra) shi i  Fighter   (ho n to u)  no ha ji ma ri  sa
 
-# キ ミ を  キ  ミ を    越 え て  ゆ くん だ
-# ki mi wo. ki mi wo.   ko e  te yu kun  da
+# キ ミ を  キ  ミ を    越 え て  ゆ くん  だ
+# ki mi wo. ki mi wo.   ko e  te yu  kun  da
 
 # こ の  場   所  か ら
 # ko no (ba sho) ka ra
@@ -59,8 +59,8 @@
 # 手      渡 す よ う  に   勇   気  を  く れ た
 # (te wa ta) su yo u  ni. (yu u ki) wo ku re ta
 
-# 仲     間   た  ち  が  い る よ
-# (na ka ma)  ta chi  ga  i ru yo
+# 仲     間   た  ち   が  い る よ
+# (na ka ma)  ta chi  ga.  i ru yo
 
 #  風     の    中      キ   ミ の   名   前   を   呼ん  で る
 # (ka ze) no (na ka).   ki  mi no  (na ma e)  wo   yo n  de ru
