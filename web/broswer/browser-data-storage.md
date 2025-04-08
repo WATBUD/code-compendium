@@ -1,8 +1,25 @@
 - If I only have the frontend without backend server support, 
 - what methods can I use to store data on the client side?
 
-# IndexedDB: 瀏覽器中存儲大量結構化資料的 API
-提供一個非同步、事務型的資料庫系統，在用戶計算機上持久保存資料。
+| 儲存方式      | 空間限制 | 可用大小（大概） | 儲存格式 | 是否同步 | 適合用途 |
+|---------------|-----------|--------------------|-----------|------------|-------------|
+| `localStorage` | 有       | 約 5MB             | 字串      | ✅ 同步    | 小設定 / 登入狀態 |
+| `sessionStorage` | 有    | 約 5MB             | 字串      | ✅ 同步    | 分頁內短期暫存 |
+| `IndexedDB`     | 幾乎無限制 | 上 GB 級（依裝置）| 結構化資料 | ❌ 非同步  | 儲存大量資料 / 離線應用 |
+
+### IndexedDB: 瀏覽器中存儲大量結構化資料的 API
+提供非同步事務型資料庫持久保存資料。
+### ✅ IndexedDB 的大小上限與裝置硬碟空間有關
+- 「動態上限」依硬碟、瀏覽器、裝置決定。
+- 每個瀏覽器不同根據使用者剩下空間動態調整，通常瀏覽器會允許 IndexedDB 使用「總硬碟空間的 5%～50%」。
+| 瀏覽器 | 總可用空間 | 單網域最大 | 超過會？ |
+|--------|------------|-------------|----------|
+| Chrome | 剩餘空間的 60% | 約 2～10 GB（依硬碟大小變動） | 提示詢問使用者是否允許 |
+| Firefox | 剩餘空間的 50% | 預設上限約 2GB | 自動拒絕或丟錯 |
+| Safari | 約 1GB | 更保守（約 50～100MB） | 可能不提示直接拒絕 |
+- IndexedDB存超過上限，**有些瀏覽器會彈出提示詢問是否允許更多空間**（像 Chrome）；
+- 有些瀏覽器（如 Safari）則**直接中止**，不給提示；
+- **不同裝置（桌機 vs 手機）也會有不同限制**。
 
 # localStorage：瀏覽器本地存儲方案大小限制（通常5 MB），保存「長期需要資料」，關掉瀏覽器再開啟，資料還會保留。適合儲存像是用戶設定或登入狀態等。
 
@@ -31,7 +48,6 @@ None：允許所有跨站請求攜帶 Cookie，但必須同時設定 Secure 屬�
 // 設定一個名為 "username" 的 Cookie，值為 "JohnDoe"，啟用 SameSite 屬性
 document.cookie = "username=JohnDoe;path=/; SameSite=Strict";
 ```
-
 # 傳輸過程中的數據洩漏：
 Cookie 在 HTTP 請求中傳輸，使用未加密的 HTTP 協議，攻擊者可以利用（MITM）攔截 Cookie 竊取敏感信息。
 設置 Secure 確保 Cookie 僅在 HTTPS 中傳輸。
@@ -43,3 +59,5 @@ document.cookie = "username=JohnDoe; expires=" + new Date(Date.now() + 7 * 24 * 
 // 並同時設定 HttpOnly 和 Secure 屬性
 document.cookie = "sessionToken=encryptedToken; HttpOnly; Secure; path=/";
 ```
+
+
