@@ -62,5 +62,3 @@ Crystalline Glucosamine Sulfate is a nutritional supplement used for **joint hea
 
 ---
 
-如果你想進一步了解要不要搭配物理治療、吃多久、或跟什麼藥會衝突，也可以問我～  
-Let me know if you want advice on combining it with physical therapy, how long to take it, or whether it conflicts with other medications!
