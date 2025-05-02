@@ -10,7 +10,7 @@ var isValid = function(s) {
         if(map[indexWord]){//如果有左括號(, [, {，則將其推入 stack array 中。
             stack.push(indexWord);
         }
-        else if(indexWord!==map[stack.pop()]){//不是左就是其他檢測是不是 ), ], } pop()拿到key(左括號)同時移除左括號=>然後比對。
+        else if(indexWord!==map[stack.pop()]){//利用pop()從陣列移除同時拿到 左括號(, [, { 然後比對檢測是不是 ), ], }。
             return false;
         } 
     }
