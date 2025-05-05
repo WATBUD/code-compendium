@@ -38,41 +38,41 @@
  
 ###-----------------------2------------------------###
 
-# 自     分  の  た め だ け  に  生 き  て い る    人    が　   
-# (ji bu n)  no ta me da ke. ni (i ki). te i ru (hi to) ga.
+# 自     分   の  た め だ け  に  生 き  て い る    人    が　   
+# (ji bu n).  no. ta me da ke. ni (i ki). te i ru (hi to) ga.
 
-#    集  め  ら れ  た  よう な  こ  の   街     で
+#   集   め  ら れ  た  よう な  こ  の   街     で
 # (a tsu me) ra re ta  you  na. ko no (ma chi) de 
 
 #    誰   か  を     心      か  ら   想   え る  
-# (da re) ka. wo (ko ko ro) ka. ra (o mo) e ru.   
+# (da re) ka. o  (ko ko ro) ka. ra (o mo) e ru.   
  
 #     幸      せ を  い つ  ま で も    忘    れ た  く な い
 # (shi a wa)  se wo. i tsu ma de mo. (wa su) re ta ku na i
 
-# す ぐ に ヤ   キ モ チ    焼 く  こ と  も 好 き だ  よ 
-# su gu ni ya. ki mo chi. ya ku ko to. mo su ki da yo. 
+# す ぐ に ヤ   キ モ チ   焼 く  こ と も 好 き だ  よ 
+# su gu ni ya. ki mo chi. ya ku ko to mo su ki da yo. 
 
-# って  か ら か っ て      笑   う   君    に   甘   え て  い  た
-# tte  ka ra ka  a  te (wa ra) u (ki mi)  ni (a ma) e  te  i  ta 
+# って  か ら か  っ て     笑   う   君     に   甘   え て  い  た
+# tte  ka ra ka~  a  te (wa ra) u (ki mi)  ni (a ma) e  te  i  ta 
 
-#  愛    し て   い る こ  と を  言      葉  以    外 の     方      法  で
-# (a i) shi te. i ru ko. to wo (ko to. ba) (i ga i) no.    (ho u ho u) de. 
+#  愛    し て  い る こ  と を  言      葉  以    外  の      方      法  で
+# (a i) shi te. i ru ko. to wo (ko to. ba) (i ga i). no.    (ho u ho u) de. 
   
-#  今  す ぐ   に     伝     え た い
-# i ma su gu. ni  (tsu ta)  e ta i~
+#  今    す ぐ   に     伝     え た い
+# (i ma) su gu.  ni  (tsu ta)  e ta i~
 
 # 微     笑 ん で  く れ た  顔  も 
 # (ho ho e) n de. ku re ta ka o mo. 
 
-#   怒   った   顔    も    愛    し  く て   仕      方   な  か った よ
-# (o ko) tta (ka  o) mo  (i to) shi  ku te. (shi ka ta)  na. ka tta yo 
+#   怒   った   顔    も    愛    し  く て   仕      方   な  か  った よ
+# (o ko) tta (ka  o) mo  (i to) shi  ku te. (shi ka ta)  na. ka~ tta yo 
 
 # 打 ち 明  け  て く   れ  た   過   去   も   
-# u chi a  ke  te ku. re  ta.  (ka. ko)  mo.  
+# u chi a  ke  te ku.  re  ta.  (ka. ko)  mo.  
 
-# 二      人 が   見 た  青    空   も     忘    れ な い
-# (fu ta ri) ga  mi ta (ao zo ra)  mo/ (wa su) re na i  
+# 二      人  が   見 た   青      空   も     忘   れ な い
+# (fu ta/ ri) ga/  mi ta (a/ o zo ra)  mo/ (wa su) re na i  
 
 
 ###-----------------------3------------------------###
@@ -96,8 +96,8 @@
 #   君    の   事      が  好 き  だ よ　  こ れ か  ら  も  ず  っ  と  
 # (ki mi) no (ko to)/ ga (su ki) da yo.   ko re ka ra/ mo zu   i  to  
  
-#    君   を  抱  き  し  め た い
-# (ki mi) o  (da ki) shi me ta i
+#    君   を  抱   き  し  め た い
+# (ki mi) o  (da/ ki) shi me ta i~
 
-#    君   を    強    く    抱  き   し  め た  い
-# (ki mi) o  (tsu yo) ku.  (da ki) shi  me ta  i
+#    君   を     強    く    抱  き   し  め た  い
+# (ki mi) wo/  (tsu yo) ku.  (da ki) shi  me ta  i
