@@ -62,11 +62,11 @@
 #  今    す ぐ   に     伝     え た い
 # (i ma) su gu.  ni  (tsu ta)  e ta i~
 
-# 微     笑 ん で  く れ た  顔  も 
-# (ho ho e) n de. ku re ta ka o mo. 
+# 微     笑 ん で  く れ  た  顔   も 
+# (ho ho e) n de. ku re/ ta ka/ o mo. 
 
-#   怒   った   顔    も    愛    し  く て   仕      方   な  か  った よ
-# (o ko) tta (ka  o) mo  (i to) shi  ku te. (shi ka ta)  na. ka~ tta yo 
+#   怒    った    顔    も    愛    し  く て  仕      方  な  か った よ
+# (o ko)/ tta (ka/  o) mo/ (i to) shi ku te. (shi ka ta) na. ka tta yo 
 
 # 打 ち 明  け  て く   れ  た   過   去   も   
 # u chi a  ke  te ku.  re  ta.  (ka. ko)  mo.  
