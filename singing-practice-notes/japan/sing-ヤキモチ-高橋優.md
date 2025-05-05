@@ -62,8 +62,8 @@
 #  今    す ぐ   に     伝     え た い
 # (i ma) su gu.  ni  (tsu ta)  e ta i~
 
-# 微     笑 ん で  く れ  た  顔   も 
-# (ho ho e) n de. ku re/ ta ka/ o mo. 
+# 微     笑 ん で  く れ  た    顔   も 
+# (ho ho e) n de. ku re/ ta (ka/ o) mo. 
 
 #   怒    った    顔    も    愛    し  く て  仕      方  な  か った よ
 # (o ko)/ tta (ka/  o) mo/ (i to) shi ku te. (shi ka ta) na. ka tta yo 
@@ -87,8 +87,8 @@
 # (ta i se tsu) na/ ko to. ho do. mi na re ta. (ba sho)/ de (ka ga. ya) ku no ka/ mo shi re na i 
 
 
-# 微     笑 ん で  く れ  た  顔   も 
-# (ho ho e) n de. ku re/ ta ka/ o mo. 
+# 微     笑 ん で  く れ  た    顔   も 
+# (ho ho e) n de. ku re/ ta (ka/ o) mo. 
 
 #   怒    った    顔    も    愛    し  く て  仕      方  な  か った よ
 # (o ko)/ tta (ka/  o) mo/ (i to) shi ku te. (shi ka ta) na. ka tta yo 
@@ -99,5 +99,5 @@
 #    君   を  抱   き  し  め た い
 # (ki mi) o  (da/ ki) shi me ta i~
 
-#    君   を     強    く    抱  き   し  め た  い
+#    君   を     強     く    抱  き   し  め た  い
 # (ki mi) wo/  (tsu yo) ku.  (da ki) shi  me ta  i
