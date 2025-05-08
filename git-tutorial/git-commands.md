@@ -1,6 +1,23 @@
 
-# Common Git CLI Commands
+* --------------------------git-common-instructions-------------------------- *
 
+### List All Branches
+```sh
+git branch
+```
+
+### Pull Changes from Remote Repository
+```sh
+git pull origin <branch_name>
+```
+
+### Fetch and Prune Stale Remote Branches from Origin
+
+```sh
+git fetch --prune origin
+```
+
+* --------------------------git-common-instructions end-------------------------- *
 ## Configuration
 
 ### Set User Name
@@ -64,10 +81,6 @@ git mv <old_name> <new_name>
 
 ## Branching and Merging
 
-### List All Branches
-```sh
-git branch
-```
 
 ### Create a New Branch
 ```sh
@@ -116,10 +129,7 @@ git remote -v
 git push origin <branch_name>
 ```
 
-### Pull Changes from Remote Repository
-```sh
-git pull origin <branch_name>
-```
+
 
 ## Viewing History
 
