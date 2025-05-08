@@ -1,5 +1,5 @@
 
-* --------------------------git-common-instructions-------------------------- *
+## git-common-instructions
 
 ### List All Branches
 ```sh
@@ -17,7 +17,13 @@ git pull origin <branch_name>
 git fetch --prune origin
 ```
 
+### Check Repository Status
+```sh
+git status
+```
+
 * --------------------------git-common-instructions end-------------------------- *
+
 ## Configuration
 
 ### Set User Name
@@ -49,10 +55,7 @@ git clone https://github.com/user/repo.git
 
 ## Basic Commands
 
-### Check Repository Status
-```sh
-git status
-```
+
 
 ### Add Files to Staging Area
 ```sh
