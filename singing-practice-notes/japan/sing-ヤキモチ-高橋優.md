@@ -50,8 +50,8 @@
 #     幸      せ を  い つ  ま で も    忘    れ た  く な い
 # (shi a wa)  se wo. i tsu ma de mo. (wa su) re ta ku na i
 
-# す ぐ に ヤ   キ モ チ   焼 く  こ と も 好 き だ  よ 
-# su gu ni ya. ki mo chi. ya ku ko to mo su ki da yo. 
+# す ぐ に ヤ   キ モ チ   焼 く  こ と  も 好 き だ  よ 
+# su gu ni ya. ki mo chi. ya ku ko to. mo su ki da yo. 
 
 # って  か ら か  っ て     笑   う   君     に   甘   え て  い  た
 # tte  ka ra ka~  a  te (wa ra) u (ki mi)  ni (a ma) e  te  i  ta 
@@ -97,7 +97,7 @@
 # (ki mi) no (ko to)/ ga (su ki) da yo.   ko re ka ra/ mo zu   i  to  
  
 #    君   を  抱   き  し  め た い
-# (ki mi) o  (da/ ki) shi me ta i~
+# (ki mi) wo  (da/ ki) shi me ta i~
 
 #    君   を     強     く    抱  き   し  め た  い
 # (ki mi) wo/  (tsu yo) ku.  (da ki) shi  me ta  i
