@@ -10,6 +10,25 @@ git branch
 ```sh
 git pull origin <branch_name>
 ```
+### Checkout Remote Branch and Create Local Tracking Branch
+
+```sh
+git checkout -b <local_branch_name> origin/<remote_branch_name>
+```
+* `-b`: 建立一個新的本地分支。
+* `feature/PTMA-174`: 新建立的本地分支名稱。
+* `origin/feature/PTMA-174`: 遠端分支名稱，作為基礎。
+* 效果：在本地建立 `feature/PTMA-174` 分支，並讓它追蹤遠端的 `origin/feature/PTMA-174` 分支。
+
+`git checkout` / `git switch` 都會切換分支。
+> ✅ **建立本地分支**來追蹤遠端分支，
+> ❌ **但不切換過去**
+* `git fetch origin`：取得所有遠端更新，不會改變當前分支。
+* `git branch <local_branch> <remote/branch>`：建立本地分支並設定起點，但不會切換。
+```sh
+git fetch origin
+git branch feature/PTMA-174 origin/feature/PTMA-174
+```
 
 ### Fetch and Prune Stale Remote Branches from Origin
 
@@ -21,6 +40,14 @@ git fetch --prune origin
 ```sh
 git status
 ```
+
+### Delete a Branch
+```sh
+git branch -d <branch_name>
+```
+
+
+
 
 * --------------------------git-common-instructions end-------------------------- *
 
@@ -105,10 +132,6 @@ git checkout -b <branch_name>
 git merge <branch_name>
 ```
 
-### Delete a Branch
-```sh
-git branch -d <branch_name>
-```
 
 ## Remote Repositories
 
