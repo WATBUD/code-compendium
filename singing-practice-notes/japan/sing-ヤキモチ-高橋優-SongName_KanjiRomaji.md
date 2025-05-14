@@ -18,13 +18,13 @@
 
 # 自(ji) 分(bu n) 勝(ka) 手(te) な(na) 想(o mo) い(i) が(ga) 残(zan) 酷(ko ku) な(na)
 
-# 言(ko to ba) 葉(ni) に(na) って(tte) 君(ki mi) を(wo) 傷(ki zu tsu) け(ke) て(ta)
+# 言(ko to ba) 葉(ni) に(na) って(tte) 君(ki mi) を(wo) 傷(ki zu tsu) け(ke) て(te) た(ta)
 
-# 一(i i) 緒(sho) に(ni) 居(i) られ(ra re) る(ru) だけ(da ke) で(de)
+# 一(i i) 緒(sho) に(ni) 居(i) られ(ra re) るだ(ru da) けで(ke de)
 
-# 手(te) と(to) 手(te) を(wo) 重(ka sa) ね(ne) 
+# 手と(te to) 手を(te wo) 重(ka sa) ね(ne) 
 
-# 合(a) え(e) る(ru) だけ(da ke) で(de) 良(yo) かった(katta) ね(ne)
+# 合(a) え(e) るだ(ru da) け(ke) で(de) 良(yo) か(ka) った(a~~~ta) ね(ne)
 
 # 大(ta i) 切(se tsu) な(na) 事(ko to) ほど(hodo) 
 
@@ -44,7 +44,9 @@
 
 # 幸(shi a wa) せ(se) を(wo) いつ(i tsu) まで(ma de) も(mo) 忘れ(wa su re) たく(ta ku) ない(na i)
 
-# す(su) ぐ(gu) に(ni) ヤ(ya) キ(ki) モ(mo) チ(chi) 焼(ya) く(ku) こと(ko to) も(mo) 好(su) き(ki) だ(da) よ(yo)
+# す(su) ぐ(gu) に(ni) ヤ(ya) キ(ki) モ(mo) チ(chi) 
+
+# 焼(ya) く(ku) こと(ko to) も(mo) 好(su) き(ki) だ(da) よ(yo)
 
 # って(tte) から(ka ra) か(ka) って(tte) 笑(wa ra) う(u) 君(ki mi) に(ni) 甘(a ma) え(e) て(te) いた(i ta)
 
@@ -60,23 +62,32 @@
 
 # 打(u) ち(chi) 明(a) け(ke) て(te) くれ(ku re) た(ta) 過去(ka ko) も(mo)
 
-# 二(fu ta ri) 人(ga) が(ga) 見(mi) た(ta) 青(a o zo ra) 空(mo) も(mo) 忘れ(wa su re) ない(na i)
+# 二(fu ta ri) 人(ga) が(ga) 見(mi) た(ta) 青空(a o zo ra) も(mo) 忘れ(wa su re) ない(na i)
 
 ###-----------------------3------------------------###
 
-# 一(i i) 緒(sho) に(ni) 居(i) られ(ra re) る(ru) だけ(da ke) で(de)
+# 一(i i) 緒(sho) に(ni) 居(i) られ(ra re) るだ(ru da) けで(ke de)
 
-# 手(te) と(to) 手(te) を(wo) 重(ka sa) ね(ne) 合(a) え(e) る(ru) だけ(da ke) で(de) 良(yo) かった(katta) ね(ne)
+# 手と(te to) 手を(te wo) 重(ka sa) ね(ne) 
 
-# 大(ta i) 切(se tsu) な(na) 事(ko to) ほど(hodo) 見(mi) 慣(na) れ(re) た(ta) 場(ba sho) 所(de) で(de) 輝(ka ga ya) く(ku) の(no) か(ka) も(mo) し(shi) れ(re) ない(na i)
+# 合(a) え(e) るだ(ru da) け(ke) で(de) 良(yo) か(ka) った(a~~~ta) ね(ne)
+
+
+# 大(ta i) 切(se tsu) な(na) 事(ko to) ほど(hodo) 
+
+# 見(mi) 慣(na) れ(re) た(ta) 場所(ba sho) で(de) 輝(ka ga ya) く(ku) の(no) か(ka) 
+
+# も(mo) し(shi) れ(re) ない(na i)
 
 # 微(ho ho e) ん(n) で(de) くれ(ku re) た(ta) 顔(ka o) も(mo)
 
 # 怒(o ko) った(tta) 顔(ka o) も(mo) 愛(i to) しく(shi ku) て(te) 
 
-# 仕方(shi ka ta) な(na)か(ka) った(tta) よ(yo)
+# 仕方(shi ka ta) な(na) か(ka)~ った(tta) よ(yo)
 
-# 君(ki mi) の(no) 事(ko to) が(ga) 好(su) き(ki) だ(da) よ(yo) これ(ko re) から(ka ra) も(mo) ず(zu) っと(tto)
+# 君(ki mi) の(no) 事(ko to) が(ga) 好(su) き(ki) だ(da) よ(yo) 
+
+# これ(ko re) から(ka ra) も(mo) ず(zu) っと(tto)
 
 # 君(ki mi) を(wo) 抱(da) き(ki) し(shi) め(me) たい(ta i)
 
