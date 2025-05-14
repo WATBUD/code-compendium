@@ -1,8 +1,7 @@
 ###-----------------------1------------------------###
 
-君(kimi) が(ga) 前(mae) に(ni) 付き(tsuki) 合(au) って(tte) い(i) た(ta) 人(hito) の(no) こと(koto)
-
-
+#   君    が    前   に  付  き  合  って  い   た    人    の こ と
+# (ki mi) ga. (ma e) ni tsu ki.  a  tte   i.  ta  (hi to) no ko to. 
 
 #   僕    に  打 ち  明 け て  く れ  た と き
 # (bo ku) ni. u chi  a ke te. ku re ta to ki.
@@ -91,14 +90,14 @@
 # 微     笑 ん で  く れ  た    顔   も 
 # (ho ho e) n de. ku re/ ta (ka/ o) mo. 
 
--   怒    った    顔    も    愛    し  く て  仕      方  な  か った よ
+#   怒    った    顔    も    愛    し  く て  仕      方  な  か った よ
 # (o ko)/ tta (ka/  o) mo/ (i to) shi ku te. (shi ka ta) na. ka tta yo 
 
--   君    の    事     が  好 き  だ よ　  こ れ か  ら  も  ず  っ  と  
+#   君    の    事     が  好 き  だ よ　  こ れ か  ら  も  ず  っ  と  
 # (ki mi) no (ko to)/ ga (su ki) da yo.   ko re ka ra/ mo zu   i  to  
  
--    君   を   抱   き  し  め た い
+#    君   を   抱   き  し  め た い
 # (ki mi) wo  (da/ ki) shi me ta i~
 
--    君   を     強    く    抱  き   し  め た  い
+#    君   を     強    く    抱  き   し  め た  い
 # (ki mi) wo/ (tsu yo) ku.  (da ki) shi  me ta  i
