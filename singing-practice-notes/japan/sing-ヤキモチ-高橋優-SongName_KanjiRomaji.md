@@ -8,7 +8,7 @@
 
 # 素(su) 直(na o) に(ni) 聴(ki) い(i) て(te) あ(a) げ(ge) ら(ra) れ(re) ず(zu) に(ni)
 
-# 寂(sa bi) し(shi) い(i) 思(o) い(i) を(o) さ(sa) せ(se) て(te) し(shi) ま(ma) った(tta) ね(ne)
+# 寂(sa bi) し(shi) い(i) 思(o) い(i) を(o) さ(sa) せ(se) て(te) し(shi) ま(ma) った(a ta) ね(ne)
 
 # す(su) ぐ(gu) に(ni) ヤ(ya) キ(ki) モ(mo) チ(chi) 焼(ya) く(ku) の(no) が(ga)
 
