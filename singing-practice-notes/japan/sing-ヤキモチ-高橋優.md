@@ -1,7 +1,8 @@
 ###-----------------------1------------------------###
 
-#   君    が    前   に  付  き  合  って  い   た    人    の こ と
-# (ki mi) ga. (ma e) ni tsu ki.  a  tte   i.  ta  (hi to) no ko to. 
+君(kimi) が(ga) 前(mae) に(ni) 付き(tsuki) 合(au) って(tte) い(i) た(ta) 人(hito) の(no) こと(koto)
+
+
 
 #   僕    に  打 ち  明 け て  く れ  た と き
 # (bo ku) ni. u chi  a ke te. ku re ta to ki.
