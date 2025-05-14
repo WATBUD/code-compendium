@@ -26,7 +26,7 @@
 
 # 合(a) え(e) るだ(ru da) け(ke) で(de) 良(yo) か(ka) った(a~~~ta) ね(ne)
 
-# 大(ta i) 切(se tsu) な(na) 事(ko to) ほど(hodo) 
+# 大(ta i) 切(se tsu) な(na) 事(ko to) ほど(ho do) 
 
 # 見(mi) 慣(na) れ(re) た(ta) 場所(ba sho) で(de) 輝(ka ga ya) く(ku) の(no) か(ka) 
 
@@ -62,7 +62,7 @@
 
 # 打(u) ち(chi) 明(a) け(ke) て(te) くれ(ku re) た(ta) 過去(ka ko) も(mo)
 
-# 二(fu ta ri) 人(ga) が(ga) 見(mi) た(ta) 青空(a o zo ra) も(mo) 忘れ(wa su re) ない(na i)
+# 二人(fu ta ri) が(ga) 見(mi) た(ta) 青空(a o zo ra) も(mo) 忘れ(wa su re) ない(na i)
 
 ###-----------------------3------------------------###
 
@@ -72,8 +72,7 @@
 
 # 合(a) え(e) るだ(ru da) け(ke) で(de) 良(yo) か(ka) った(a~~~ta) ね(ne)
 
-
-# 大(ta i) 切(se tsu) な(na) 事(ko to) ほど(hodo) 
+# 大(ta i) 切(se tsu) な(na) 事(ko to) ほど(ho do) 
 
 # 見(mi) 慣(na) れ(re) た(ta) 場所(ba sho) で(de) 輝(ka ga ya) く(ku) の(no) か(ka) 
 
@@ -87,7 +86,7 @@
 
 # 君(ki mi) の(no) 事(ko to) が(ga) 好(su) き(ki) だ(da) よ(yo) 
 
-# これ(ko re) から(ka ra) も(mo) ず(zu) っと(tto)
+# これ(ko re) から(ka ra) も(mo) ず(zu) っと(u to)
 
 # 君(ki mi) を(wo) 抱(da) き(ki) し(shi) め(me) たい(ta i)
 
