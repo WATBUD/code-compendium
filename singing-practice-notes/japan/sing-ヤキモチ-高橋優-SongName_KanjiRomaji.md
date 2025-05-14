@@ -16,9 +16,9 @@
 
 # 分(wa) か(ka) って(a te) い(i) た(ta) 筈(ha zu) な(na) の(no) に(ni)
 
-# 自(ji) 分(bu n) 勝(ka a) 手(te) な(na) 想(o mo) い(i) が(ga) 残(zan) 酷(ko ku) な(na)
+# 自分(ji bu n) 勝(ka a) 手(te) な(na) 想(o mo) い(i) が(ga) 残(zan) 酷(ko ku) な(na)
 
-# 言(ko to ba) 葉(ni) に(na) って(tte) 君(ki mi) を(wo) 傷(ki zu tsu) け(ke) て(te) た(ta)
+# 言葉(ko to ba) に(ni) な(na) って(tte) 君(ki mi) を(wo) 傷(ki zu tsu) け(ke) て(te) た(ta)
 
 # 一(i i) 緒(sho) に(ni) 居(i) られ(ra re) るだ(ru da) けで(ke de)
 
@@ -36,9 +36,9 @@
 
 ###-----------------------2------------------------###
 
-# 自(ji) 分(bu n) の(no) ため(ta me) だけ(da ke) に(ni) 生(i) き(ki) て(te) いる(i ru) 人(hi to) が(ga)
+# 自分(ji bu n) の(no) ため(ta me) だけ(da ke) に(ni) 生(i) き(ki) て(te) いる(i ru) 人(hi to) が(ga)
 
-# 集(a tsu me) め(ra re) られ(ra re) た(ta) よう(yo u) な(na) この(ko no) 街(ma chi) で(de)
+# 集め(a tsu me) ら(ra) れ(re) た(ta) よう(yo u) な(na) この(ko no) 街(ma chi) で(de)
 
 # 誰(da re) か(ka) を(wo) 心(ko ko ro) から(ka ra) 想(o mo) える(e ru)
 
@@ -48,9 +48,9 @@
 
 # 焼(ya) く(ku) こと(ko to) も(mo) 好(su) き(ki) だ(da) よ(yo)
 
-# って(tte) から(ka ra) か(ka) って(tte) 笑(wa ra) う(u) 君(ki mi) に(ni) 甘(a ma) え(e) て(te) いた(i ta)
+# って(tte) から(ka ra) か(ka) って(a te) 笑(wa ra) う(u) 君(ki mi) に(ni) 甘(a ma) え(e) て(te) いた(i ta)
 
-# 愛(a i) し(shi) て(te) いる(i ru) こと(ko to) を(wo) 言(ko to ba) 葉(i ga i) 以外(i ga i) の(no) 方法(ho u ho u) で(de)
+# 愛(a i) し(shi) て(te) い(i) る(ru) こ(ko) と(to) を(wo) 言葉(ko to ba) 以外(i ga i) の(no) 方法(ho u ho u) で(de)
 
 # 今(i ma) すぐ(su gu) に(ni) 伝え(tsu ta e) たい(ta i)
 
@@ -58,7 +58,7 @@
 
 # 怒(o ko) った(tta) 顔(ka o) も(mo) 愛(i to) しく(shi ku) て(te) 
 
-# 仕方(shi ka ta) な(na)か(ka) った(tta) よ(yo)
+# 仕方(shi ka ta) な(na) か(ka) った(tta) よ(yo)
 
 # 打(u) ち(chi) 明(a) け(ke) て(te) くれ(ku re) た(ta) 過去(ka ko) も(mo)
 
