@@ -86,7 +86,7 @@
 
 # 君(ki mi) の(no) 事(ko to) が(ga) 好(su) き(ki) だ(da) よ(yo) 
 
-# これ(ko re) から(ka ra) も(mo) ず(zu) っと(u to)
+# こ(ko) れ(re) か(ka) ら(ra) も(mo) ず(zu) っと(u to)
 
 # 君(ki mi) を(wo) 抱(da) き(ki) し(shi) め(me) たい(ta i)
 
