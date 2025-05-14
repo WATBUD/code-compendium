@@ -38,8 +38,8 @@
  
 ###-----------------------2------------------------###
 
-# 自     分   の  た め だ け  に  生 き  て い る    人    が　   
-# (ji bu n).  no. ta me da ke. ni (i ki). te i ru (hi to) ga.
+# 自     分   の  た め だ け   に  生 き   て い る    人    が　   
+# (ji bu n).  no. ta me da ke. ni (i ki). te i ru (hi to)  ga.
 
 #   集   め  ら れ  た  よう な  こ  の   街     で
 # (a tsu me) ra re ta  you  na. ko no (ma chi) de 
@@ -90,14 +90,14 @@
 # 微     笑 ん で  く れ  た    顔   も 
 # (ho ho e) n de. ku re/ ta (ka/ o) mo. 
 
-#   怒    った    顔    も    愛    し  く て  仕      方  な  か った よ
+-   怒    った    顔    も    愛    し  く て  仕      方  な  か った よ
 # (o ko)/ tta (ka/  o) mo/ (i to) shi ku te. (shi ka ta) na. ka tta yo 
 
-#   君    の   事      が  好 き  だ よ　  こ れ か  ら  も  ず  っ  と  
+-   君    の    事     が  好 き  だ よ　  こ れ か  ら  も  ず  っ  と  
 # (ki mi) no (ko to)/ ga (su ki) da yo.   ko re ka ra/ mo zu   i  to  
  
-#    君   を  抱   き  し  め た い
+-    君   を   抱   き  し  め た い
 # (ki mi) wo  (da/ ki) shi me ta i~
 
-#    君   を     強     く    抱  き   し  め た  い
-# (ki mi) wo/  (tsu yo) ku.  (da ki) shi  me ta  i
+-    君   を     強    く    抱  き   し  め た  い
+# (ki mi) wo/ (tsu yo) ku.  (da ki) shi  me ta  i
