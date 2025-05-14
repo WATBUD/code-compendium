@@ -14,9 +14,9 @@
 
 # 僕(bo ku) の(no) 悪(wa ru) い(i) 癖(ku se) だ(da) って(tte) 
 
-# 分(wa) か(ka) って(tte) い(i) た(ta) 筈(ha zu) な(na) の(no) に(ni)
+# 分(wa) か(ka) って(a te) い(i) た(ta) 筈(ha zu) な(na) の(no) に(ni)
 
-# 自(ji) 分(bu n) 勝(ka) 手(te) な(na) 想(o mo) い(i) が(ga) 残(zan) 酷(ko ku) な(na)
+# 自(ji) 分(bu n) 勝(ka a) 手(te) な(na) 想(o mo) い(i) が(ga) 残(zan) 酷(ko ku) な(na)
 
 # 言(ko to ba) 葉(ni) に(na) って(tte) 君(ki mi) を(wo) 傷(ki zu tsu) け(ke) て(te) た(ta)
 
