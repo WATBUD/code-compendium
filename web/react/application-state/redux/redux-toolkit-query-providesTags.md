@@ -1,74 +1,108 @@
-`providesTags` 是 **RTK Query（Redux Toolkit Query）** 中的一個重要功能，用於實現 **快取管理（cache management）與自動重新請求（refetch）**。
+以下是使用 Redux Toolkit Query（RTK Query）建立的 **3 個常見 API 範例**，包含：
+
+1. 取得用戶列表（`getUsers`）
+2. 新增用戶（`createUser`）
+3. 刪除用戶（`deleteUser`）
+
+這些 API 會搭配 `providesTags` 與 `invalidatesTags` 來實現自動快取失效與重新載入資料。
 
 ---
 
-### 📌 它的作用是什麼？
-
-`providesTags` 告訴 RTK Query：
-
-> 「這個 query 提供了哪些 tag，這樣當其他 mutation `invalidatesTags` 這些 tag 時，RTK Query 就會知道該重新 fetch 這個 query。」
-
----
-
-### 🔄 常見用途範例：
+## 🧩 1. 建立 API Slice
 
 ```ts
-// 假設你有一個 API 查詢帳戶資料
-getAccounts: builder.query<Account[], void>({
-  query: () => '/accounts',
-  providesTags: ['Account'], // 告訴 RTK Query：這個 query 提供 'Account' 的資料
-})
+// services/userApi.ts
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+
+export const userApi = createApi({
+  reducerPath: 'userApi',
+  baseQuery: fetchBaseQuery({ baseUrl: '/api' }),
+  tagTypes: ['User'], // ⭐️ 定義可使用的快取標籤
+  endpoints: (builder) => ({
 ```
 
-然後你有一個 mutation 可以新增帳戶：
+---
+
+## 📘 API 1：取得用戶列表
 
 ```ts
-createAccount: builder.mutation<Account, NewAccount>({
-  query: (newAccount) => ({
-    url: '/accounts',
-    method: 'POST',
-    body: newAccount,
+    getUsers: builder.query<User[], void>({
+      query: () => '/users',
+      providesTags: ['User'], // ⭐️ 表示這個 query 提供了 'User' 資料
+    }),
+```
+
+---
+
+## 📗 API 2：新增用戶
+
+```ts
+    createUser: builder.mutation<User, Partial<User>>({
+      query: (newUser) => ({
+        url: '/users',
+        method: 'POST',
+        body: newUser,
+      }),
+      invalidatesTags: ['User'], // ⭐️ 執行後讓 getUsers 快取失效，自動 refetch
+    }),
+```
+
+---
+
+## 📕 API 3：刪除用戶
+
+```ts
+    deleteUser: builder.mutation<{ success: boolean; id: string }, string>({
+      query: (id) => ({
+        url: `/users/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['User'], // ⭐️ 同樣讓 getUsers 被自動重新抓取
+    }),
   }),
-  invalidatesTags: ['Account'], // 當執行這個 mutation 後，會標記 'Account' 這個 tag 為失效
-})
-```
+});
 
-這樣做的效果是：
-✅ RTK Query 會自動重新執行 `getAccounts`，因為它的快取被 `createAccount` 的 `invalidatesTags` 失效了。
-
----
-
-### 🧠 額外補充：動態 `providesTags`
-
-你也可以根據回傳的資料動態生成 tag：
-
-```ts
-getPost: builder.query<Post, number>({
-  query: (id) => `/post/${id}`,
-  providesTags: (result, error, id) => [{ type: 'Post', id }],
-})
-```
-
-對應的 mutation：
-
-```ts
-updatePost: builder.mutation<Post, Post>({
-  query: (post) => ({
-    url: `/post/${post.id}`,
-    method: 'PUT',
-    body: post,
-  }),
-  invalidatesTags: (result, error, post) => [{ type: 'Post', id: post.id }],
-})
+export const {
+  useGetUsersQuery,
+  useCreateUserMutation,
+  useDeleteUserMutation,
+} = userApi;
 ```
 
 ---
 
-### ✅ 總結
+## 🧪 使用範例（React 元件中）
 
-| 名稱                | 功能說明                                      |
-| ----------------- | ----------------------------------------- |
-| `providesTags`    | 指出此 query 提供哪些 tag，方便快取追蹤與重新請求            |
-| `invalidatesTags` | 指出此 mutation 執行後會失效哪些 tag，讓相關 query 被自動刷新 |
+```tsx
+import React from 'react';
+import {
+  useGetUsersQuery,
+  useCreateUserMutation,
+  useDeleteUserMutation,
+} from './services/userApi';
 
-這是 RTK Query 的 **自動快取失效機制（auto cache invalidation）** 的關鍵組件。
+const UserList = () => {
+  const { data: users, isLoading } = useGetUsersQuery();
+  const [createUser] = useCreateUserMutation();
+  const [deleteUser] = useDeleteUserMutation();
+
+  if (isLoading) return <div>Loading...</div>;
+
+  return (
+    <div>
+      <button onClick={() => createUser({ name: 'New User' })}>新增用戶</button>
+      <ul>
+        {users?.map((user) => (
+          <li key={user.id}>
+            {user.name}
+            <button onClick={() => deleteUser(user.id)}>刪除</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+```
+
+---
+
