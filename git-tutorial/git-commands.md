@@ -46,8 +46,8 @@ git status
 git branch -d <branch_name>
 ```
 
-
-
+### Use the following command to filter Git tags by a specific keyword.
+git tag -l "*4.0.0*"
 
 * --------------------------git-common-instructions end-------------------------- *
 
