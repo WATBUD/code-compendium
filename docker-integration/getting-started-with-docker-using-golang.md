@@ -4,7 +4,7 @@
 1. Create Dockerfile in command prompt
 echo. > Dockerfile
 # option:
-- A: Use docker-compose directly
+- A: Use docker-compose directlypgo
 docker-compose up -d
 docker-compose -p golang-container-group up -d
 - B: Use Dockerfile Cli
