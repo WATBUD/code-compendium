@@ -65,16 +65,52 @@ app.get('/', (req, res) => {
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
   body { font-family: Arial, sans-serif; margin: 20px; }
-  #file-list { float: left; width: 25%; max-height: 90vh; overflow-y: auto; border-right: 1px solid #ccc; padding-right: 10px; }
-  #md-content { margin-left: 28%; padding-left: 20px; max-width: 70%; }
-  a { cursor: pointer; color: blue; text-decoration: underline; display: block; margin-bottom: 5px; }
+  #file-list-container {
+    float: left;
+    width: 25%;
+    max-height: 90vh;
+    border-right: 1px solid #ccc;
+    padding-right: 10px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+  }
+  #search {
+    width: 100%;
+    padding: 6px 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+  }
+  #file-list {
+    flex: 1 1 auto; /* 讓檔案列表撐滿剩餘空間 */
+    overflow-y: auto;
+  }
+  a {
+    cursor: pointer;
+    color: blue;
+    text-decoration: underline;
+    display: block;
+    margin-bottom: 5px;
+  }
+  #md-content {
+    margin-left: 28%;
+    padding-left: 20px;
+    max-width: 70%;
+  }
 </style>
 </head>
 <body>
 
 <h1>Markdown 檔案列表</h1>
-<div id="file-list">
-  載入中...
+
+<div id="file-list-container">
+  <input type="text" id="search" placeholder="搜尋檔案名稱..." />
+  <div id="file-list">
+    載入中...
+  </div>
 </div>
 
 <div id="md-content">
@@ -82,11 +118,21 @@ app.get('/', (req, res) => {
 </div>
 
 <script>
+  let allFiles = [];
+
   async function loadFileList() {
     const res = await fetch('/api/files');
-    const files = await res.json();
+    allFiles = await res.json();
+    renderFileList(allFiles);
+  }
+
+  function renderFileList(files) {
     const container = document.getElementById('file-list');
     container.innerHTML = '';
+    if(files.length === 0) {
+      container.textContent = '找不到檔案';
+      return;
+    }
     files.forEach(f => {
       const a = document.createElement('a');
       a.textContent = f;
@@ -97,6 +143,11 @@ app.get('/', (req, res) => {
       };
       container.appendChild(a);
     });
+  }
+
+  function filterFiles(keyword) {
+    const filtered = allFiles.filter(f => f.toLowerCase().includes(keyword.toLowerCase()));
+    renderFileList(filtered);
   }
 
   async function loadMd(filePath) {
@@ -111,6 +162,11 @@ app.get('/', (req, res) => {
 
   window.onload = () => {
     loadFileList();
+
+    const searchInput = document.getElementById('search');
+    searchInput.addEventListener('input', (e) => {
+      filterFiles(e.target.value);
+    });
   }
 </script>
 
@@ -118,6 +174,7 @@ app.get('/', (req, res) => {
 </html>
   `);
 });
+
 
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
