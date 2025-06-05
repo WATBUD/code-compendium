@@ -1,11 +1,3 @@
-import * as readline from 'readline';
-
-// 創建 Readline 介面
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
-
 // 判斷是否為質數的函數
 function isPrime(num: number): boolean {
     if (num < 2) {
@@ -30,23 +22,9 @@ function find_primes(start: number, end: number): number[] {
     return primes;
 }
 
-// 讀取 start 值
-rl.question('Enter start: ', (startInput) => {
-    const start = parseInt(startInput, 10);
-
-    // 讀取 end 值
-    rl.question('Enter end: ', (endInput) => {
-        const end = parseInt(endInput, 10);
-
-        // 找出質數
-        const primeNumbers = find_primes(start, end);
-
-        // 輸出結果
-        console.log(primeNumbers.length);
-        console.log(primeNumbers.join(' '));
-
-        // 關閉 readline
-        rl.close();
-    });
-});
-```
+// 示例使用
+const start = 1;
+const end = 100;
+const primeNumbers = find_primes(start, end);
+console.log(`Found ${primeNumbers.length} prime numbers between ${start} and ${end}`);
+console.log(primeNumbers.join(' '));
