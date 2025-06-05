@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const baseDir = path.join(__dirname, '..');
+const baseDir = path.join(__dirname, '..', 'public');
 
 console.log('API files.js loaded');
 console.log('Current directory:', __dirname);
@@ -19,11 +19,9 @@ function getFiles(dir, prefix = '') {
     
     for (const file of list) {
       if (file.isDirectory()) {
-        if (!['node_modules', '.git', '.vercel'].includes(file.name)) {
-          const subDir = path.join(dir, file.name);
-          console.log('Entering subdirectory:', subDir);
-          results = results.concat(getFiles(subDir, path.join(prefix, file.name)));
-        }
+        const subDir = path.join(dir, file.name);
+        console.log('Entering subdirectory:', subDir);
+        results = results.concat(getFiles(subDir, path.join(prefix, file.name)));
       } else if (file.name.endsWith('.md')) {
         const filePath = path.join(prefix, file.name).replace(/\\/g, '/');
         console.log('Found markdown file:', filePath);

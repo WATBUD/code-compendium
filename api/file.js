@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const baseDir = path.join(__dirname, '..');
+const baseDir = path.join(__dirname, '..', 'public');
 
 export default function handler(req, res) {
   const { path: filePath } = req.query;
@@ -13,7 +13,7 @@ export default function handler(req, res) {
     return res.status(400).json({ error: 'Missing path parameter' });
   }
 
-  // Ensure the path is safe and within the project directory
+  // Ensure the path is safe and within the public directory
   const safePath = path.normalize(filePath).replace(/^(\.\.(\/|\\|$))+/, '');
   const fullPath = path.join(baseDir, safePath);
 
