@@ -41,6 +41,10 @@
     padding-left: 20px;
     max-width: 70%;
   }
+  .error {
+    color: red;
+    margin: 10px 0;
+  }
 </style>
 </head>
 <body>
@@ -62,9 +66,21 @@
   let allFiles = [];
 
   async function loadFileList() {
-    const res = await fetch('/api/files');
-    allFiles = await res.json();
-    renderFileList(allFiles);
+    try {
+      console.log('Fetching file list...');
+      const res = await fetch('/api/files');
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      const data = await res.json();
+      console.log('Received files:', data);
+      allFiles = data;
+      renderFileList(allFiles);
+    } catch (error) {
+      console.error('Error loading file list:', error);
+      document.getElementById('file-list').innerHTML = 
+        `<div class="error">載入失敗: ${error.message}</div>`;
+    }
   }
 
   function renderFileList(files) {
@@ -92,16 +108,24 @@
   }
 
   async function loadMd(filePath) {
-    const res = await fetch('/api/file?path=' + encodeURIComponent(filePath));
-    if (!res.ok) {
-      document.getElementById('md-content').innerHTML = '<p style="color:red">讀取失敗: ' + res.status + '</p>';
-      return;
+    try {
+      console.log('Loading markdown:', filePath);
+      const res = await fetch('/api/file?path=' + encodeURIComponent(filePath));
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      const text = await res.text();
+      console.log('Received markdown content');
+      document.getElementById('md-content').innerHTML = marked.parse(text);
+    } catch (error) {
+      console.error('Error loading markdown:', error);
+      document.getElementById('md-content').innerHTML = 
+        `<div class="error">讀取失敗: ${error.message}</div>`;
     }
-    const text = await res.text();
-    document.getElementById('md-content').innerHTML = marked.parse(text);
   }
 
   window.onload = () => {
+    console.log('Page loaded, initializing...');
     loadFileList();
 
     const searchInput = document.getElementById('search');
