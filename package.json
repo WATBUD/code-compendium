@@ -1,5 +1,8 @@
 {
+  "name": "markdown-viewer",
+  "version": "1.0.0",
+  "type": "module",
   "dependencies": {
-    "express": "^5.1.0"
+    "marked": "^12.0.0"
   }
 }
