@@ -1,8 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fafafa;
+  --foreground: #2c3e50;
+  --primary: #3498db;
+  --secondary: #95a5a6;
+  --accent: #e67e22;
+  --code-bg: #f5f6fa;
+  --border: #e0e0e0;
+  --hover: #f0f2f5;
 }
 
 @theme inline {
@@ -12,17 +18,11 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.6;
 }
 
 @tailwind base;
@@ -31,13 +31,8 @@ body {
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 0 0% 98%;
+    --foreground: 210 29% 24%;
   }
 }
 
@@ -53,27 +48,27 @@ body {
 }
 
 .prose h1 {
-  @apply text-4xl font-bold mb-4 text-gray-900 dark:text-gray-100;
+  @apply text-4xl font-bold mb-4 text-[#2c3e50];
 }
 
 .prose h2 {
-  @apply text-3xl font-bold mb-3 text-gray-800 dark:text-gray-200;
+  @apply text-3xl font-bold mb-3 text-[#2c3e50];
 }
 
 .prose h3 {
-  @apply text-2xl font-bold mb-2 text-gray-700 dark:text-gray-300;
+  @apply text-2xl font-bold mb-2 text-[#2c3e50];
 }
 
 .prose p {
-  @apply my-4 leading-7 text-gray-700 dark:text-gray-300;
+  @apply my-4 leading-7 text-[#34495e];
 }
 
 .prose ul {
-  @apply list-disc pl-6 my-4 text-gray-700 dark:text-gray-300;
+  @apply list-disc pl-6 my-4 text-[#34495e];
 }
 
 .prose ol {
-  @apply list-decimal pl-6 my-4 text-gray-700 dark:text-gray-300;
+  @apply list-decimal pl-6 my-4 text-[#34495e];
 }
 
 .prose li {
@@ -81,23 +76,23 @@ body {
 }
 
 .prose blockquote {
-  @apply border-l-4 border-gray-300 pl-4 italic my-4 text-gray-600 dark:text-gray-400;
+  @apply border-l-4 border-[#3498db] pl-4 italic my-4 text-[#7f8c8d];
 }
 
 .prose code {
-  @apply bg-gray-100 dark:bg-gray-800 rounded px-1 py-0.5 text-sm text-gray-900 dark:text-gray-100;
+  @apply bg-[#f5f6fa] rounded px-1 py-0.5 text-sm text-[#e67e22];
 }
 
 .prose pre {
-  @apply bg-gray-900 text-gray-100 p-4 rounded-lg my-4 overflow-x-auto;
+  @apply bg-[#f5f6fa] text-[#2c3e50] p-4 rounded-lg my-4 overflow-x-auto;
 }
 
 .prose pre code {
-  @apply bg-transparent text-gray-100 p-0 text-sm;
+  @apply bg-transparent text-[#2c3e50] p-0 text-sm;
 }
 
 .prose a {
-  @apply text-blue-600 dark:text-blue-400 no-underline hover:underline;
+  @apply text-[#3498db] no-underline hover:underline;
 }
 
 .prose img {
@@ -105,22 +100,41 @@ body {
 }
 
 .prose table {
-  @apply w-full my-4 border-collapse border border-solid border-gray-300 dark:border-gray-700;
+  @apply w-full my-4 border-collapse border border-solid border-[#e0e0e0];
 }
 
 .prose th,
 .prose td {
-  @apply px-4 py-2 border border-solid border-gray-300 dark:border-gray-700;
+  @apply px-4 py-2 border border-solid border-[#e0e0e0];
 }
 
 .prose th {
-  @apply bg-gray-100 dark:bg-gray-800 font-semibold text-left;
+  @apply bg-[#f5f6fa] font-semibold text-left text-[#2c3e50];
 }
 
 .prose tbody tr:nth-child(even) {
-  @apply bg-gray-50 dark:bg-gray-900;
+  @apply bg-[#f5f6fa];
 }
 
 .prose tbody tr:hover {
-  @apply bg-gray-100 dark:bg-gray-800;
+  @apply bg-[#f0f2f5];
+}
+
+/* 自定义滚动条样式 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f5f6fa;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #95a5a6;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #7f8c8d;
 }
