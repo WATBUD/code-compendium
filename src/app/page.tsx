@@ -3,6 +3,7 @@ import React, { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
+import type { Components } from 'react-markdown';
 
 const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: false });
 
@@ -176,11 +177,52 @@ function HomeContent() {
       </aside>
       <main className="flex-1 p-4 overflow-auto md:mt-0 mt-12">
         {md ? (
-          <article className="prose max-w-none">
-            <ReactMarkdown>{md}</ReactMarkdown>
+          <article className="prose prose-slate max-w-none dark:prose-invert prose-headings:font-bold prose-headings:tracking-tight prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg prose-pre:bg-gray-900 prose-pre:text-gray-100">
+            <ReactMarkdown
+              components={{
+                h1: ({children}) => <h1 className="text-4xl font-bold mb-4">{children}</h1>,
+                h2: ({children}) => <h2 className="text-3xl font-bold mb-3">{children}</h2>,
+                h3: ({children}) => <h3 className="text-2xl font-bold mb-2">{children}</h3>,
+                p: ({children}) => <p className="my-4 leading-7">{children}</p>,
+                ul: ({children}) => <ul className="list-disc pl-6 my-4">{children}</ul>,
+                ol: ({children}) => <ol className="list-decimal pl-6 my-4">{children}</ol>,
+                li: ({children}) => <li className="my-1">{children}</li>,
+                blockquote: ({children}) => (
+                  <blockquote className="border-l-4 border-gray-300 pl-4 italic my-4">{children}</blockquote>
+                ),
+                code: ({node, className, children, ...props}) => {
+                  const match = /language-(\w+)/.exec(className || '');
+                  return !match ? (
+                    <code className="bg-gray-100 rounded px-1 py-0.5 text-sm" {...props}>
+                      {children}
+                    </code>
+                  ) : (
+                    <code className="block bg-gray-900 text-gray-100 p-4 rounded-lg my-4 overflow-x-auto" {...props}>
+                      {children}
+                    </code>
+                  );
+                },
+                pre: ({children}) => (
+                  <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg my-4 overflow-x-auto">{children}</pre>
+                ),
+                table: ({children}) => (
+                  <div className="overflow-x-auto my-4">
+                    <table className="min-w-full divide-y divide-gray-300">{children}</table>
+                  </div>
+                ),
+                th: ({children}) => (
+                  <th className="px-4 py-2 bg-gray-100 font-semibold text-left">{children}</th>
+                ),
+                td: ({children}) => (
+                  <td className="px-4 py-2 border-t">{children}</td>
+                ),
+              }}
+            >
+              {md}
+            </ReactMarkdown>
           </article>
         ) : (
-          <div className="text-gray-400">請點選左側檔案以顯示內容</div>
+          <div className="text-gray-400 text-center mt-8">請點選左側檔案以顯示內容</div>
         )}
       </main>
     </div>
