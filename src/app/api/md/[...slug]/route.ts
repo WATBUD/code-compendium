@@ -1,10 +1,13 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 
 const CONTENT_DIR = path.join(process.cwd(), 'content');
 
-export async function GET(req: Request, { params }: { params: { slug: string[] } }) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { slug: string[] } }
+) {
   const slug = params.slug || [];
   const filePath = path.join(CONTENT_DIR, ...slug);
   if (!filePath.endsWith('.md')) {
