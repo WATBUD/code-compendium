@@ -150,32 +150,36 @@ function HomeContent() {
           </svg>
         </button>
       </div>
-      <aside className={`md:w-1/4 border-r p-4 bg-gray-50 ${showPopup ? "block" : "hidden md:block"} md:mt-0 mt-12`}>
-        <input
-          className="w-full mb-2 p-2 border rounded"
-          placeholder="搜尋檔名..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        {search ? (
-          <ul>
-            {filtered.map((node) => (
-              <li key={node.fullPath}>
-                <Link
-                  href={`/?file=${encodeURIComponent(node.path)}`}
-                  className={`text-blue-600 underline hover:text-blue-800 ${selected === node.path ? "font-bold" : ""}`}
-                  onClick={() => setShowPopup(false)}
-                >
-                  {node.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          renderTree(tree)
-        )}
+      <aside className={`md:w-1/4 border-r bg-gray-50 ${showPopup ? "block" : "hidden md:block"} md:mt-0 mt-12 h-[calc(100vh-3rem)] md:h-screen overflow-y-auto`}>
+        <div className="p-4 sticky top-0 bg-gray-50 z-10 border-b">
+          <input
+            className="w-full p-2 border rounded"
+            placeholder="搜尋檔名..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+        <div className="p-4">
+          {search ? (
+            <ul>
+              {filtered.map((node) => (
+                <li key={node.fullPath}>
+                  <Link
+                    href={`/?file=${encodeURIComponent(node.path)}`}
+                    className={`text-blue-600 underline hover:text-blue-800 ${selected === node.path ? "font-bold" : ""}`}
+                    onClick={() => setShowPopup(false)}
+                  >
+                    {node.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            renderTree(tree)
+          )}
+        </div>
       </aside>
-      <main className="flex-1 p-4 overflow-auto md:mt-0 mt-12">
+      <main className="flex-1 p-4 overflow-y-auto md:mt-0 mt-12 h-[calc(100vh-3rem)] md:h-screen">
         {md ? (
           <article className="prose prose-slate max-w-none dark:prose-invert prose-headings:font-bold prose-headings:tracking-tight prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg prose-pre:bg-gray-900 prose-pre:text-gray-100">
             <ReactMarkdown
