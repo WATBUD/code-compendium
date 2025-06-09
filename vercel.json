@@ -1,8 +1,9 @@
 {
   "version": 2,
-  "routes": [
-    { "src": "/api/files", "dest": "/api/files.js" },
-    { "src": "/api/file", "dest": "/api/file.js" },
-    { "src": "/(.*)", "dest": "/public/$1" }
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
   ]
 } 
