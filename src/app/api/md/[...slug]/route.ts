@@ -8,15 +8,18 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { slug: string[] } }
 ) {
-  const slug = params.slug || [];
+  const resolvedParams = await Promise.resolve(params);
+  const slug = resolvedParams.slug || [];
   const filePath = path.join(CONTENT_DIR, ...slug);
+  
   if (!filePath.endsWith('.md')) {
     return NextResponse.json({ error: 'Only markdown files allowed' }, { status: 400 });
   }
+
   try {
     const content = fs.readFileSync(filePath, 'utf-8');
     return NextResponse.json({ content });
-  } catch (e) {
+  } catch (_) {
     return NextResponse.json({ error: 'File not found' }, { status: 404 });
   }
 } 

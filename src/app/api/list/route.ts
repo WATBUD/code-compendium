@@ -4,7 +4,22 @@ import path from 'path';
 
 const CONTENT_DIR = path.join(process.cwd(), 'content');
 
-function walk(dir: string): any {
+type FileNode = {
+  type: 'file';
+  name: string;
+  path: string;
+}
+
+type FolderNode = {
+  type: 'folder';
+  name: string;
+  path: string;
+  children: (FileNode | FolderNode)[];
+}
+
+type FileTree = (FileNode | FolderNode)[];
+
+function walk(dir: string): FileTree {
   const files = fs.readdirSync(dir);
   return files.map((name) => {
     const fullPath = path.join(dir, name);

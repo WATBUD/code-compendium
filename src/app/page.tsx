@@ -1,13 +1,30 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 
 const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: false });
 
-function flattenTree(tree: any[], prefix = ""): any[] {
-  let result: any[] = [];
+type FileNode = {
+  type: 'file';
+  name: string;
+  path: string;
+  fullPath?: string;
+}
+
+type FolderNode = {
+  type: 'folder';
+  name: string;
+  path: string;
+  fullPath?: string;
+  children: (FileNode | FolderNode)[];
+}
+
+type TreeNode = FileNode | FolderNode;
+
+function flattenTree(tree: TreeNode[], prefix = ""): TreeNode[] {
+  let result: TreeNode[] = [];
   for (const node of tree) {
     if (node.type === "file") {
       result.push({ ...node, fullPath: prefix + node.path });
@@ -19,14 +36,14 @@ function flattenTree(tree: any[], prefix = ""): any[] {
   return result;
 }
 
-export default function Home() {
+function HomeContent() {
   const searchParams = useSearchParams();
   const fileParam = searchParams.get("file");
-  const [tree, setTree] = useState<any[]>([]);
+  const [tree, setTree] = useState<TreeNode[]>([]);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<string>(fileParam || "");
   const [md, setMd] = useState<string>("");
-  const [flat, setFlat] = useState<any[]>([]);
+  const [flat, setFlat] = useState<TreeNode[]>([]);
   const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
@@ -52,10 +69,10 @@ export default function Home() {
     }
   }, [fileParam]);
 
-  function renderTree(nodes: any[]) {
+  function renderTree(nodes: TreeNode[]) {
     return (
       <ul className="pl-4">
-        {nodes.map((node: any) => (
+        {nodes.map((node) => (
           <li key={node.fullPath || node.path}>
             {node.type === "file" ? (
               <Link
@@ -140,5 +157,13 @@ export default function Home() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <HomeContent />
+    </Suspense>
   );
 }
