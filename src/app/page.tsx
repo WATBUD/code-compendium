@@ -4,6 +4,9 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import type { Components } from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
+import rehypeHighlight from 'rehype-highlight';
 
 const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: false });
 
@@ -183,16 +186,18 @@ function HomeContent() {
         {md ? (
           <article className="prose prose-slate max-w-none dark:prose-invert prose-headings:font-bold prose-headings:tracking-tight prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg prose-pre:bg-gray-900 prose-pre:text-gray-100">
             <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeRaw, rehypeHighlight]}
               components={{
-                h1: ({children}) => <h1 className="text-4xl font-bold mb-4">{children}</h1>,
-                h2: ({children}) => <h2 className="text-3xl font-bold mb-3">{children}</h2>,
-                h3: ({children}) => <h3 className="text-2xl font-bold mb-2">{children}</h3>,
-                p: ({children}) => <p className="my-4 leading-7">{children}</p>,
-                ul: ({children}) => <ul className="list-disc pl-6 my-4">{children}</ul>,
-                ol: ({children}) => <ol className="list-decimal pl-6 my-4">{children}</ol>,
-                li: ({children}) => <li className="my-1">{children}</li>,
-                blockquote: ({children}) => (
-                  <blockquote className="border-l-4 border-gray-300 pl-4 italic my-4">{children}</blockquote>
+                h1: ({node, ...props}) => <h1 className="text-4xl font-bold mb-4" {...props} />,
+                h2: ({node, ...props}) => <h2 className="text-3xl font-bold mb-3" {...props} />,
+                h3: ({node, ...props}) => <h3 className="text-2xl font-bold mb-2" {...props} />,
+                p: ({node, ...props}) => <p className="my-4 leading-7" {...props} />,
+                ul: ({node, ...props}) => <ul className="list-disc pl-6 my-4" {...props} />,
+                ol: ({node, ...props}) => <ol className="list-decimal pl-6 my-4" {...props} />,
+                li: ({node, ...props}) => <li className="my-1" {...props} />,
+                blockquote: ({node, ...props}) => (
+                  <blockquote className="border-l-4 border-gray-300 pl-4 italic my-4" {...props} />
                 ),
                 code: ({node, className, children, ...props}) => {
                   const match = /language-(\w+)/.exec(className || '');
@@ -206,19 +211,19 @@ function HomeContent() {
                     </code>
                   );
                 },
-                pre: ({children}) => (
-                  <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg my-4 overflow-x-auto">{children}</pre>
+                pre: ({node, ...props}) => (
+                  <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg my-4 overflow-x-auto" {...props} />
                 ),
-                table: ({children}) => (
+                table: ({node, ...props}) => (
                   <div className="overflow-x-auto my-4">
-                    <table className="min-w-full divide-y divide-gray-300">{children}</table>
+                    <table className="min-w-full divide-y divide-gray-300" {...props} />
                   </div>
                 ),
-                th: ({children}) => (
-                  <th className="px-4 py-2 bg-gray-100 font-semibold text-left">{children}</th>
+                th: ({node, ...props}) => (
+                  <th className="px-4 py-2 bg-gray-100 font-semibold text-left" {...props} />
                 ),
-                td: ({children}) => (
-                  <td className="px-4 py-2 border-t">{children}</td>
+                td: ({node, ...props}) => (
+                  <td className="px-4 py-2 border-t" {...props} />
                 ),
               }}
             >
