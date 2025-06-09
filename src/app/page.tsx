@@ -7,6 +7,8 @@ import type { Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import rehypeHighlight from 'rehype-highlight';
+import { FaFolder, FaFileAlt, FaJs, FaPython, FaDocker, FaGitAlt, FaLinux, FaDatabase, FaCodeBranch, FaCloud, FaCogs, FaProjectDiagram, FaGlobe, FaMobileAlt, FaWindows, FaApple, FaBolt, FaLeaf, FaServer, FaChartLine, FaBook, FaPuzzlePiece, FaUserSecret, FaRegFileCode, FaNodeJs, FaLaptopCode, FaPills, FaHeartbeat, FaExchangeAlt, FaQuestionCircle, FaClipboardList, FaGraduationCap, FaBoxes, FaCompressArrowsAlt, FaLock, FaCheckCircle, FaThermometerHalf } from 'react-icons/fa';
+import { SiTypescript, SiGo } from 'react-icons/si';
 
 const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: false });
 
@@ -87,46 +89,94 @@ function HomeContent() {
   }
 
   function renderTree(nodes: TreeNode[]) {
+    const folderIcons: { [key: string]: React.ElementType } = {
+      'javascript': FaJs,
+      'python': FaPython,
+      'docker-integration': FaDocker,
+      'git-tutorial': FaGitAlt,
+      'linux': FaLinux,
+      'database': FaDatabase,
+      'design-pattern': FaCogs, // Gears for design patterns
+      'algorithm': FaPuzzlePiece, // Puzzle piece for algorithms
+      'architecture-pattern': FaProjectDiagram, // Diagram for architecture patterns
+      'cloud-computing': FaCloud,
+      'coding-style': FaRegFileCode, // Code file for coding style
+      'web': FaGlobe,
+      'typeScript': SiTypescript,
+      'golang': SiGo, // Go language icon
+      'node': FaNodeJs,
+      'network': FaServer, // Server for network
+      'performance': FaBolt, // Bolt for performance
+      'basics-of-computing': FaLaptopCode, // Laptop code for basics
+      'mobile-app': FaMobileAlt, // Mobile for mobile apps
+      'windows-system': FaWindows, // Windows icon
+      'mac': FaApple, // Apple icon
+      'stock-guide': FaChartLine, // Chart line for stock guide
+      'life': FaLeaf, // Leaf for life (generic)
+      'medication': FaPills, // Pills for medication
+      'human-body': FaHeartbeat, // Heartbeat for human body
+      'token': FaUserSecret, // Secret agent for token
+      'singing-practice-notes': FaBook, // Book for notes
+      'statistical-analysis': FaChartLine, // Chart line for analysis
+      'rabbit-mq': FaExchangeAlt, // Exchange for rabbitmq
+      'regular-expression': FaQuestionCircle, // Question for regex
+      'rental-documents': FaClipboardList, // Clipboard for documents
+      'job-guide': FaGraduationCap, // Graduation cap for job guide
+      'bundlers': FaBoxes, // Boxes for bundlers
+      'compression': FaCompressArrowsAlt, // Compress for compression
+      'crypto': FaLock, // Lock for crypto
+      'data-validation': FaCheckCircle, // Check circle for data validation
+      'cache': FaThermometerHalf, // Thermometer for cache (generic)
+    };
+
+    const getFileIcon = (fileName: string) => {
+      if (fileName.endsWith('.md')) {
+        return <FaFileAlt className="text-blue-500" />;
+      }
+      return <FaRegFileCode className="text-gray-500" />;
+    };
+
     return (
       <ul className="pl-4">
-        {nodes.map((node) => (
-          <li key={node.fullPath || node.path}>
-            {node.type === "file" ? (
-              node.name.endsWith('.md') && (
-                <Link
-                  href={`/?file=${encodeURIComponent(node.path)}`}
-                  className={`text-blue-600 underline hover:text-blue-800 ${selected === node.path ? "font-bold" : ""}`}
-                  onClick={() => setShowPopup(false)}
-                >
-                  {node.name}
-                </Link>
-              )
-            ) : (
-              <>
-                <div className="flex items-center gap-1">
-                  <button
-                    onClick={() => toggleFolder(node.path)}
-                    className="text-gray-500 hover:text-gray-700"
+        {nodes.map((node) => {
+          const Icon = node.type === "folder" ? folderIcons[node.name.toLowerCase()] || FaFolder : undefined;
+          return (
+            <li key={node.fullPath || node.path}>
+              {node.type === "file" ? (
+                node.name.endsWith('.md') && (
+                  <Link
+                    href={`/?file=${encodeURIComponent(node.path)}`}
+                    className={`flex items-center gap-2 text-blue-600 hover:text-blue-800 ${selected === node.path ? "font-bold" : ""}`}
+                    onClick={() => setShowPopup(false)}
                   >
-                    {expandedFolders.has(node.path) ? "▼" : "▶"}
-                  </button>
-                  <span className="font-semibold">📁 {node.name}</span>
-                </div>
-                {expandedFolders.has(node.path) && renderTree(node.children)}
-              </>
-            )}
-          </li>
-        ))}
+                    {getFileIcon(node.name)}
+                    <span>{node.name}</span>
+                  </Link>
+                )
+              ) : (
+                <>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => toggleFolder(node.path)}
+                      className="text-gray-500 hover:text-gray-700"
+                    >
+                      {expandedFolders.has(node.path) ? "▼" : "▶"}
+                    </button>
+                    {Icon && <Icon className="text-yellow-500" />}
+                    <span className="font-semibold">{node.name}</span>
+                  </div>
+                  {expandedFolders.has(node.path) && renderTree(node.children)}
+                </>
+              )}
+            </li>
+          );
+        })}
       </ul>
     );
   }
 
   const filtered = search
-    ? flat.filter((n) => 
-        n.name.toLowerCase().includes(search.toLowerCase()) && 
-        n.type === "file" && 
-        n.name.endsWith('.md')
-      )
+    ? flat.filter((n) => n.name.toLowerCase().includes(search.toLowerCase()) && n.type === "file" && n.name.endsWith('.md'))
     : [];
 
   return (
