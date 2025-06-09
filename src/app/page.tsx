@@ -26,7 +26,7 @@ type TreeNode = FileNode | FolderNode;
 function flattenTree(tree: TreeNode[], prefix = ""): TreeNode[] {
   let result: TreeNode[] = [];
   for (const node of tree) {
-    if (node.type === "file") {
+    if (node.type === "file" && node.name.endsWith('.md')) {
       result.push({ ...node, fullPath: prefix + node.path });
     } else if (node.type === "folder") {
       result.push({ ...node, fullPath: prefix + node.path });
@@ -45,6 +45,7 @@ function HomeContent() {
   const [md, setMd] = useState<string>("");
   const [flat, setFlat] = useState<TreeNode[]>([]);
   const [showPopup, setShowPopup] = useState(false);
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     fetch("/api/list")
@@ -69,23 +70,45 @@ function HomeContent() {
     }
   }, [fileParam]);
 
+  function toggleFolder(path: string) {
+    setExpandedFolders(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(path)) {
+        newSet.delete(path);
+      } else {
+        newSet.add(path);
+      }
+      return newSet;
+    });
+  }
+
   function renderTree(nodes: TreeNode[]) {
     return (
       <ul className="pl-4">
         {nodes.map((node) => (
           <li key={node.fullPath || node.path}>
             {node.type === "file" ? (
-              <Link
-                href={`/?file=${encodeURIComponent(node.path)}`}
-                className={`text-blue-600 underline hover:text-blue-800 ${selected === node.path ? "font-bold" : ""}`}
-                onClick={() => setShowPopup(false)}
-              >
-                {node.name}
-              </Link>
+              node.name.endsWith('.md') && (
+                <Link
+                  href={`/?file=${encodeURIComponent(node.path)}`}
+                  className={`text-blue-600 underline hover:text-blue-800 ${selected === node.path ? "font-bold" : ""}`}
+                  onClick={() => setShowPopup(false)}
+                >
+                  {node.name}
+                </Link>
+              )
             ) : (
               <>
-                <span className="font-semibold">📁 {node.name}</span>
-                {renderTree(node.children)}
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => toggleFolder(node.path)}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    {expandedFolders.has(node.path) ? "▼" : "▶"}
+                  </button>
+                  <span className="font-semibold">📁 {node.name}</span>
+                </div>
+                {expandedFolders.has(node.path) && renderTree(node.children)}
               </>
             )}
           </li>
@@ -95,7 +118,11 @@ function HomeContent() {
   }
 
   const filtered = search
-    ? flat.filter((n) => n.name.toLowerCase().includes(search.toLowerCase()) && n.type === "file")
+    ? flat.filter((n) => 
+        n.name.toLowerCase().includes(search.toLowerCase()) && 
+        n.type === "file" && 
+        n.name.endsWith('.md')
+      )
     : [];
 
   return (
