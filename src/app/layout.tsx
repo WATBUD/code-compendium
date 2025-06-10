@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "程式碼寶典 | 學習與分享",
-  description: "探索程式設計、軟體開發、演算法、設計模式等技術知識，一個專為教學與分享打造的程式碼筆記網站。",
+  title: "Code Compendium | Learn & Share",
+  description: "Explore technical knowledge like programming, software development, algorithms, design patterns, and more. A code notebook website built for teaching and sharing.",
 };
 
 export default function RootLayout({
