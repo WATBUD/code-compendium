@@ -7,7 +7,7 @@ import type { Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import rehypeHighlight from 'rehype-highlight';
-import { FaFolder, FaFileAlt, FaJs, FaPython, FaDocker, FaGitAlt, FaLinux, FaDatabase, FaCodeBranch, FaCloud, FaCogs, FaProjectDiagram, FaGlobe, FaMobileAlt, FaWindows, FaApple, FaBolt, FaLeaf, FaServer, FaChartLine, FaBook, FaPuzzlePiece, FaUserSecret, FaRegFileCode, FaNodeJs, FaLaptopCode, FaPills, FaHeartbeat, FaExchangeAlt, FaQuestionCircle, FaClipboardList, FaGraduationCap, FaBoxes, FaCompressArrowsAlt, FaLock, FaCheckCircle, FaThermometerHalf } from 'react-icons/fa';
+import { FaFolder, FaFileAlt, FaJs, FaPython, FaDocker, FaGitAlt, FaLinux, FaDatabase, FaCogs, FaProjectDiagram, FaCloud, FaRegFileCode, FaGlobe, FaNodeJs, FaServer, FaBolt, FaLaptopCode, FaMobileAlt, FaWindows, FaApple, FaChartLine, FaLeaf, FaPills, FaHeartbeat, FaUserSecret, FaBook, FaExchangeAlt, FaQuestionCircle, FaClipboardList, FaGraduationCap, FaBoxes, FaCompressArrowsAlt, FaLock, FaCheckCircle, FaThermometerHalf, FaPuzzlePiece } from 'react-icons/fa';
 import { SiTypescript, SiGo } from 'react-icons/si';
 
 const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: false });
@@ -52,6 +52,56 @@ function HomeContent() {
   const [flat, setFlat] = useState<TreeNode[]>([]);
   const [showPopup, setShowPopup] = useState(false);
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
+  const [sidebarWidth, setSidebarWidth] = useState(300); // Initial width in pixels
+
+  // Icon mappings for folders
+  const folderIcons: { [key: string]: React.ElementType } = {
+    'javascript': FaJs,
+    'python': FaPython,
+    'docker-integration': FaDocker,
+    'git-tutorial': FaGitAlt,
+    'linux': FaLinux,
+    'database': FaDatabase,
+    'design-pattern': FaCogs,
+    'algorithm': FaPuzzlePiece,
+    'architecture-pattern': FaProjectDiagram,
+    'cloud-computing': FaCloud,
+    'coding-style': FaRegFileCode,
+    'web': FaGlobe,
+    'typeScript': SiTypescript,
+    'golang': SiGo,
+    'node': FaNodeJs,
+    'network': FaServer,
+    'performance': FaBolt,
+    'basics-of-computing': FaLaptopCode,
+    'mobile-app': FaMobileAlt,
+    'windows-system': FaWindows,
+    'mac': FaApple,
+    'stock-guide': FaChartLine,
+    'life': FaLeaf,
+    'medication': FaPills,
+    'human-body': FaHeartbeat,
+    'token': FaUserSecret,
+    'singing-practice-notes': FaBook,
+    'statistical-analysis': FaChartLine,
+    'rabbit-mq': FaExchangeAlt,
+    'regular-expression': FaQuestionCircle,
+    'rental-documents': FaClipboardList,
+    'job-guide': FaGraduationCap,
+    'bundlers': FaBoxes,
+    'compression': FaCompressArrowsAlt,
+    'crypto': FaLock,
+    'data-validation': FaCheckCircle,
+    'cache': FaThermometerHalf,
+  };
+
+  // Function to get file icon based on file name
+  const getFileIcon = (fileName: string) => {
+    if (fileName.endsWith('.md')) {
+      return <FaFileAlt className="text-blue-500" />;
+    }
+    return <FaRegFileCode className="text-gray-500" />;
+  };
 
   useEffect(() => {
     fetch("/api/list")
@@ -89,53 +139,6 @@ function HomeContent() {
   }
 
   function renderTree(nodes: TreeNode[]) {
-    const folderIcons: { [key: string]: React.ElementType } = {
-      'javascript': FaJs,
-      'python': FaPython,
-      'docker-integration': FaDocker,
-      'git-tutorial': FaGitAlt,
-      'linux': FaLinux,
-      'database': FaDatabase,
-      'design-pattern': FaCogs, // Gears for design patterns
-      'algorithm': FaPuzzlePiece, // Puzzle piece for algorithms
-      'architecture-pattern': FaProjectDiagram, // Diagram for architecture patterns
-      'cloud-computing': FaCloud,
-      'coding-style': FaRegFileCode, // Code file for coding style
-      'web': FaGlobe,
-      'typeScript': SiTypescript,
-      'golang': SiGo, // Go language icon
-      'node': FaNodeJs,
-      'network': FaServer, // Server for network
-      'performance': FaBolt, // Bolt for performance
-      'basics-of-computing': FaLaptopCode, // Laptop code for basics
-      'mobile-app': FaMobileAlt, // Mobile for mobile apps
-      'windows-system': FaWindows, // Windows icon
-      'mac': FaApple, // Apple icon
-      'stock-guide': FaChartLine, // Chart line for stock guide
-      'life': FaLeaf, // Leaf for life (generic)
-      'medication': FaPills, // Pills for medication
-      'human-body': FaHeartbeat, // Heartbeat for human body
-      'token': FaUserSecret, // Secret agent for token
-      'singing-practice-notes': FaBook, // Book for notes
-      'statistical-analysis': FaChartLine, // Chart line for analysis
-      'rabbit-mq': FaExchangeAlt, // Exchange for rabbitmq
-      'regular-expression': FaQuestionCircle, // Question for regex
-      'rental-documents': FaClipboardList, // Clipboard for documents
-      'job-guide': FaGraduationCap, // Graduation cap for job guide
-      'bundlers': FaBoxes, // Boxes for bundlers
-      'compression': FaCompressArrowsAlt, // Compress for compression
-      'crypto': FaLock, // Lock for crypto
-      'data-validation': FaCheckCircle, // Check circle for data validation
-      'cache': FaThermometerHalf, // Thermometer for cache (generic)
-    };
-
-    const getFileIcon = (fileName: string) => {
-      if (fileName.endsWith('.md')) {
-        return <FaFileAlt className="text-blue-500" />;
-      }
-      return <FaRegFileCode className="text-[#e2b100cf]" />;
-    };
-
     return (
       <ul className="pl-4">
         {nodes.map((node) => {
@@ -150,7 +153,7 @@ function HomeContent() {
                     onClick={() => setShowPopup(false)}
                   >
                     {getFileIcon(node.name)}
-                    <span>{node.name}</span>
+                    <span className="break-all">{node.name}</span>
                   </Link>
                 )
               ) : (
@@ -158,7 +161,7 @@ function HomeContent() {
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => toggleFolder(node.path)}
-                      className="text-[#e2b100cf] hover:text-[#e2b100cf]"
+                      className="text-gray-500 hover:text-gray-700"
                     >
                       {expandedFolders.has(node.path) ? "▼" : "▶"}
                     </button>
@@ -180,8 +183,8 @@ function HomeContent() {
     : [];
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen w-full">
-      <div className="md:hidden fixed top-0 left-0 right-0 h-12 bg-white border-b flex items-center px-4 z-10 w-full">
+    <div className="flex flex-col md:flex-row min-h-screen">
+      <div className="md:hidden fixed top-0 left-0 right-0 h-12 bg-white border-b flex items-center px-4 z-10">
         <button
           className="bg-blue-500 text-white p-2 rounded opacity-75 hover:opacity-100"
           onClick={() => setShowPopup(!showPopup)}
@@ -203,8 +206,10 @@ function HomeContent() {
           </svg>
         </button>
       </div>
-
-      <aside className={`md:w-64 md:min-w-64 md:flex-shrink-0 border-r bg-gray-50 ${showPopup ? "fixed inset-0 z-20" : "hidden md:block"} md:relative md:z-0`}>
+      <aside
+        className={`border-r bg-gray-50 md:mt-0 mt-12 h-[calc(100vh-3rem)] md:h-screen overflow-y-auto ${showPopup ? "block fixed inset-0 z-20" : "hidden md:block"}`}
+        style={{ width: showPopup ? 'auto' : (window.innerWidth >= 768 ? `${sidebarWidth}px` : '100%') }}
+      >
         <div className="p-4 sticky top-0 bg-gray-50 z-10 border-b">
           <input
             className="w-full p-2 border rounded"
@@ -220,10 +225,11 @@ function HomeContent() {
                 <li key={node.fullPath}>
                   <Link
                     href={`/?file=${encodeURIComponent(node.path)}`}
-                    className={`text-blue-600 underline hover:text-blue-800 ${selected === node.path ? "font-bold" : ""} block truncate`}
+                    className={`flex items-center gap-2 text-blue-600 hover:text-blue-800 ${selected === node.path ? "font-bold" : ""}`}
                     onClick={() => setShowPopup(false)}
                   >
-                    {node.name}
+                    {getFileIcon(node.name)}
+                    <span className="break-all">{node.name}</span>
                   </Link>
                 </li>
               ))}
@@ -233,60 +239,53 @@ function HomeContent() {
           )}
         </div>
       </aside>
+      <div
+        className="hidden md:block w-2 cursor-ew-resize"
+        onMouseDown={(e) => {
+          if (window.innerWidth < 768) return; // Only enable resize on desktop
+          const startX = e.clientX;
+          const startWidth = sidebarWidth;
 
+          const handleMouseMove = (mouseMoveEvent: MouseEvent) => {
+            const newWidth = startWidth + (mouseMoveEvent.clientX - startX);
+            setSidebarWidth(Math.max(200, Math.min(newWidth, window.innerWidth * 0.5))); // Min 200px, Max 50% of screen width
+          };
+
+          const handleMouseUp = () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleMouseUp);
+          };
+
+          window.addEventListener('mousemove', handleMouseMove);
+          window.addEventListener('mouseup', handleMouseUp);
+        }}
+      ></div>
       <main className="flex-1 p-4 overflow-y-auto md:mt-0 mt-12 h-[calc(100vh-3rem)] md:h-screen">
         {md ? (
-          <article className="prose prose-slate w-full prose-headings:font-bold prose-headings:tracking-tight prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg prose-pre:bg-gray-900 prose-pre:text-[#e2b100cf]">
+          <article className="prose prose-slate max-w-none dark:prose-invert prose-headings:font-bold prose-headings:tracking-tight prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg prose-pre:bg-gray-900 prose-pre:text-gray-100">
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               rehypePlugins={[rehypeRaw, rehypeHighlight]}
               components={{
-                h1: ({node, ...props}) => <h1 className="text-4xl font-bold mb-4 w-full break-words" {...props} />,
-                h2: ({node, ...props}) => <h2 className="text-3xl font-bold mb-3 w-full break-words" {...props} />,
-                h3: ({node, ...props}) => <h3 className="text-2xl font-bold mb-2 w-full break-words" {...props} />,
-                p: ({node, ...props}) => <p className="my-4 leading-7 w-full break-words" {...props} />,
-                ul: ({node, ...props}) => <ul className="list-disc pl-6 my-4 w-full break-words" {...props} />,
-                ol: ({node, ...props}) => <ol className="list-decimal pl-6 my-4 w-full break-words" {...props} />,
-                li: ({node, ...props}) => <li className="my-1 w-full break-words" {...props} />,
-                blockquote: ({node, ...props}) => (
-                  <blockquote className="border-l-4 border-gray-300 pl-4 italic my-4 w-full break-words" {...props} />
-                ),
-                code: ({node, className, children, ...props}) => {
+                code: ({node, inline, className, children, ...props}) => {
                   const match = /language-(\w+)/.exec(className || '');
                   return !match ? (
-                    <code className="bg-gray-100 rounded px-1 py-0.5 text-sm w-full break-words" {...props}>
+                    <code className="bg-gray-100 rounded px-1 py-0.5 text-sm" {...props}>
                       {children}
                     </code>
                   ) : (
-                    <code className="block bg-gray-900 text-[#e2b100cf] p-4 rounded-lg my-4 overflow-x-auto w-full break-words" {...props}>
+                    <code className="block bg-gray-900 text-gray-100 p-4 rounded-lg my-4 overflow-x-auto" {...props}>
                       {children}
                     </code>
                   );
                 },
-                pre: ({node, ...props}) => (
-                  <pre className="bg-gray-900 text-[#e2b100cf] p-4 rounded-lg my-4 overflow-x-auto w-full break-words" {...props} />
-                ),
-                table: ({node, ...props}) => (
-                  <div className="overflow-x-auto w-full">
-                    <table className="w-full my-4 border-collapse border border-solid border-gray-300 break-words" {...props} />
-                  </div>
-                ),
-                th: ({node, ...props}) => (
-                  <th className="px-4 py-2 border border-solid border-gray-300 bg-gray-100 font-semibold text-left break-words" {...props} />
-                ),
-                td: ({node, ...props}) => (
-                  <td className="px-4 py-2 border border-solid border-gray-300 break-words" {...props} />
-                ),
-                tr: ({node, ...props}) => (
-                  <tr className="hover:bg-gray-100" {...props} />
-                ),
               }}
             >
               {md}
             </ReactMarkdown>
           </article>
         ) : (
-          <div className="text-[#e2b100cf] text-center mt-8">請點選左側檔案以顯示內容</div>
+          <div className="text-gray-400 text-center mt-8">請點選左側檔案以顯示內容</div>
         )}
       </main>
     </div>
