@@ -1,8 +1,5 @@
 ### 1. **S — 單一職責原則 (Single Responsibility Principle)**
 
-> ✅ Every module/class/function should have one reason to change.
-> ✅ 每個模組/類別/函式只應該有一個職責與變化原因。
-
 ```js
 // ❌ 壞設計：UserManager 同時負責驗證與儲存
 class UserManager {
@@ -23,9 +20,6 @@ class UserStorage {
 ---
 
 ### 2. **O — 開放封閉原則 (Open/Closed Principle)**
-
-> ✅ Software should be open for extension, but closed for modification.
-> ✅ 軟體應該「可擴充、但不可修改」。
 
 ```js
 // 折扣策略基礎接口
@@ -56,9 +50,6 @@ console.log(checkout.getTotal(100, new BlackFridayDiscount())); // 70
 ---
 
 ### 3. **L — 里氏替換原則 (Liskov Substitution Principle)**
-
-> ✅ Subtypes should be substitutable for their base types.
-> ✅ 子類別應該可以完全取代父類別使用。
 
 ```js
 class Bird {
@@ -92,9 +83,6 @@ class Penguin {
 
 ### 4. **I — 介面隔離原則 (Interface Segregation Principle)**
 
-> ✅ Clients should not be forced to depend on methods they don’t use.
-> ✅ 不該強迫客戶端依賴它們用不到的方法。
-
 ```js
 // ❌ 一個大介面強迫所有動物都能飛
 class Animal {
@@ -124,9 +112,6 @@ class Bird extends Eater {
 ---
 
 ### 5. **D — 依賴反轉原則 (Dependency Inversion Principle)**
-
-> ✅ High-level modules should depend on abstractions, not concretes.
-> ✅ 高階模組應依賴抽象而不是實作。
 
 ```js
 // 抽象通知介面
@@ -159,15 +144,4 @@ service.notifyUser(); // Email sent: Welcome!
 
 ---
 
-## ✅ 總整理（中英對照）
-
-| 原則縮寫 | 中文名稱   | 英文名稱                            | 說明一句話          |
-| ---- | ------ | ------------------------------- | -------------- |
-| S    | 單一職責原則 | Single Responsibility Principle | 一個類別只應有一個職責    |
-| O    | 開放封閉原則 | Open/Closed Principle           | 可擴充但不可修改原有程式   |
-| L    | 里氏替換原則 | Liskov Substitution Principle   | 子類可安全地取代父類     |
-| I    | 介面隔離原則 | Interface Segregation Principle | 不應強迫實作不需要的方法   |
-| D    | 依賴反轉原則 | Dependency Inversion Principle  | 高層模組依賴抽象而非具體實作 |
-
----
 

@@ -1,8 +1,5 @@
 ### 1. **S — 單一職責原則 (Single Responsibility Principle)**
 
-> Every class should have only one reason to change.
-> 每個類別應該只有一個變化的原因。
-
 ✅ **C# 範例：**
 
 ```csharp
@@ -26,8 +23,6 @@ public class UserStorage {
 
 ### 2. **O — 開放封閉原則 (Open/Closed Principle)**
 
-> Software should be open for extension, but closed for modification.
-> 軟體應該**對擴充開放，對修改封閉**。
 
 ✅ **C# 範例：**
 
@@ -58,9 +53,6 @@ public class Checkout {
 
 ### 3. **L — 里氏替換原則 (Liskov Substitution Principle)**
 
-> Subtypes must be substitutable for their base types.
-> 子類別應可替代父類別而不影響功能。
-
 ✅ **C# 範例：**
 
 ```csharp
@@ -85,9 +77,6 @@ public class Penguin : Bird {
 ---
 
 ### 4. **I — 介面隔離原則 (Interface Segregation Principle)**
-
-> Clients should not be forced to depend on methods they do not use.
-> 不應強迫類別實作它不需要的接口。
 
 ✅ **C# 範例：**
 
@@ -121,9 +110,6 @@ public class Bird : IEater, IFlyer {
 
 ### 5. **D — 依賴反轉原則 (Dependency Inversion Principle)**
 
-> High-level modules should not depend on low-level modules. Both should depend on abstractions.
-> 高層模組不應依賴低層模組，兩者都應依賴抽象。
-
 ✅ **C# 範例：**
 
 ```csharp
@@ -151,17 +137,5 @@ public class UserService {
 ```
 
 ➡️ 可輕易替換為 `SmsNotifier`，而無需改 `UserService`。
-
----
-
-## ✅ 總結總覽表
-
-| 原則縮寫 | 中文名稱   | 英文名稱                            | 面試提示      |
-| ---- | ------ | ------------------------------- | --------- |
-| S    | 單一職責原則 | Single Responsibility Principle | 一個類別只做一件事 |
-| O    | 開放封閉原則 | Open/Closed Principle           | 擴充功能不改程式碼 |
-| L    | 里氏替換原則 | Liskov Substitution Principle   | 子類能正確替代父類 |
-| I    | 介面隔離原則 | Interface Segregation Principle | 拆小介面，不濫用  |
-| D    | 依賴反轉原則 | Dependency Inversion Principle  | 依賴抽象不依賴實作 |
 
 ---
