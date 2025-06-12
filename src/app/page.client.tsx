@@ -263,7 +263,7 @@ export default function ClientPage({ staticContent, tree }: { staticContent: Rec
   return (
     <div className="flex flex-col md:flex-row h-screen">
       <div
-        className={`fixed md:relative bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ${
+        className={`fixed md:relative bg-white border-r border-gray-200 transition-all duration-300 ${
           isMobile 
             ? (isCollapsed ? 'h-16' : 'h-screen') 
             : 'h-screen'
@@ -278,11 +278,11 @@ export default function ClientPage({ staticContent, tree }: { staticContent: Rec
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={handleSearchFocus}
-              className="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 min-w-0 h-10 px-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <button
               onClick={() => handleSearchModeChange(searchMode === 'filename' ? 'content' : 'filename')}
-              className={`p-2 rounded-lg border transition-colors ${
+              className={`h-10 w-10 flex items-center justify-center rounded-lg border transition-colors ${
                 searchMode === 'filename' 
                   ? 'bg-blue-500 text-white hover:bg-blue-600' 
                   : 'bg-gray-100 hover:bg-gray-200'
@@ -303,14 +303,14 @@ export default function ClientPage({ staticContent, tree }: { staticContent: Rec
                       <div
                         key={index}
                         onClick={() => handleResultClick(result.path)}
-                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer"
+                        className="p-2 hover:bg-gray-100 rounded cursor-pointer"
                       >
                         <div className="font-medium flex items-center gap-2">
                           <FaFileAlt className="text-blue-500" />
                           {result.path}
                         </div>
                         {result.content.map((line, i) => (
-                          <div key={i} className="text-sm text-gray-600 dark:text-gray-400 pl-6">
+                          <div key={i} className="text-sm text-gray-600 pl-6">
                             {line}
                           </div>
                         ))}
@@ -328,7 +328,7 @@ export default function ClientPage({ staticContent, tree }: { staticContent: Rec
         </div>
         {!isMobile && (
           <div
-            className="absolute right-0 top-0 bottom-0 w-2 cursor-col-resize hover:bg-blue-500 bg-gray-200 dark:bg-gray-700"
+            className="absolute right-0 top-0 bottom-0 w-2 cursor-col-resize hover:bg-blue-500 bg-gray-200"
             onMouseDown={handleMouseDown}
           />
         )}
