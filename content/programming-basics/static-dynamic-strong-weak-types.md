@@ -3,8 +3,8 @@
 * [動強] 型別：[Python、Ruby、Kotlin]。
 * [動弱] 型別：[JavaScript、PHP、Perl]。
 * 靜態型別 (Static Typing) [在編譯時就明確指定變數的type，type錯誤會在編譯時被檢查出來]
-* 動態型別 (Dynamic Typing) [允許變數type運行時確定，可以改變type]
-* 強型別 (Strong Typing) [型別嚴格，不允許不同type直接隱式運算]
+* 動態型別 (Dynamic Typing) [型別在運行時決定，可以運行改變type x = 10,x = "hello" error]
+* 強型別 (Strong Typing) [型別嚴格，不同type不能隱式運算 ex:"10"+ 5 error]
 * 弱型別 (Weak Typing) [允許不同type之間進行隱式運算或轉換，語言不會強制檢查type]
 **對比**
 
