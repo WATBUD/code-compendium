@@ -11,7 +11,7 @@ Fung yu leui zeoi gon
 Mou leui fan  bat ching ying jung  
 
 天    空  海  闊   你  與  我　   可 會   變 （ 誰   沒  在   變）  
-Tin hung hoi fut nei yu ngo    ho wui bin (seui mut joi bin)  
+Tin hung hoi fut  nei  yu ngo    ho wui bin (seui mut joi bin)  
 
 多  少  次　迎    著    冷    眼   與  嘲    笑  
 Do siu ci ying jeuk laang ngaan yu zaau siu  
@@ -31,8 +31,8 @@ Yun loeng ngo ze jat saang bat gei fong jung oi ji yau
 也  會  怕  有  一  天  會   跌  倒  
 Ya wui pa yau jat tin wui dit dou  
 
- 背  棄  了   理   想　    誰   人  都  可 以  
-Bui hei liu lei seung   seui yan dou ho yi  
+ 背  棄  了  理  想　    誰   人  都  可 以  
+Bui hei liu  雷  聲     seui yan dou ho yi  
 
 那  會  怕  有  一  天  只  你   共   我  
 Na wui pa yau jat tin zi nei gung ngo  
@@ -41,5 +41,5 @@ Na wui pa yau jat tin zi nei gung ngo
 Ying jin ji yau ji ngo  
 
  永   遠  高    唱    我  歌　走  遍   千   里  
-Wing yun gou cheung ngo go zau bin chin lei  
+Wing yun gou cheung  ngo go  zau bin chin lei  
 
