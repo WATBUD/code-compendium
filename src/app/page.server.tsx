@@ -5,5 +5,5 @@ export const dynamic = 'force-static';
 
 export default async function Home() {
   const staticContent = getStaticContent();
-  return <ClientPage staticContent={staticContent} />;
+  return <ClientPage staticContent={staticContent.contents} tree={staticContent.tree} />;
 } 

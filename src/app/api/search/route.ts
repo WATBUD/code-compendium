@@ -62,7 +62,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ results: [] });
   }
 
-  const results = Object.entries(staticContent)
+  const results = Object.entries(staticContent.contents)
     .map(([path, content]) => {
       const lines = content.split('\n');
       const matches = lines.filter(line => 
