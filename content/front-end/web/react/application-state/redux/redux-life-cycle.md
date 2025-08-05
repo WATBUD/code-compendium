@@ -1,3 +1,10 @@
+
+---
+
+## **Redux State 更新流程教學（含同步 / 非同步、小範例、名詞解釋）**
+
+---
+
 ### **1. 無非同步請求的情況（同步 Action）**
 
 1. **使用者操作**
@@ -100,16 +107,117 @@ dispatch(fetchUser(1));
 
 ## **名詞解釋 + 小範例**
 
-| 名詞                | 意思                                                                     | 小範例                                                                                                                                                                                   |
-| ----------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Action**        | 一個描述「發生什麼事」的物件，必須有 `type` 屬性，可包含 `payload` 作為資料。                       | `js { type: 'counter/increment', payload: 1 } `                                                                                                                                       |
-| **Dispatch**      | Redux 的方法，用來發送 action 到 store。                                         | `js dispatch({ type: 'counter/increment' }); `                                                                                                                                        |
-| **Reducer**       | 純函數 `(state, action) => newState`，接收舊 state 和 action，回傳新 state。        | `js function counterReducer(state = { value: 0 }, action) { if (action.type === 'counter/increment') return { value: state.value + 1 }; return state; } `                             |
-| **State**         | 應用程式的資料狀態，儲存在 Redux store。                                             | `js { value: 0 } `                                                                                                                                                                    |
-| **Store**         | Redux 儲存狀態的物件，負責管理 state 和提供 `dispatch`、`getState` 方法。                 | `js import { configureStore } from '@reduxjs/toolkit'; const store = configureStore({ reducer: counterReducer }); `                                                                   |
-| **Middleware**    | Redux 中的擴充機制，可以在 dispatch 與 reducer 之間加入邏輯，例如日誌紀錄、非同步處理。               | `js const logger = store => next => action => { console.log('dispatching', action); return next(action); }; `                                                                         |
-| **redux-thunk**   | 一種 middleware，允許 action 是函數而不是物件，並在函數中進行非同步邏輯後再 dispatch 真正的同步 action。 | ``js const fetchUser = (id) => async (dispatch) => { const res = await fetch(`/api/users/${id}`); const data = await res.json(); dispatch({ type: 'user/set', payload: data }); }; `` |
-| **Thunk Action**  | 由 redux-thunk 處理的函數型 action，可以執行非同步請求。                                 | `js function fetchData() { return async (dispatch) => { const res = await fetch('/api/data'); const json = await res.json(); dispatch({ type: 'data/set', payload: json }); }; } `    |
-| **Event Handler** | React 中綁定在 UI 元素上的事件處理函數，例如 `onClick`。                                 | `jsx <button onClick={() => dispatch({ type: 'counter/increment' })}>+</button> `                                                                                                     |
+---
+
+### **1. Action**
+
+一個描述「發生什麼事」的物件，必須有 `type` 屬性，可包含 `payload` 作為資料。
+
+```javascript
+{ type: 'counter/increment', payload: 1 }
+```
 
 ---
+
+### **2. Dispatch**
+
+Redux 的方法，用來發送 action 到 store。
+
+```javascript
+dispatch({ type: 'counter/increment' });
+```
+
+---
+
+### **3. Reducer**
+
+純函數 `(state, action) => newState`，接收舊 state 和 action，回傳新 state。
+
+```javascript
+function counterReducer(state = { value: 0 }, action) {
+  if (action.type === 'counter/increment') {
+    return { value: state.value + 1 };
+  }
+  return state;
+}
+```
+
+---
+
+### **4. State**
+
+應用程式的資料狀態，儲存在 Redux store。
+
+```javascript
+{ value: 0 }
+```
+
+---
+
+### **5. Store**
+
+Redux 儲存狀態的物件，負責管理 state 和提供 `dispatch`、`getState` 方法。
+
+```javascript
+import { configureStore } from '@reduxjs/toolkit';
+
+const store = configureStore({ reducer: counterReducer });
+```
+
+---
+
+### **6. Middleware**
+
+Redux 中的擴充機制，可以在 dispatch 與 reducer 之間加入邏輯，例如日誌紀錄、非同步處理。
+
+```javascript
+const logger = store => next => action => {
+  console.log('dispatching', action);
+  return next(action);
+};
+```
+
+---
+
+### **7. redux-thunk**
+
+一種 middleware，允許 action 是函數而不是物件，並在函數中進行非同步邏輯後再 dispatch 真正的同步 action。
+
+```javascript
+const fetchUser = (id) => async (dispatch) => {
+  const res = await fetch(`/api/users/${id}`);
+  const data = await res.json();
+  dispatch({ type: 'user/set', payload: data });
+};
+```
+
+---
+
+### **8. Thunk Action**
+
+由 redux-thunk 處理的函數型 action，可以執行非同步請求。
+
+```javascript
+function fetchData() {
+  return async (dispatch) => {
+    const res = await fetch('/api/data');
+    const json = await res.json();
+    dispatch({ type: 'data/set', payload: json });
+  };
+}
+```
+
+---
+
+### **9. Event Handler**
+
+React 中綁定在 UI 元素上的事件處理函數，例如 `onClick`。
+
+```jsx
+<button onClick={() => dispatch({ type: 'counter/increment' })}>
+  +
+</button>
+```
+
+---
+
