@@ -70,7 +70,6 @@ function flattenTree(nodes: TreeNode[]): TreeNode[] {
 export default function ClientPage({ staticContent, tree }: { staticContent: Record<string, string>, tree: TreeNode[] }) {
   const [flat, setFlat] = useState<TreeNode[]>([]);
   const [content, setContent] = useState<string>('');
-  const [showPopup, setShowPopup] = useState(false);
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
   const [sidebarWidth, setSidebarWidth] = useState(300);
   const [isDragging, setIsDragging] = useState(false);
@@ -79,7 +78,7 @@ export default function ClientPage({ staticContent, tree }: { staticContent: Rec
   const [searchResults, setSearchResults] = useState<{ path: string; content: string[] }[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchMode, setSearchMode] = useState<'filename' | 'content'>('filename');
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const router = useRouter();
   const searchParams = useSearchParams();
   const fileParam = searchParams.get('file');

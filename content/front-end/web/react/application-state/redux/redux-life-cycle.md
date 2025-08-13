@@ -1,4 +1,6 @@
 
+![跳舞的貓](https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif)
+
 ---
 
 ## **Redux State 更新流程教學（含同步 / 非同步、小範例、名詞解釋）**
@@ -6,6 +8,8 @@
 ---
 
 ### **1. 無非同步請求的情況（同步 Action）**
+
+<img src="./images/redux-sync-life-cycle.gif" alt="Redux Sync Lifecycle" width="100%" />
 
 1. **使用者操作**
    使用者透過 UI 觸發事件，例如點擊按鈕。
@@ -47,6 +51,8 @@ function counterReducer(state = { value: 0 }, action) {
 // 使用者點擊按鈕
 dispatch(increment);
 ```
+
+
 
 ---
 
