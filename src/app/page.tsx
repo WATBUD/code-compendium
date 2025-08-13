@@ -1,5 +1,5 @@
 import { getStaticContent } from '@/app/lib/content';
-import ClientPage from './page.client';
+import ClientPage from './ClientPage';
 
 export const dynamic = 'force-static';
 
