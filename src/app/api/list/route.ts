@@ -8,14 +8,14 @@ type FileNode = {
   type: 'file';
   name: string;
   path: string;
-}
+};
 
 type FolderNode = {
   type: 'folder';
   name: string;
   path: string;
   children: (FileNode | FolderNode)[];
-}
+};
 
 type FileTree = (FileNode | FolderNode)[];
 
@@ -45,4 +45,4 @@ function walk(dir: string): FileTree {
 export async function GET() {
   const tree = walk(CONTENT_DIR);
   return NextResponse.json(tree);
-} 
+}
