@@ -1,16 +1,13 @@
-當然可以！以下是 **結晶型硫酸鹽葡萄糖胺（Crystalline Glucosamine Sulfate, CGS）** 的中英對照精緻版說明：
-
 ---
-
-### ✅ 什麼是結晶型硫酸鹽葡萄糖胺？  
+### ✅ 什麼是結晶型硫酸鹽葡萄糖胺？
 ### ✅ What is Crystalline Glucosamine Sulfate (CGS)?
 
-結晶型硫酸鹽葡萄糖胺是一種用於**關節保健**的營養補充品，特別適用於**退化性關節炎（骨關節炎）**的輔助治療。  
+結晶型硫酸鹽葡萄糖胺是一種用於**關節保健**的營養補充品，特別適用於**退化性關節炎（骨關節炎）**的輔助治療。
 Crystalline Glucosamine Sulfate is a nutritional supplement used for **joint health**, especially as an adjunct treatment for **osteoarthritis (degenerative joint disease)**.
-
 ---
 
-### 🧪 作用機制  
+### 🧪 作用機制
+
 ### 🧪 Mechanism of Action
 
 1. **促進關節軟骨修復**  
@@ -35,19 +32,21 @@ Crystalline Glucosamine Sulfate is a nutritional supplement used for **joint hea
 
 ---
 
-### 💊 使用建議  
+### 💊 使用建議
+
 ### 💊 Usage Guidelines
 
-| 項目 | 中文說明 | English Description |
-|------|----------|---------------------|
-| 建議劑量 | 每日 1500 毫克 | 1500 mg per day |
-| 見效時間 | 約需 4～8 週 | Takes about 4–8 weeks to show effects |
+| 項目       | 中文說明             | English Description                     |
+| ---------- | -------------------- | --------------------------------------- |
+| 建議劑量   | 每日 1500 毫克       | 1500 mg per day                         |
+| 見效時間   | 約需 4～8 週         | Takes about 4–8 weeks to show effects   |
 | 常見副作用 | 輕微腸胃不適（少見） | Mild gastrointestinal discomfort (rare) |
-| 適用情況 | 膝關節或髖關節退化 | Degeneration in knees or hips |
+| 適用情況   | 膝關節或髖關節退化   | Degeneration in knees or hips           |
 
 ---
 
-### ❌ 不適用情況  
+### ❌ 不適用情況
+
 ### ❌ When It’s Not Suitable
 
 - **急性滑囊炎或肌腱炎等發炎性疼痛**  
@@ -61,4 +60,3 @@ Crystalline Glucosamine Sulfate is a nutritional supplement used for **joint hea
   → Glucosamine has limited benefits and is not the main treatment.
 
 ---
-
