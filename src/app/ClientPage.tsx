@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -105,6 +105,34 @@ function flattenTree(nodes: TreeNode[]): TreeNode[] {
   return result;
 }
 
+function findAncestorFolderPaths(
+  nodes: TreeNode[],
+  filePath: string,
+  ancestors: string[] = []
+): string[] | null {
+  for (const node of nodes) {
+    if (node.type === 'file' && node.path === filePath) {
+      return ancestors;
+    }
+
+    if (node.type === 'folder' && node.children) {
+      const result = findAncestorFolderPaths(node.children, filePath, [...ancestors, node.path]);
+      if (result) {
+        return result;
+      }
+    }
+  }
+
+  return null;
+}
+
+function copyMarkdownFileName(filePath: string) {
+  const fileName = filePath.split(/[\\/]/).pop();
+  if (!fileName) return;
+
+  void navigator.clipboard.writeText(fileName.replace(/\.md$/i, ''));
+}
+
 export default function ClientPage({
   staticContent,
   tree,
@@ -124,6 +152,7 @@ export default function ClientPage({
   const [isSearching, setIsSearching] = useState(false);
   const [searchMode, setSearchMode] = useState<'filename' | 'content'>('filename');
   const [isCollapsed, setIsCollapsed] = useState(true);
+  const selectedFileRef = useRef<HTMLAnchorElement>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const fileParam = searchParams.get('file');
@@ -159,8 +188,31 @@ export default function ClientPage({
       if (content) {
         setContent(content);
       }
+
+      const ancestorPaths = findAncestorFolderPaths(tree, fileParam);
+      if (ancestorPaths) {
+        setExpandedFolders((previous) => {
+          const next = new Set(previous);
+          let changed = false;
+
+          ancestorPaths.forEach((path) => {
+            if (!next.has(path)) {
+              next.add(path);
+              changed = true;
+            }
+          });
+
+          return changed ? next : previous;
+        });
+      }
     }
-  }, [fileParam, staticContent]);
+  }, [fileParam, staticContent, tree]);
+
+  useEffect(() => {
+    if (!fileParam || searchQuery) return;
+
+    selectedFileRef.current?.scrollIntoView({ block: 'nearest' });
+  }, [expandedFolders, fileParam, searchQuery]);
 
   const handleSearch = (query: string) => {
     if (!query.trim()) {
@@ -209,6 +261,8 @@ export default function ClientPage({
   }, [searchQuery, searchMode]);
 
   const handleResultClick = (filePath: string) => {
+    copyMarkdownFileName(filePath);
+    setSearchQuery('');
     router.push(`/?file=${encodeURIComponent(filePath)}`);
     if (isMobile) {
       setIsCollapsed(true);
@@ -244,9 +298,11 @@ export default function ClientPage({
               {node.type === 'file' ? (
                 node.name.endsWith('.md') && (
                   <Link
+                    ref={fileParam === node.path ? selectedFileRef : undefined}
                     href={`/?file=${encodeURIComponent(node.path)}`}
                     className={`flex items-center gap-2 text-blue-600 hover:text-blue-800 ${fileParam === node.path ? 'font-bold' : ''}`}
                     onClick={() => {
+                      copyMarkdownFileName(node.path);
                       if (isMobile) {
                         setIsCollapsed(true);
                       }
