@@ -1,122 +1,165 @@
-# 不管是誰　都會有想去逃避的時候
-# 逃 げ た り     あ  き ら め る コ ト は　   誰     も
-# Ni ge ta ri.    a  ki ra me ru ko to wa. (da re) mo~
+# brave heart
 
-# 在那一瞬間發揮潛藏的力量　便能清除路上的障礙
-# 一      瞬    あ れ ば で き る か  ら　     歩    き     続    け  よ う
-# Is   (shu n). a  re ba de ki ru ka ra.   (a ru)  ki. (tsu zu) ke yo  u
- 
-# 一定有些什麼事情是你才能做到的　讓這藍色星球
-#   君     に  し か  で き な い    コ ト が あ る　   青   い      星    に
-# (Ki mi)  ni shi ka. de ki na i.   ko to ga a ru.  (a o)  i.  (ho shi) ni
- 
-# 繼續閃耀著光芒
-#     光     が な く せ  ぬ    よ う に
-# (Hi ka ri) ge na ku se nu.   yo u  ni~~
- 
-# 抓緊著！你擁有的夢想
-# つ  か め！   描    い た    夢    を
-# Tsu ka me! (e ga)  i  ta  (yume)  wo
- 
-# 守護著！你最重要的朋友
-# ま も れ！  大    事    な    友   を
-# Ma mo re!  (da i ji)   na (to mo) wo
+> 演唱：宮崎歩
+> 用途：日文歌詞、分音節羅馬拼音與中文對照練唱
 
-# 使自己變的更加堅強
-# た く ま  し い  自     分   に  な れ る さ
-# Ta ku ma shi i  (ji bu n)   ni~ na re ru sa~~
- 
-# 潛在的未知力量　像火焰一樣被點燃吧！
-# 知  ら ない   パ ワ ー が  宿  る　  ハ ー ト   に 火 が  つ  い た ら
-# Shi ra nai~  pa wa a ga ya do ru~  ha a  to. ni hi ga  tsu i ta ra
- 
-# 你擁有的願望是真的
-# どん な    願     い も　    噓     じゃ な い
-# Don  na (ne ga)  i mo.    (u so)   ja  na  i
+## 第一段
 
-# 都一定可以被實現…
-# き っと か  な  う か ら…
-# ki tto  ka na  u  ka ra…
- 
-# 向我秀出你的勇氣之心
-# show me your brave heart~~
+### 主歌 1
 
-# //-----------------------2------------------------//
+**逃げ(ni ge) た(ta) り(ri)**  
+選擇逃避
 
-# 天氣不會每天都是晴天
-# 晴 れ の 日   ば か り じゃ ない か ら　  た ま に
-# Ha re no hi. ba ka ri  ja  nai ka ra~  ta ma ni~
- 
-# 當寒冷的雨降下時　就要撐起雨傘
-#    冷      た い     雨     も  振 る け れ ど　   傘.    ひ ろ  げ よ う
-# (Tsu ma)   ta i.  (a~ me)  mo  fu ru ke re do. (ka sa). hi ro ge  yo u
+**あ(a) き(ki) ら(ra) め(me) る(ru) コ(ko) ト(to) は(wa) 誰も(da re mo)**  
+或是選擇放棄，任何人
 
-# 生活是沒有地圖可以指引的　所以擁有自由
-# 生き    方     に    地   図  な ん か な い け ど　だ  か ら   自    由
-# I ki (ka ta)  ni~   (chi zu) na n~ ka na i ke do~ da ka ra  (ji yu u)
+**一瞬(i sshu n) あ(a) れ(re) ば(ba) で(de) き(ki) る(ru) か(ka) ら(ra)**  
+只要一瞬間就能做到
 
-# 隨心所欲的只管前往你想要去的地方  
-# ど こ へ だ  って  行 け る      君     も
-# Do ko e da. tte.  yu ke ru.  (ki mi)  mo~
+**歩き(a ru ki) 続け(tsu zu ke) よ(yo) う(u)**  
+所以繼續走下去吧
 
-# 衝刺吧！比風還快的速度
-# は し  れ！   風     よ り      速   く
-# Ha shi re! (ka ze)  yo ri.  (ha ya) ku
+**君(ki mi) に(ni) し(shi) か(ka) で(de) き(ki) な(na) い(i) コ(ko) ト(to) が(ga) あ(a) る(ru)**  
+有些事情只有你才能做到
 
-# 去吧！比天空還遠的地方
-# め ざ  せ！   空    よ り    遠    く
-# Me za se!  (so ra) yo ri  (to o)  ku
+**青い(a o i) 星(ho shi) に(ni)**  
+為了讓這顆藍色星球
 
-# 遇見了一個全新的自己   
-#     新      し い  自    分  に    逢 え る  さ
-#  (A ta ra)  shi i (ji bu n) ni~   a  e ru sa~
+**光(hi ka ri) が(ga) な(na) く(ku) せ(se) ぬ(nu) よ(yo) う(u) に(ni)**  
+永遠不會失去光芒
 
-# 潛在的未知勇氣　                             
-# 知  ら ない   勇    気   が      眠      る　
-# Shi ra nai~  (yu u ki)  ga   (ne mu)    ru.  
+### 副歌 1
 
-# 像一股氣息般的積蓄著
-# ハ ート  に  気   が つ  い  た   ら
-# ha a to. ni  ki  ga tsu  i  ta  ra
+**つ(tsu) か(ka) め(me) ！**  
+抓緊吧！
 
-# 從胸中湧出的不安
-#   胸    の    中   の     ど  しゃ 降 り  も
-# (Mu ne)    (na ka) no.   do   sha bu ri mo
+**描い(e ga i) た(ta) 夢(yu me) を(wo)**  
+你所描繪的夢想
 
-# 一定會被停止…
-# き っと 止  む か ら…
-# Ki tto ya. mu ka ra~~~~
+**ま(ma) も(mo) れ(re) ！**  
+守護吧！
 
-# 向我秀出你的勇氣之心
-# show me your brave heart~
+**大事(da i ji) な(na) 友(to mo) を(wo)**  
+你最重要的朋友
 
-# //-----------------------3------------------------//
+**た(ta) く(ku) ま(ma) し(shi) い(i) 自分(ji bu n) に(ni) な(na) れ(re) る(ru) さ(sa)**  
+你一定能成為更堅強的自己
 
-# 抓緊著！眩目的明日
-# つ  か め！   眩    しい   明  日  を 
-# Tsu ka me! (ma bu)  shi   (a su)  wo.
- 
-# 守護著！所愛的人
-# ま も れ！   愛    す る     人   を
-# Ma mo re!  (a i)  su ru  (hi to) wo.
+**知ら(shi ra) な(na) い(i) パ(pa) ワー(waa) が(ga) 宿る(ya do ru)**  
+未知的力量正寄宿其中
 
-# 使自己變的更加堅強
-# た く ま  し い  自    分  に   な れ る さ
-# Ta ku ma shi i  (ji bun)  ni~ na re ru sa~~~~~
+**ハー(haa) ト(to) に(ni) 火(hi) が(ga) つ(tsu) い(i) た(ta) ら(ra)**  
+當心中的火焰被點燃
 
-# 放下那！軟弱的你
-# こ わ せ！     弱     気 な      君   を
-# Ko wa se!.  (yo wa)  ki na.  (ki mi) wo
+**ど(do) ん(n) な(na) 願い(ne ga i) も(mo)**  
+無論是什麼願望
 
-# 打破那！封閉的牆壁
-# く ず せ！  ぶ つ  か る      壁     を
-# Ku zu se!  bu tsu ka ru~  (ka be)  wo
+**嘘(u so) じゃ(ja) な(na) い(i)**  
+都不會只是謊言
 
-# 將心中灼熱的動力變成武器
-#   熱   い    鼓     動　  武 器  に  な る  か ら
-# (A tsu) i.  (ko do u).  (bu ki) ni. na ru ka ra
+**き(ki) っと(tto) か(ka) な(na) う(u) か(ka) ら(ra) …**  
+因為一定能夠實現……
 
-# 相信你的心
-# believe in your heart  
-# believe in your heart~~~
- 
+**Show me your brave heart**
+讓我看見你勇敢的心
+
+## 第二段
+
+### 主歌 2
+
+**晴れ(ha re) の(no) 日(ni chi) ば(ba) か(ka) り(ri) じゃ(ja) な(na) い(i) か(ka) ら(ra)**  
+不會每天都是晴天
+
+**た(ta) ま(ma) に(ni)**  
+偶爾
+
+**冷たい(tsu me ta i) 雨(a me) も(mo) 降る(fu ru) け(ke) れ(re) ど(do)**  
+也會下起冰冷的雨
+
+**傘(ka sa) ひ(hi) ろ(ro) げ(ge) よ(yo) う(u)**  
+那就把傘撐開吧
+
+**生き(i ki) 方(i ki ka ta) に(ni) 地図(chi zu) な(na) ん(n) か(ka) な(na) い(i) け(ke) ど(do)**  
+人生並沒有指引方向的地圖
+
+**だ(da) か(ka) ら(ra) 自由(ji yu u)**  
+所以我們才如此自由
+
+**ど(do) こ(ko) へ(he) だ(da) って(tte) 行け(i ke) る(ru)**  
+無論哪裡都能前往
+
+**君(ki mi) も(mo)**  
+你也一樣
+
+### 副歌 2
+
+**は(ha) し(shi) れ(re) ！**  
+奔跑吧！
+
+**風(ka ze) よ(yo) り(ri) 速く(ha ya ku)**  
+以比風更快的速度
+
+**め(me) ざ(za) せ(se) ！**  
+前進吧！
+
+**空(so ra) よ(yo) り(ri) 遠く(to o ku)**  
+前往比天空更遙遠的地方
+
+**新しい(a ta ra shi i) 自分(ji bu n) に(ni) 逢え(a e) る(ru) さ(sa)**  
+你一定會遇見嶄新的自己
+
+**知ら(shi ra) な(na) い(i) 勇気(yu u ki) が(ga) 眠る(ne mu ru)**  
+未知的勇氣正沉睡其中
+
+**ハー(haa) ト(to) に(ni) 気が(ki ga) つ(tsu) い(i) た(ta) ら(ra)**  
+當你的心察覺到它
+
+**胸(mu ne) の(no) 中の(na ka no) ど(do) しゃ(sha) 降り(o ri) も(mo)**  
+胸口那場傾盆大雨
+
+**き(ki) っと(tto) 止む(to mu) か(ka) ら(ra) …**  
+也一定會停歇……
+
+**Show me your brave heart**
+讓我看見你勇敢的心
+
+## 最終副歌
+
+**つ(tsu) か(ka) め(me) ！**  
+抓緊吧！
+
+**眩しい(ma bu shi i) 明日(a shi ta) を(wo)**  
+那耀眼的明天
+
+**ま(ma) も(mo) れ(re) ！**  
+守護吧！
+
+**愛す(a i su) る(ru) 人(ni n) を(wo)**  
+你所愛的人
+
+**た(ta) く(ku) ま(ma) し(shi) い(i) 自分(ji bu n) に(ni) な(na) れ(re) る(ru) さ(sa)**  
+你一定能成為更堅強的自己
+
+**こ(ko) わ(wa) せ(se) ！**  
+打破吧！
+
+**弱気(yo wa ki) な(na) 君(ki mi) を(wo)**  
+那個軟弱的自己
+
+**く(ku) ず(zu) せ(se) ！**  
+擊碎吧！
+
+**ぶ(bu) つ(tsu) か(ka) る(ru) 壁(ka be) を(wo)**  
+擋在面前的牆壁
+
+**熱い(a tsu i) 鼓動(ko do u)**  
+因為炙熱的心跳
+
+**武器(bu ki) に(ni) な(na) る(ru) か(ka) ら(ra)**  
+將會化為你的武器
+
+**Believe in your heart**
+相信你的心
+
+**Believe in your heart**
+相信你的心

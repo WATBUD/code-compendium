@@ -1,94 +1,64 @@
-# あ り っ   た け の 梦(yu me)を か き 集(a tsu)め
-# a  ri (tsu ta) ke no          o ka ki          me
+**あ(a) り(ri) った(tta) け(ke) の(no) 夢(yu me) を(wo) か(ka) き(ki) 集(a tsu) め(me)**  
 
-# 捜(sa ga)  し   物を       探    し  に 行  く の  さ
-#            shi mo n no o sa ga shi  ni yu  ku no sa
+**捜(sa ga) し(shi) 物(mo no) を(wo) 探し(sa ga shi) に(ni) 行く(i ku) の(no) さ(sa)**  
 
 # one piece
 
-###-----------------------1-2------------------------###
+**羅針盤(i ra shi n ba n) な(na) ん(n) て(te) 渋滞(ju u ta i) の(no) も(mo) と(to)**  
 
-# 罗针盘(い ら  し ん ばん)な んて  渋滞(じゅうたい)  の も と
-#       (i) ra shi n ba n na n te       jyu  ta i   no mo to
- 
-# 热(ね  つ) にう か さ れ    舵(は  じ) を    と る  の さ
-#    ne tsu ni u ka sa re       ha ji  wo    to ru no  sa
-    
-# ほ こ り  か ぶっ て  た    宝(た か ら)の地図(ち ず) も
-# ho ko ri ka  bu  te ta       ta ka ra no    chi zi mo
- 
-# 确(た  し) か   め た   の  な  ら     伝说(で ん せ つ) じゃ ない
-#    ta shi ka   me ta   no .na .ra         de n se tsu jya  na i
- 
-# 个人(こ  じん)    的(てき)  な    岚(あ ら し) は   谁(だ れ) か  の
-#      ko ji n        te ki na        a ra shi wa     da re k(a) no 喔
- 
-# バ イ オ   リ  ズ ム 乘(と)   っ   か   っ   て
-# ba e  o    ri zi mu    to  (tsu)  ka  阿  te
- 
-# 思(おも)い 过(す)ご  せ ば い い!
-#    o mo i    su go se ba i (i)!
- 
-# あ り っ    た け の 梦(yu me)を か き 集(a tsu)め
-# a  ri (tsu ta) ke no          o ka ki          me
+**熱(ne tsu) に(ni) う(u) か(ka) さ(sa) れ(re) 舵(ha ji) を(wo) と(to) る(ru) の(no) さ(sa)**  
 
-# 捜(sa ga)  し   物を       探    し  に 行  く の  さ
-#            shi mo n no o sa ga shi  ni yu  ku no sa
+**ほ(ho) こ(ko) り(ri) か(ka) ぶ(bu) って(tte) た(ta) 宝(ta ka ra) の(no) 地図(chi zu) も(mo)**  
 
-# ポ ケ  ツ    ト   の    コ イン、   そ れ と
-# po ke (tsu恩)to   no    ko in.     so re to
- 
+**確(ta shi) か(ka) め(me) た(ta) の(no) な(na) ら(ra) 伝説(de n se tsu) じゃ(ja) な(na) い(i)**  
+
+**個人(ko ji n) 的(te ki) な(na) 嵐(a ra shi) は(wa) 誰(da re) か(ka) の(no)**  
+
+**バ(ba) イ(i) オ(o) リ(ri) ズ(zu) ム(mu) 乗(to) っか(kka) って(tte)**  
+
+**思(o mo) い(i) 過(su) ご(go) せ(se) ば(ba) い(i) い(i) !**  
+
+**あ(a) り(ri) った(tta) け(ke) の(no) 夢(yu me) を(wo) か(ka) き(ki) 集(a tsu) め(me)**  
+
+**捜(sa ga) し(shi) 物(mo no) を(wo) 探し(sa ga shi) に(ni) 行く(i ku) の(no) さ(sa)**  
+
+**ポ(po) ケ(ke) ツ(tsu) ト(to) の(no) コ(ko) イ(i) ン(n) 、 そ(so) れ(re) と(to)**  
+
 # You wanna be my Friend?
- 
-# We are, We are on the cruise! ウィーアー(we are)!
 
-###-----------------------2------------------------###
+**We are , We are on the cruise ! ウィー(uii) アー(aa) !**  
 
-# ぜ  ん ぶ ま に 受 け て　   信じち  ゃっ         て も
-# ze  n bu ma ni u  ke te    Shinji cha~tsu(阿)  te mo
- 
-# 肩 を押     さ れ て     １  歩       リード さ
-# ka ta o o.  sa re te   .i.i.ppo    Rī do sa~
- 
-# 今  度 会   え た な ら　  話   す つ    も り さ
-# kon do a    e ta na ra   hana su tsu   mo ri sa
- 
-# そ れ  か ら の    こ と と    こ れ か ら    の  こ と
-# so re ka ra no    ko to to    ko re ka ra   no  ko to
- 
-# つ  ま り    い つ  も　ピンチ  は   誰(dare)か に
-# tsu ma ri    i tsu mo  Pinchi wa           ka ni
- 
+**ぜ(ze) ん(n) ぶ(bu) ま(ma) に(ni) 受け(u ke) て(te) 信じ(shi n ji) ちゃ(cha) って(tte) も(mo)**  
+
+**肩(ka ta) を(wo) 押さ(o sa) れ(re) て(te) １ 歩(ho) リー(rii) ド(do) さ(sa)**  
+
+**今度(ko n do) 会え(a e) た(ta) な(na) ら(ra) 話す(ha na su) つ(tsu) も(mo) り(ri) さ(sa)**  
+
+**そ(so) れ(re) か(ka) ら(ra) の(no) こ(ko) と(to) と(to) こ(ko) れ(re) か(ka) ら(ra) の(no) こ(ko) と(to)**  
+
+**つ(tsu) ま(ma) り(ri) い(i) つ(tsu) も(mo) ピ(pi) ン(n) チ(chi) は(wa) 誰(dare) か(ka) に(ni)**  
+
 # ア ピ  ー  ル    出 来 る　  いい チャン       ス
 # a  pi  ー  ru   de ki ru    i i  Cha n~~~~   su
- 
-# 自 意 識    過 剰         に！
-# ji is hi  ki ka jyo o    ni!
- 
-# し  み   った れ た    夜  を    ぶ  っ     と ば せ!
-# shi (mi) tta re ta   yoru o     bu(tsu)屋 to ba se!
- 
-# 宝         箱    に キョ ウ ミ は     な い け ど
-# ta ka ra ba ko   ni kyo u mi  wa     na i ke do
- 
-# ポ ケ ッ       ト    に  ロ マ ン、 そ れ と
-# PO KE 恩(~Tsu) to   ni  RO MA N,  so re to
- 
+
+**自意識過剰(ji i shi ki ka jo u) に(ni) ！**  
+
+**し(shi) み(mi) った(tta) れ(re) た(ta) 夜(yo ru) を(wo) ぶ(bu) っと(tto) ば(ba) せ(se) !**  
+
+**宝箱(ta ka ra ba ko) に(ni) キョ(kyo) ウ(u) ミ(mi) は(ha) な(na) い(i) け(ke) ど(do)**  
+
+**ポ(po) ケ(ke) ット(tto) に(ni) ロ(ro) マ(ma) ン(n) 、 そ(so) れ(re) と(to)**  
+
 # You wanna be my Friend?
- 
-# We are, We are on the cruise! ウィーアー(we are)!
 
-###-----------------------repeat------------------------###
+**We are , We are on the cruise ! ウィー(uii) アー(aa) !**  
 
-# あ り っ    た け の 梦(yu me)を か き 集(a tsu)め
-# a  ri (tsu ta) ke no          o ka ki          me
+**あ(a) り(ri) った(tta) け(ke) の(no) 夢(yu me) を(wo) か(ka) き(ki) 集(a tsu) め(me)**  
 
-# 捜(sa ga)  し   物を       探    し  に 行  く の  さ
-#            shi mo n no o sa ga shi  ni yu  ku no sa
- 
-# ポ ケ  ツ    ト   の    コ イ ン、  そ れ と
-# po ke (tsu恩)to   no    ko i n     so re to
- 
+**捜(sa ga) し(shi) 物(mo no) を(wo) 探し(sa ga shi) に(ni) 行く(i ku) の(no) さ(sa)**  
+
+**ポ(po) ケ(ke) ツ(tsu) ト(to) の(no) コ(ko) イ(i) ン(n) 、 そ(so) れ(re) と(to)**  
+
 # You wanna be my Friend?
- 
-# We are, We are on the cruise! ウィーアー(we are))!
+
+**We are , We are on the cruise ! ウィー(uii) アー(aa) ) !**  

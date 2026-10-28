@@ -1,100 +1,63 @@
-###-----------------------1------------------------###
+**悲し(ka na shi) げ(ge) に(ni) 咲く(sa ku) 花(ha na) に(ni)**  
 
-#   悲    し  げ  に  咲 く    花   に
-# (ka na) shi ge ni  sa ku (ha na) ni
+**君(ki mi) の(no) 面影(o mo ka ge) を(wo) 見た(mi ta)**  
 
-#   君    の    面     影   を  见 た
-# (ki mi) no (o mo) (ka ge) wo mi ta
+**大好き(da i su ki) な(na) 雨(a me) な(na) の(no) に(ni)**  
 
-#  大   好  き    な   雨   な の に
-# (da i su ki).  na (a me) na no ni
+**何故か(na ze ka) 今日(kyou) は(wa) 冷たく(tsu me ta ku) て(te)**  
 
-# 何  故  か 今 日 は     冷    た く て
-# na  ze ka  kyou wa. (tsu me) ta ku te
+**淡(a wa) く(ku) 儚(ha ka na) く(ku) 夜(yo ru) に(ni) 揺ら(yu ra) れ(re) て(te)**  
 
-#    淡  く     儚      く     夜    に  揺 ら  れ て
-# (a wa) ku (ha ka na) ku.  (yo ru) ni (yu ra) re te
+**溜め息(ta me i ki) 一つ(hi to tsu) 堕ち(o chi) た(ta) 花びら(ha na bi ra)**  
 
-# 溜 め    息   一      つ   堕 ち  た    花    び ら
-# ta me (i ki) (hi to tsu). o  chi ta (ha na) bi ra
+**月(tsu ki) の(no) 欠片(ka ke ra) を(wo) 集め(a tsu me) て(te)**  
 
-#    月    の  欠   片  を   集    め て
-# (tsu ki) no ka ke ra wo (a tsu) me te
+**夢(yu me) を(wo) 飾り(ka za ri) 眠る(ne mu ru)**  
 
-#   梦    を     饰   り    眠   る
-# (yu me) wo  (ka za) ri (ne mu) ru
+**時の(to ki no) 砂(su na) 散り(chi ri) ば(ba) め(me) て(te) も(mo)**  
 
-#   时    の  砂     散    り ば め て も
-# (to ki) no (su na chi). ri ba me te mo
+**あ(a) の(no) 頃(ko ro) へ(e) 返れ(ka e re) な(na) い(i)**  
 
-# あ の    顷   へ   返   れ な い
-# a  no (ko ro) e (ka e) re na i
+**ふ(fu) と(to) 見上げ(mi a ge) た(ta) 星空(ho shi zo ra)**  
 
-###-----------------------2------------------------###
-# ふ と 见 上  げ た    星       空
-# hu to mi a  ge ta (ho shi) (zo ra)
+**ま(ma) た(ta) 君(ki mi) を(wo) さ(sa) が(ga) し(shi) て(te) た(ta)**  
 
-# ま た    君   を  さ が し  て た
-# ma ta (ki mi) wo sa ga shi te ta
+**い(i) く(ku) つ(tsu) 夜(yo ru) を(wo) 越え(ko e) れ(re) ば(ba)**  
 
-# い く  つ    夜    を  越 え  れ ば
-# i  ku tsu (yo ru) wo (ko e)  re ba
+**涙(na mi da) は(wa) 「 強さ(tsu yo sa) 」 に(ni) な(na) る(ru) ？**  
 
-#     涙     は 「  强    さ」に な る？
-# (na mi da) wa (tsu yo) sa  ni na ru
+**季節(ki se tsu) は(wa) 巡り(me gu ri) 森(mo ri) は(wa) 染め(so me) ら(ra) れ(re)**  
 
-#  季      节 は    巡   り    森    は 染 め ら れ
-# (ki se tsu) wa (me gu) ri (mo ri) wa so me ra re
+**風(ka ze) は(wa) 奏で(ka na de) て(te) 想い(o mo i) 溢れ(a fu re) て(te)**  
 
-#    风   は   奏  で て    想  い   溢   れ て
-# (ka ze) wa ka na de te (o mo) i (a hu) re te
+**逢い(a i) た(ta) く(ku) て(te) 愛おしく(i too shi ku) て(te)**  
 
-# 逢 い  た く  て   爱    お し  く て
-# a  i  ta  ku te (i to)  o shi ku te
+**触れた(fu re ta) く(ku) て(te) 苦しく(ku ru shi ku) て(te)**  
 
-# 触 れ  た く て   苦    し  く て
-# hu re ta ku te (ku ru) shi ku te
+**届か(to do ka) な(na) い(i) 伝わ(tsu ta wa) ら(ra) な(na) い(i)**  
 
-#   届    か な い   伝     わ ら な い
-# (to do) ka na i (tsu ta) wa ra na i
+**叶わ(ka na wa) な(na) い(i) 遠す(to o su) ぎ(gi) て(te)**  
 
-#   叶    わ な い   远   す ぎ て
-# (ka na) wa na i (to o) su gi te
+**今(i ma) は(ha) も(mo) う(u) 君(ki mi) は(ha) い(i) な(na) い(i) よ(yo)**  
 
-#   今   は も う  君     は い な い よ
-# (i ma) wa mo u (ki mi) wa i  na i yo
+**散り(chi ri) 逝く(i ku) と(to) 知る(shi ru) 花(ha na) は(ha) そ(so) れ(re) で(de) も(mo)**  
 
-###-----------------------3------------------------###
+**強く(tsu yo ku) 生き(i ki) て(te) る(ru) 色(i ro) 鮮(se n) や(ya) か(ka) に(ni)**  
 
-#  散 り  逝 く  と 知  る    花   は  そ れ で も
-# chi ri  yu ku to shi ru (ha na) wa so re de mo
+**月(tsu ki) の(no) 欠片(ka ke ra) を(wo) 集め(a tsu me) て(te)**  
 
-#    强    く  生 き  て る    色    鲜   や か に
-# (tsu yo) ku  i  ki te ru (i ro) (a za) ya ka ni
+**夢(yu me) を(wo) 飾り(ka za ri) 眠る(ne mu ru)**  
 
-#    月    の  欠   片  を   集    め て
-# (tsu ki) no ka ke ra wo (a tsu) me te
+**時の(to ki no) 砂(su na) 散り(chi ri) ば(ba) め(me) て(te) も(mo)**  
 
-#   梦    を     饰   り    眠   る
-# (yu me) wo  (ka za) ri (ne mu) ru
+**あ(a) の(no) 頃(ko ro) へ(e) 返れ(ka e re) な(na) い(i)**  
 
-#   时    の  砂     散    り ば め て も
-# (to ki) no (su na chi). ri ba me te mo
+**逢い(a i) た(ta) く(ku) て(te) 愛おしく(i too shi ku) て(te)**  
 
-# あ の    顷   へ   返   れ な い
-# a  no (ko ro) e (ka e) re na i
+**触れた(fu re ta) く(ku) て(te) 苦しく(ku ru shi ku) て(te)**  
 
-# 逢 い  た く  て   爱    お し  く て
-# a  i  ta  ku te (i to)  o shi ku te
+**届か(to do ka) な(na) い(i) 伝わ(tsu ta wa) ら(ra) な(na) い(i)**  
 
-# 触 れ  た く て     苦    し く て
-# hu re  ta ku te (ku ru) shi ku te
+**叶わ(ka na wa) な(na) い(i) 遠す(to o su) ぎ(gi) て(te)**  
 
-#   届    か な い   伝     わ ら な い
-# (to do) ka na i (tsu ta) wa ra na i
-
-#   叶    わ な い   远   す ぎ て
-# (ka na) wa na i (to o) su gi te
-
-#   今   は も う  君     は い な い よ
-# (i ma) wa mo u (ki mi) wa i  na i yo
+**今(i ma) は(ha) も(mo) う(u) 君(ki mi) は(ha) い(i) な(na) い(i) よ(yo)**  

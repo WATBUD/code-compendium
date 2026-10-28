@@ -1,112 +1,147 @@
-###-----------------------1-1------------------------###
-# ゴ キ ゲン     な    蝶   に  な  って　
-# Go ki gen.    na  (chou) ni. na  tte
+# Butter-Fly
 
-# き ら め く      風    に 乗 って
-# ki ra me ku   (ka ze) ni no tte~
+> 演唱：和田光司
+> 用途：日文歌詞、羅馬拼音與中文對照練唱
 
-# 今(い ま)  す ぐ    キ ミ に   会(あ)  い に   行 こ う
-# i     ma  su gu~   ki mi ni~  (  a)  i  ni~  yu ko u~
+## 第一段
 
-# 余     計  な     事     なん  て       忘   れ た    方     が マ  シ  さ
-# (Yo ke i) na.  (ko to)  nan   te~   (wa su) re ta  (hou).  ga ma shi sa
- 
-# こ れ  以  上    シャ   レ て る   時    間  は な い
-# Ko re (i jou).  (sha)  re te ru  (ji. kan) wa na i
- 
-#    何     が　 WOW ~*5 こ  の    空     に    届    く の  だ ろう
-#  (Na ni)  ga. (WOW~*5) ko  no (so ra)  ni (to do)  ku no da rou
+### 主歌 1
 
-# だ け ど　  WOW~* 5     明     日  の    予    定  も わ  か  ら な い
-# Da ke do　 (WOW~*5).   (a shi ta) no.   (yo tei). mo wa ka. ra na i~~
- 
-###-----------------------1-2------------------------###
+**ゴ(go) キ(ki) ゲ(ge) ン(n) な(na) 蝶(cho u) に(ni) な(na) って(tte)**  
+成為一隻心情愉快的蝴蝶
 
-# 無  限   大   な     夢    の あ と の      何    も  ない    世 の    中   じゃ　
-# (Mu gen dai) na.  (yu me) no a  to no~  (na ni) mo  nai.    yo no (na ka) ja
- 
-# そ うさ     愛    し  い     想い      も    負け    そ う  に な る け  ど
-# So u sa.  (i to) shi i~   (o mo i)   mo   (ma. ke) so u.  ni na ru ke do.
- 
-# Stayし  が  ち  なイ  メー  ジ  だ ら け の     頼    り ない       翼      で も　
-# (Stay) (ga) chi nai.  mee  ji da ra ke no~  (ta yo) ri nai~  (tsu ba sa) de mo
- 
-# き っ  と    飛  べ  る さ  on~ my~ love~
-# Ki i   to.  (to be) ru sa. on~ my~ love~
+**き(ki) ら(ra) め(me) く(ku) 風(ka ze) に(ni) 乗って(no tte)**  
+乘著閃耀的風
 
-###-----------------------2-1------------------------###
+**今す(i ma su) ぐ(gu) キ(ki) ミ(mi) に(ni) 会い(a i) に(ni) 行こ(i ko) う(u)**  
+現在就立刻去見你吧
 
-# ウ カ レ  タ   蝶    に   な って     一    途   な     風     に 乗 って
-# U  ka re ta (chou)  ni.  na tte.    (i chi zu)  na (ka. ze)  ni no tte
- 
-# ど こ ま で  も   キ ミ に   会い に 行 こ う
-# Do ko ma de mo~  ki mi ni.  a i ni yu ko u
- 
-# 曖      昧  な  言    葉  って   意    外  に  便    利  だ って
-# (A i ma i)  na (ko to b) tte~   (i ga i) ni  (ben. ri) da tte
- 
-#    叫   ん で  る   ヒ ツト ソン グ 聴 き な が ら
-# (Sa ke) n de  ru.  hi tto  son gu ki~ ki na ga ra
- 
-#   何     が   WOW ~*5    こ  の   街     に    響    く の  だ ろう
-# (Na ni)  ga  (WOW~*5).   ko no (ma chi) ni. (hi bi) ku no da rou
- 
-# だ け ど.　 WOW ~*5    期    待  し  て て  も   仕      方  な  い
-# Da ke do　 (WOW~*5). 　(ki ta i) shi te te. mo (shi ka ta) na. i~~
+**余計(yo ke i) な(na) 事(ko to) な(na) ん(n) て(te) 忘れ(wa su re) た(ta) 方が(ho u ga) マ(ma) シ(shi) さ(sa)**  
+那些多餘的事情，還是忘掉比較好
 
-###-----------------------2-2------------------------###
+**こ(ko) れ(re) 以上(i jo u) シャ(sha) レ(re) て(te) る(ru) 時間(ji ka n) は(ha) な(na) い(i)**  
+已經沒有時間繼續耍帥了
 
-# 無   限   大  な    夢    の  あ と の
-# (Mu gen dai) na. (yu me) no  a  to no.
+**何(na ni) が(ga) WOW WOW WOW WOW WOW**  
+究竟會是什麼呢
 
-# や る せ な い  世 の   中    じゃ
-# ya ru se nai.  yo no (na ka) ja
- 
-# そ う さ  常        識      は   ず れ も    悪    く      ない か な
-# So u sa. (jo u shi ki)   (ha a) zu re mo. (wa a. ku wa)  nai  ka na
- 
-# Stayし  そう なイ メー ジ  を  染 め た  
-# (Stay)  sou  nai  mee ji  wo so me ta~  
+**こ(ko) の(no) 空(so ra) に(ni) 届く(to do ku) の(no) だ(da) ろ(ro) う(u)**  
+能夠傳達到這片天空呢
 
-# ぎ こ  ち  ない      翼       で も
-# gi ko chi  nai. (tsu ba sa)  de mo
+**だ(da) け(ke) ど(do) WOW WOW WOW WOW WOW**  
+可是
 
-# き  っ と   飛  べ  る  さ　  On My Love
-# Ki  i  to  to  be  ru  sa.   On My Love
+**明日(a shi ta) の(no) 予定(yo te i) も(mo) わ(wa) か(ka) ら(ra) な(na) い(i)**  
+我連明天的安排都不知道
 
-###-----------------------repeat*1-2------------------------###
+### 副歌 1
 
-# 無   限   大   な     夢    の あ と の      何    も  ない    世 の    中   じゃ　
-# (Mu gen dai)  na.  (yu me) no a  to no~  (na ni) mo  nai.    yo no (na ka) ja
- 
-# そ うさ     愛    し  い     想い      も    負け    そ う  に な る け  ど
-# So u sa.  (i to) shi i~   (o mo i)   mo   (ma. ke) so u.  ni na ru ke do.
- 
-# Stayし  が  ち  なイ  メー  ジ  だ ら け の     頼    り ない       翼      で も　
-# (Stay) (ga) chi nai.  mee  ji da ra ke no~  (ta yo) ri nai~  (tsu ba sa) de mo
- 
-# き っ  と    飛  べ  る さ  Oh Yeah～
-# Ki i   to.  (to be) ru sa. Oh Yeah～
-  
+**無限大(mu ge n da i) な(na) 夢(yu me) の(no) あ(a) と(to) の(no)**  
+在無限大的夢想之後
 
-###-----------------------repeat*2-2------------------------###
+**何も(na ni mo) な(na) い(i) 世の(yo no) 中(yo no na ka) じゃ(ja)**  
+在這個一無所有的世界裡
 
-# 無   限   大  な    夢    の  あ と の
-# (Mu gen dai) na. (yu me) no  a  to no.
+**そ(so) う(u) さ(sa) 愛しい(i to shi i) 想い(o mo i) も(mo) 負け(ma ke) そ(so) う(u) に(ni) な(na) る(ru) け(ke) ど(do)**  
+是啊，雖然連珍愛的心意都快要認輸
 
-# や る せ な い  世 の   中    じゃ
-# ya ru se nai.  yo no (na ka) ja
- 
-# そ う さ  常        識    は ず れ も    悪    く      ない か な
-# So u sa. (jo u shi ki)   ha zu re mo. (wa a. ku wa)  nai  ka na
- 
-# Stayし  そう  なイ メージ  を 染 め た  
-# (Stay)  sou  nai  mee ji wo so me ta~  
+**Stay し(shi) が(ga) ち(chi) な(na) イ(i) メー(mee) ジ(ji) だ(da) ら(ra) け(ke) の(no)**  
+滿是停滯不前的印象
 
-# ぎ こ  ち  ない      翼       で も
-# gi ko chi  nai. (tsu ba sa)  de mo
- 
-# き  っ と  飛  べ  る  さ　   On My Love
-# Ki  i  to  to  be  ru  sa.   On My Love
+**頼りない(ta yo ri na i) 翼(tsu ba sa) で(de) も(mo)**  
+即使是一雙不可靠的翅膀
 
+**き(ki) っと(tto) 飛べ(to be) る(ru) さ(sa) On My Love**  
 
+## 第二段
+
+### 主歌 2
+
+**ウ(u) カ(ka) レ(re) タ(ta) 蝶(cho u) に(ni) な(na) って(tte)**  
+化作一隻雀躍的蝴蝶
+
+**一途(i chi zu) な(na) 風(ka ze) に(ni) 乗って(no tte)**  
+乘著一心向前的風
+
+**ど(do) こ(ko) ま(ma) で(de) も(mo) キ(ki) ミ(mi) に(ni) 会い(a i) に(ni) 行こ(i ko) う(u)**  
+無論到哪裡，都要去見你
+
+**曖昧(a i ma i) な(na) 言葉(ko to ba) って(tte)**  
+含糊的話語
+
+**意外(i ga i) に(ni) 便利(be n ri) だ(da) って(tte)**  
+意外地很方便
+
+**叫ん(sa ke n) で(de) る(ru) ヒ(hi) ット(tto) ソ(so) ン(n) グ(gu) 聴き(ki ki) な(na) が(ga) ら(ra)**  
+一邊聽著高聲吶喊的熱門歌曲
+
+**何(na ni) が(ga) WOW WOW WOW WOW WOW**  
+究竟會是什麼呢
+
+**こ(ko) の(no) 街(ma chi) に(ni) 響く(hi bi ku) の(no) だ(da) ろ(ro) う(u)**  
+會在這座城市裡迴響呢
+
+**だ(da) け(ke) ど(do) WOW WOW WOW WOW WOW**  
+可是
+
+**期待し(ki ta i shi) て(te) て(te) も(mo) 仕方ない(shi ka ta na i)**  
+光是期待也無濟於事
+
+### 副歌 2
+
+**無限大(mu ge n da i) な(na) 夢(yu me) の(no) あ(a) と(to) の(no)**  
+在無限大的夢想之後
+
+**や(ya) る(ru) せ(se) な(na) い(i) 世の(yo no) 中(yo no na ka) じゃ(ja)**  
+面對這個令人無奈的世界
+
+**そ(so) う(u) さ(sa) 常識(jo u shi ki) は(ha) ず(zu) れ(re) も(mo) 悪く(wa ru ku) な(na) い(i) か(ka) な(na)**  
+是啊，偶爾打破常規或許也不壞
+
+**Stay し(shi) そ(so) う(u) な(na) イ(i) メー(mee) ジ(ji) を(wo) 染め(so me) た(ta)**  
+染上了彷彿會停滯不前的印象
+
+**ぎ(gi) こ(ko) ち(chi) な(na) い(i) 翼(tsu ba sa) で(de) も(mo)**  
+即使是一雙笨拙的翅膀
+
+**き(ki) っと(tto) 飛べ(to be) る(ru) さ(sa) On My Love**  
+
+## 重複副歌
+
+### 副歌 1
+
+**無限大(mu ge n da i) な(na) 夢(yu me) の(no) あ(a) と(to) の(no)**  
+在無限大的夢想之後
+
+**何も(na ni mo) な(na) い(i) 世の(yo no) 中(yo no na ka) じゃ(ja)**  
+在這個一無所有的世界裡
+
+**そ(so) う(u) さ(sa) 愛しい(i to shi i) 想い(o mo i) も(mo) 負け(ma ke) そ(so) う(u) に(ni) な(na) る(ru) け(ke) ど(do)**  
+是啊，雖然連珍愛的心意都快要認輸
+
+**Stay し(shi) が(ga) ち(chi) な(na) イ(i) メー(mee) ジ(ji) だ(da) ら(ra) け(ke) の(no)**  
+滿是停滯不前的印象
+
+**頼りない(ta yo ri na i) 翼(tsu ba sa) で(de) も(mo)**  
+即使是一雙不可靠的翅膀
+
+**き(ki) っと(tto) 飛べ(to be) る(ru) さ(sa) Oh Yeah**  
+
+### 副歌 2
+
+**無限大(mu ge n da i) な(na) 夢(yu me) の(no) あ(a) と(to) の(no)**  
+在無限大的夢想之後
+
+**や(ya) る(ru) せ(se) な(na) い(i) 世の(yo no) 中(yo no na ka) じゃ(ja)**  
+面對這個令人無奈的世界
+
+**そ(so) う(u) さ(sa) 常識(jo u shi ki) は(ha) ず(zu) れ(re) も(mo) 悪く(wa ru ku) な(na) い(i) か(ka) な(na)**  
+是啊，偶爾打破常規或許也不壞
+
+**Stay し(shi) そ(so) う(u) な(na) イ(i) メー(mee) ジ(ji) を(wo) 染め(so me) た(ta)**  
+染上了彷彿會停滯不前的印象
+
+**ぎ(gi) こ(ko) ち(chi) な(na) い(i) 翼(tsu ba sa) で(de) も(mo)**  
+即使是一雙笨拙的翅膀
+
+**き(ki) っと(tto) 飛べ(to be) る(ru) さ(sa) On My Love**  

@@ -1,97 +1,61 @@
-# DAN DAN　心        魅     か  れ て く
-# DAN DAN  ko ko ro hi 　   ka re te ku
+**DAN DAN 心魅か(ko ko ro hi ka) れ(re) て(te) く(ku)**  
 
-# そ の    眩     し い   笑   顔 に
-# so no  ma bu   shi i   e ga o  ni
+**そ(so) の(no) 眩しい(ma bu shi i) 笑顔(e ga o) に(ni)**  
 
-# 果 て ない  暗闇（やみ）      か ら 飛 び 出  そ う　  Hold my hand
-# ha te na i  ya     mi       ka ra to bi da  so u    Hold my hand
+**果て(ha te) な(na) い(i) 暗闇(ya mi) か(ka) ら(ra) 飛び出そ(to bi da so) う(u) Hold my hand**  
 
-#    君      と  出 会     った  と き
-#  (ki mi)   to  de a~     tta  to ki
+**君(ki mi) と(to) 出会っ(de a tsu) た(ta) と(to) き(ki)**  
 
-# 子    供  の こ ろ　  大切に          想    ってい  た  ばしょ  を    思   い  出  し  た ん だ
-# ko do mo  no ko ro   ta i se tsu ni o mo   ttei  ta   ba sho wo   o mo  i  de  shi ta n da
+**子供(ko do mo) の(no) こ(ko) ろ(ro) 大切(ta i se tsu) に(ni) 想っ(o mo tsu) て(te) い(i) た(ta) ば(ba) しょ(sho) を(wo) 思い出し(o mo i da shi) た(ta) ん(n) だ(da)**  
 
-#  僕     と    踊   って く れ な い か
-# bo ku   to   o do  tte ku re na i ka
+**僕(bo ku) と(to) 踊っ(o do tsu) て(te) く(ku) れ(re) な(na) い(i) か(ka)**  
 
-#   光      と     影   の　   Winding Road　 
-# hi ka ri  to   ka ge  no    Winding Road.   
+**光と(hi ka to) 影(ka ge) の(no) Winding Road**  
 
-#   今     で も　  あ い つ  に   夢中     な  の？
-# (i ma)   de mo.   a i  tsu ni mu chu u  na  no ?
+**今(i ma) で(de) も(mo) あ(a) い(i) つ(tsu) に(ni) 夢中(mu chu u) な(na) の(no) ？**  
 
+**少し(su ko shi) だ(da) け(ke) 振り向き(fu ri mu ki) た(ta) く(ku) な(na) る(ru) よ(yo) う(u) な(na) 時(to ki) も(mo) あ(a) る(ru) け(ke) ど(do)**  
 
-#  少    し  だ  け　 振 り  向 き     た く な る よ う な     時     も    あ る け ど
-# su ko  shi da ke   fu ri /mu ki.   ta ku na ru yo u na.  (to ki)  mo.   a ru ke do
+**愛(a i) と(to) 勇気(yu u ki) と(to) 誇り(ho ko ri) を(wo) 持っ(mo tsu) て(te) 闘う(ta ta ka u) よ(yo)**  
 
-#  愛 と    勇  気  と   誇   り   を  持    って       闘       うよ
-# a i to   yu u ki to.  ho ko ri  wo mo(O)  tte    ta ta ka    u yo
- 
-###-----------------------1-2------------------------###
-# DAN DAN　心        魅     か  れ て く
-# DAN DAN  ko ko ro hi 　   ka re te ku
+**DAN DAN 心魅か(ko ko ro hi ka) れ(re) て(te) く(ku)**  
 
-# この   ほ  し   の    希   望   の か け  ら
-# ko no  ho shi  no   (ki.  bo)  no ka ke ra
+**こ(ko) の(no) ほ(ho) し(shi) の(no) 希望(ki bo u) の(no) か(ka) け(ke) ら(ra)**  
 
-# き っと    誰      も が　   永    遠 を 手 に 入 れ た い
-# ki tto  (da  re)  mo ga.    e i e n wo te ni i  re ta i
+**き(ki) っと(tto) 誰も(da re mo) が(ga) 永遠(e i e n) を(wo) 手に入れ(te ni i re) た(ta) い(i)**  
 
-# ZEN ZEN　 気    に  し   な   い フ リ し  て も
-# ZEN ZEN  (ki)   ni shi  na    i fu ri shi te mo
+**ZEN ZEN 気に(ki ni) し(shi) な(na) い(i) フ(fu) リ(ri) し(shi) て(te) も(mo)**  
 
-# ほ ら     君         に    恋      し  て る
-# ho ra  (ki mi)      ni  (ko i)   shi te ru
+**ほ(ho) ら(ra) 君(ki mi) に(ni) 恋し(ko i shi) て(te) る(ru)**  
 
-# 果 て な い  暗闇（や み）    か ら 飛 び  出 そ う　   Hold your hand
-# ha te na i  ya/      mi.    ka ra to bi da so u.     
+**果て(ha te) な(na) い(i) 暗闇(ya mi) か(ka) ら(ra) 飛び出そ(to bi da so) う(u) Hold your hand**  
 
-###-----------------------2------------------------###
+**怒っ(i ka tsu) た(ta) 顔(ka o) も(mo) 疲れ(tsu ka re) て(te) る(ru)**  
 
-#   怒    った   顔     も     疲      れ て る
-# (o ko).  tta  (ka o)  mo   (tsu ka) re te ru 
+**君(ki mi) も(mo) 好き(su ki) だ(da) け(ke) ど(do) あ(a) ん(n) な(na) に(ni)**  
 
-#   君     も 好 き     だ け ど  あん な に
-# (ki mi)  mo su ki    da ke do  a n na ni 
+**飛ば(to ba) し(shi) て(te) 生き(i ki) て(te) 大丈夫(da i jo u bu) か(ka) な(na) と(to) 思う(o mo u)**  
 
-# 飛 ば  し て 生   き て　大   丈   夫      か な と     思  う
-# to ba shi te i   ki te  dai jo u bu      ka na to    o mo u
- 
-#    僕    は…    何     気     な い   行動(しぐさに)  
-# (bo ku)  wa…   (na ni ge)    na i    shi  gu sa ni   
- 
-# 振 り   回        さ れ て る   sea side blue
-# fu ri ma wa      sa re te ru   sea side blue
- 
-# そ れ で も　   あ い   つ に    夢     中    な の？
-# so re de mo.    a  i  tsu ni   (mu chu u)   na no ?
- 
-# も っと  聞 き      た い   こ と が     あ った のに
-# mo tto   ki ki     ta i    ko to ga     a  tta no ni
- 
-# 二      人   の      会話       が　         車        の     音   に      
-# (fu ta ri)   no   (ka i wa)    ga       (ku ru ma )   no   o to  ni 
- 
-# は ば ま れ    て  通   り       に  舞うよ
-# ha ba ma re    te to o ri       ni ma u yo
- 
-###-----------------------3------------------------###
-# DAN DAN　心        魅     か  れ て く
-# DAN DAN  ko ko ro hi 　   ka re te ku
+**僕(bo ku) は(wa) … 何気な(na ni ge na) い(i) 行動(shi gu sa ni)**  
 
-# 自     分   で  も   不   思  議  な   ん だ け ど
-# (ji bu n)   de mo   (fu shi gi)  na.  n da ke do
-# 
-#    何   か  あ   る と す ぐ に　  君     に   電    話  し    た く な  る
-# (na ni) ka (a)   ru to su gu ni (ki mi) ni   (de n wa) shi  ta ku na ru
-# 
-# ZEN ZEN　 気  の な い     フ リ      し て も
-# ZEN ZEN   ki no na i      fu ri (一) shi te mo
-# 
-# 結        局　  君    の こ    と だ け 見 てい た
-# (ke kkyo ku) (ki mi) no ko    to da ke mi tei ta
-# 
-#   海    の   彼      方  へ　  飛 び 出 そ う よ　  Hold my hand
-# (u mi)  no  (ka. na ta) he    to bi da so u yo    Hold my hand
+**振り回さ(fu ri ma wa sa) れ(re) て(te) る(ru) sea side blue**  
+
+**そ(so) れ(re) で(de) も(mo) あ(a) い(i) つ(tsu) に(ni) 夢中(mu chu u) な(na) の(no) ？**  
+
+**も(mo) っと(tto) 聞き(ki ki) た(ta) い(i) こ(ko) と(to) が(ga) あ(a) った(tta) の(no) に(ni)**  
+
+**二人(fu ta ri) の(no) 会話(ka i wa) が(ga) 車(ku ru ma) の(no) 音(o to) に(ni)**  
+
+**は(ha) ば(ba) ま(ma) れ(re) て(te) 通り(to u ri) に(ni) 舞う(ma u) よ(yo)**  
+
+**DAN DAN 心魅か(ko ko ro hi ka) れ(re) て(te) く(ku)**  
+
+**自分(ji bu n) で(de) も(mo) 不思議(fu shi gi) な(na) ん(n) だ(da) け(ke) ど(do)**  
+
+**何か(na ni ka) あ(a) る(ru) と(to) す(su) ぐ(gu) に(ni) 君(ki mi) に(ni) 電話(de n wa) し(shi) た(ta) く(ku) な(na) る(ru)**  
+
+**ZEN ZEN 気の(ki no) な(na) い(i) フ(fu) リ(ri) し(shi) て(te) も(mo)**  
+
+**結局(ke kkyo ku) 君(ki mi) の(no) こ(ko) と(to) だ(da) け(ke) 見て(mi te) い(i) た(ta)**  
+
+**海(u mi) の(no) 彼方(ka na ta) へ(e) 飛び出そ(to bi da so) う(u) よ(yo) Hold my hand**  

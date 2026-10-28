@@ -1,143 +1,135 @@
-# //-----------------------1-1------------------------//
-# 只要有你在
-#   君     さ え い れ ば　
-# (ki mi)  sa e  i re ba
-# 
-# 就可以戰勝任何困難
-# ど ん な  勝     負   も    勝      ち  続 け る   
-# do n na  (sho u bu)  mo~ (ka chi) tsu zu ke ru
-# 
-# 就像撕裂黑暗那樣
-#   暗      闇    を   切  り 裂 く よう  に　
-# (ku ra) (ya mi) wo.  ki ri sa ku you.  ni
-# 
-# I need your love  
-# I need your love~  
-# 
-# //-----------------------repeat1-2------------------------//
-# 交錯了幾公分的偏差
-#  數          cm  の ズ  レ を    重    ね  て
-# (su u se n. chi) no zu re o   (ka sa) ne. te
-# 
-# 偶然就可以變成命運 
-# 偶       然 は    運     命  に な る  
-# (gu u ze n) wa~  (u n me i) ni na ru~~
-# 
-# 放棄那爽朗的笑聲
-# 屈 託     な  く    笑    う   聲   に    免   じ て   
-# ku tta ku na. ku (wa ra). u (ko e) ni.  me n ji te.
-# 
-# 也習慣了四次元的對話
-# 四    次  元 の  會     話  も  馴 れ て
-# (yo ji ge n) no (ka. i wa) mo. na re te.　
-# 
-# 就這樣越陷越深
-# つ  い 引  き  込 ま れ  て ゆ く  
-# tsu i  bi. ki ko ma re~ te yu ku.
-# 
-# //-----------------------repeat2-1------------------------//
-# 只要有你在
-#   君     さ え い れ ば　
-# (ki mi)  sa e  i re ba
-# 
-# 即使是遙遠的路也能走下去
-#   遙    か  な    道     も  超 え て 行 け る　
-# (ha ru) ka. na (mi chi) mo~ ko e  te i ke ru
-# 
-# 任何時候都會一直守護著你
-# ど ん   な  時    も  守    り 抜 く 
-# do n~~~ na to ki mo ma mo~ ri nu ku
-# 
-# 大地之水
-# 大      地  の    水    は
-# (da i chi)  no (mi zu) wa
-# 
-# 使堅強的花朵盛開
-# 透 き 通   る    花    を  咲 か せ   る   糧  
-# su ki tou ru  (ha na) wo~ sa ka se. ru (ka te)
+# 君さえいれば
 
-# 就像撕裂黑暗那樣
-#   暗      闇    を   切  り 裂 く よう  に　
-# (ku ra) (ya mi) wo.  ki ri sa ku you.  ni
+> 演唱：DEEN  
+> 用途：日文歌詞、分音節羅馬拼音與中文對照練唱
 
-# I  need your love  
-# I. need your love 
+## 第一段
 
-# //-----------------------repeat2-2------------------------//
- 
-# 即使人生改變...
-# 生ま れ 変 わ  って も   
-# u ma re ka wa tte. mo
+### 副歌
 
-# 那樣的臺詞
-# そ ん な セ リ フ　
-# so n na. se ri fu
- 
-# 懦弱的我說不出口
-# こ だ わ り  は    僕    の   弱  さ  
-# ko da wa ri wa~. bo ku no yo wa sa~
- 
-# 雖然想要逃避
-# ちょ っと    逃     げ 腰  だ  と  し  て も　
-# cho  tto. (ni ge). ko shi da. to shi te mo
- 
-# 但已對不變的愛起誓
-# 変 わ ら ぬ      愛   は    誓     え る  
-# ka wa ra nu.   (a i) wa (chi ka)  e. ru
- 
-# 這雖不是容易的事 只要兩個人在一起就好
-# 簡  単      じゃ  な い 二       人 だ  か    ら い い  
-# ka n ta n   ja~   na i (fu ta. ri) da. ka~~ ra i i
+**君(ki mi) さ(sa) え(e) い(i) れ(re) ば(ba)**  
+只要有你在
 
-# 因為知道美好的東西正在逝去
-#     美     し  い の は     壊    れ   か け だ  と    知   って る か ら？　
-# (u tsu ku) shi i no wa.  (ko wa) re~  ka ke da to~ (sh i) tte  ru ka ra ?
- 
-# 所以用親吻開相互隱瞞  
-# キ ス    で     互    い を     隠     し  て  
-# ki zu.   de  (ta ga)  i wo. (ka~~ ku) shi te
- 
-# 如果知道地平線的那邊有新的一天到來
-# 水     平     線  の      先    に  明      日  が  あ る と し  た ら  
-# (su i he i se n)  no.  (sa ki) ni. (a shi ta)  ga. a ru to shi ta ra.
- 
-# 即使狂風暴雨也能承受
-#   波       風     も     悪    く  は な  い　
-# (na mi) (ka~ ze)  mo~ (wa ru) ku. wa na. i
+**どん(don) な(na) 勝負(shou bu) も(mo) 勝(ka) ち(chi) 続(tsu zu) け(ke) る(ru)**  
+無論面對什麼挑戰，都能不斷取得勝利
 
-# I‘m no match for you  
-# I‘m no match for you  
+**暗闇(ku ra ya mi) を(wo) 切(ki) り(ri) 裂(sa) く(ku) よ(yo) う(u) に(ni)**  
+就像劃破黑暗一般
 
-# //-----------------------repeat2-2------------------------//
-# 只要有你在
-#   君     さ え い れ ば　
-# (ki mi)  sa e  i re ba
- 
-# 就可以戰勝任何困難
-# ど ん な  勝     負   も    勝      ち  続 け る   
-# do n na  (sho u bu)  mo~ (ka chi) tsu zu ke ru
- 
-# 任何時候都會一直守護著你
-# ど ん   な  時    も  守    り 抜 く 
-# do n~~~ na to ki mo ma mo~ ri nu ku
- 
-# 大地之水
-# 大      地  の    水    は
-# (da i chi)  no (mi zu) wa
+**I need your love**  
+我需要你的愛
 
-# 使堅強的花朵盛開
-# 透 き 通   る    花    を  咲 か せ   る   糧  
-# su ki tou ru  (ha na) wo~ sa ka se. ru (ka te)
+### 主歌 1
 
-# 就像撕裂黑暗那樣
-#   暗      闇    を   切  り 裂 く よう  に　
-# (ku ra) (ya mi) wo.  ki ri sa ku you.  ni
- 
-# I need your love  
-# I need your love 
- 
-# 請說出那熟悉的話語
-# あ り ふ れ た   言     葉   を   並 べ て
-# a  ri fu re ta. (ko to ba)  wo na~a be te.
+**数(suu) cm(sen chi) の(no) ズレ(zu re) を(wo) 重(ka sa) ね(ne) て(te)**  
+幾公分的偏差不斷交錯累積
 
-# LA LA love
+**偶然(guu zen) は(wa) 運命(un mei) に(ni) な(na) る(ru)**  
+偶然也會成為命運
+
+**屈託(kut ta ku) な(na) く(ku) 笑(wa ra) う(u) 声(ko e) に(ni) 免(men) じ(ji) て(te)**  
+看在你無憂無慮的笑聲上
+
+**四次元(yo ji gen) の(no) 会話(ka i wa) も(mo) 馴(na) れ(re) て(te)**  
+就連四次元般的對話也漸漸習慣
+
+**つ(tsu) い(i) 引(hi) き(ki) 込(ko) ま(ma) れ(re) て(te) ゆ(yu) く(ku)**  
+不知不覺間深深被你吸引
+
+## 第二段
+
+### 副歌
+
+**君(ki mi) さ(sa) え(e) い(i) れ(re) ば(ba)**  
+只要有你在
+
+**遥(ha ru) か(ka) な(na) 道(mi chi) も(mo) 越(ko) え(e) て(te) 行(i) け(ke) る(ru)**  
+即使路途遙遠，也能跨越前行
+
+**どん(don) な(na) 時(to ki) も(mo) 守(ma mo) り(ri) 抜(nu) く(ku)**  
+無論何時，我都會守護到底
+
+**大地(dai chi) の(no) 水(mi zu) は(wa)**  
+大地之水
+
+**透(su) き(ki) 通(to o) る(ru) 花(ha na) を(wo) 咲(sa) か(ka) せ(se) る(ru) 糧(ka te)**  
+是讓清澈花朵綻放的養分
+
+**暗闇(ku ra ya mi) を(wo) 切(ki) り(ri) 裂(sa) く(ku) よ(yo) う(u) に(ni)**  
+就像劃破黑暗一般
+
+**I need your love**  
+我需要你的愛
+
+### 主歌 2
+
+**生(u) ま(ma) れ(re) 変(ka) わ(wa) って(tte) も(mo)**  
+即使轉世重生
+
+**そ(so) ん(n) な(na) セリフ(se ri fu)**  
+那樣的台詞
+
+**こ(ko) だ(da) わ(wa) り(ri) は(wa) 僕(bo ku) の(no) 弱(yo wa) さ(sa)**  
+說不出口，是因為我的執著與軟弱
+
+**ちょ(cho) っと(tto) 逃(ni) げ(ge) 腰(go shi) だ(da) と(to) し(shi) て(te) も(mo)**  
+即使稍微有些退縮
+
+**変(ka) わ(wa) ら(ra) ぬ(nu) 愛(a i) は(wa) 誓(chi ka) え(e) る(ru)**  
+我仍能發誓這份愛永遠不變
+
+**簡単(kan tan) じゃ(ja) な(na) い(i)**  
+正因為並不簡單
+
+**二人(fu ta ri) だ(da) か(ka) ら(ra) い(i) い(i)**  
+兩個人在一起才更珍貴
+
+**美(u tsu ku) し(shi) い(i) の(no) は(wa)**  
+之所以如此美麗
+
+**壊(ko wa) れ(re) か(ka) け(ke) だ(da) と(to) 知(shi) って(tte) る(ru) か(ka) ら(ra)？**  
+是因為知道它正逐漸破碎嗎？
+
+**キス(ki su) で(de) 互(ta ga) い(i) を(wo) 隠(ka ku) し(shi) て(te)**  
+用親吻隱藏彼此的心意
+
+**水平線(sui hei sen) の(no) 先(sa ki) に(ni)**  
+如果在地平線的另一端
+
+**明日(a shi ta) が(ga) あ(a) る(ru) と(to) し(shi) た(ta) ら(ra)**  
+存在著明天
+
+**波風(na mi ka ze) も(mo) 悪(wa ru) く(ku) は(wa) な(na) い(i)**  
+那麼經歷一些風浪也不壞
+
+**I'm no match for you**  
+我比不上你
+
+## 最終副歌
+
+**君(ki mi) さ(sa) え(e) い(i) れ(re) ば(ba)**  
+只要有你在
+
+**どん(don) な(na) 勝負(shou bu) も(mo) 勝(ka) ち(chi) 続(tsu zu) け(ke) る(ru)**  
+無論面對什麼挑戰，都能不斷取得勝利
+
+**どん(don) な(na) 時(to ki) も(mo) 守(ma mo) り(ri) 抜(nu) く(ku)**  
+無論何時，我都會守護到底
+
+**大地(dai chi) の(no) 水(mi zu) は(wa)**  
+大地之水
+
+**透(su) き(ki) 通(to o) る(ru) 花(ha na) を(wo) 咲(sa) か(ka) せ(se) る(ru) 糧(ka te)**  
+是讓清澈花朵綻放的養分
+
+**暗闇(ku ra ya mi) を(wo) 切(ki) り(ri) 裂(sa) く(ku) よ(yo) う(u) に(ni)**  
+就像劃破黑暗一般
+
+**I need your love**  
+我需要你的愛
+
+**あ(a) り(ri) ふ(fu) れ(re) た(ta) 言葉(ko to ba) を(wo) 並(na ra) べ(be) て(te)**  
+排列著那些平凡無奇的話語
+
+**LA LA Love**  
+LA LA Love

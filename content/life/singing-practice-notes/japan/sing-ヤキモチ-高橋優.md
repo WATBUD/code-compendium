@@ -1,103 +1,63 @@
-###-----------------------1------------------------###
+**君(ki mi) が(ga) 前(ma e) に(ni) 付き合っ(tsu ki a tsu) て(te) い(i) た(ta) 人(hi to) の(no) こ(ko) と(to)**  
 
-#   君    が    前   に  付  き  合  って  い   た    人    の こ と
-# (ki mi) ga. (ma e) ni tsu ki.  a  tte   i.  ta  (hi to) no ko to. 
+**僕(bo ku) に(ni) 打ち(u chi) 明け(a ke) て(te) く(ku) れ(re) た(ta) と(to) き(ki)**  
 
-#   僕    に  打 ち  明 け て  く れ  た と き
-# (bo ku) ni. u chi  a ke te. ku re ta to ki.
- 
-# 素    直   に 聴 い て あ げ ら れ  ず に
-# (su na o). ni ki i te a. ge ra re zu ni.
+**素直(su na o) に(ni) 聴い(ki i) て(te) あ(a) げ(ge) ら(ra) れ(re) ず(zu) に(ni)**  
 
-#  寂    し   い思   い を さ せ て   し  ま っ た ね
-# (sa bi shi) i o.   i  o sa se te. shi ma a  ta ne.
- 
-# す ぐ に ヤ   キ  モ チ  焼 く  の が         
-# su gu ni ya. ki mo chi. ya ku no ga 
+**寂しい(sa bi shi i) 思い(o mo i) を(wo) さ(sa) せ(se) て(te) し(shi) ま(ma) った(tta) ね(ne)**  
 
-#   僕    の     悪   い     癖   だ って   分   か っ て い た    筈   な の に
-# (bo ku) no. (wa. ru i) (ku se) da tte.   wa  ka a. te i ta. (ha zu) na no ni 
- 
-# 自     分  勝     手  な  想   い  が   残      酷  な
-# (ji bu n) (ka. a te) na. (o mo i) ga. (zan ko ku) na 
+**す(su) ぐ(gu) に(ni) ヤ(ya) キ(ki) モ(mo) チ(chi) 焼く(ya ku) の(no) が(ga)**  
 
-# 言     葉  に な って     君   を    傷     付  け   て た
-# (ko to ba) ni na tte. (ki mi) wo. (ki zu tsu) ke.  te ta 
-  
-# 一    緒  に 居   ら れ  る だ  け で
-# (i i sho) ni i.  ra re/ ru da/ ke de.
+**僕(bo ku) の(no) 悪い(wa ru i) 癖(ku se) だ(da) って(tte) 分か(wa ka) って(tte) い(i) た(ta) 筈(ha zu) な(na) の(no) に(ni)**  
 
-# 手 と  手 を    重    ね  合 え る  だ  け で 良 か   っ  た ね
-# te to/ te o  (ka sa) ne. a  e ru  da. ke de yo ka. a~~ ta ne
+**自分勝手(ji bu n ka tte) な(na) 想い(o mo i) が(ga) 残酷(za n ko ku) な(na)**  
 
-# 大        切  な    事   ほ ど   見 慣 れ た   場   所   で     輝      く の  か  も し  れ な い
-# (ta i se tsu) na/ ko to. ho do. mi na re ta. (ba sho)/ de (ka ga. ya) ku no ka/ mo shi re na i 
+**言葉(ko to ba) に(ni) な(na) って(tte) 君(ki mi) を(wo) 傷付け(ki zu tsu ke) て(te) た(ta)**  
 
-#    君   を     強    く   抱   き  し  め た い
-# (ki mi) wo/ (tsu yo) ku. (da/ ki) shi me ta i
- 
-###-----------------------2------------------------###
+**一緒に(i ssho ni) 居ら(i ra) れ(re) る(ru) だ(da) け(ke) で(de)**  
 
-# 自     分   の  た め だ け   に  生 き   て い る    人    が　   
-# (ji bu n).  no. ta me da ke. ni (i ki). te i ru (hi to)  ga.
+**手(te) と(to) 手(te) を(wo) 重ね(o mo ne) 合え(a e) る(ru) だ(da) け(ke) で(de) 良か(yo ka) った(tta) ね(ne)**  
 
-#   集   め  ら れ  た  よう な  こ  の   街     で
-# (a tsu me) ra re ta  you  na. ko no (ma chi) de 
+**大切(ta i se tsu) な(na) 事(ko to) ほ(ho) ど(do) 見慣れ(mi na re) た(ta) 場所(ba sho) で(de) 輝く(ka ga ya ku) の(no) か(ka) も(mo) し(shi) れ(re) な(na) い(i)**  
 
-#    誰   か  を     心      か  ら   想   え る  
-# (da re) ka. o  (ko ko ro) ka. ra (o mo) e ru.   
- 
-#     幸      せ を  い つ  ま で も    忘    れ た  く な い
-# (shi a wa)  se wo. i tsu ma de mo. (wa su) re ta ku na i
+**君(ki mi) を(wo) 強く(tsu yo ku) 抱き(da ki) し(shi) め(me) た(ta) い(i)**  
 
-# す ぐ に ヤ   キ モ チ   焼 く  こ と  も 好 き だ  よ 
-# su gu ni ya. ki mo chi. ya ku ko to. mo su ki da yo. 
+**自分(ji bu n) の(no) た(ta) め(me) だ(da) け(ke) に(ni) 生き(i ki) て(te) い(i) る(ru) 人(hi to) が(ga)**  
 
-# って  か ら か  っ て     笑   う   君     に   甘   え て  い  た
-# tte  ka ra ka~  a  te (wa ra) u (ki mi)  ni (a ma) e  te  i  ta 
+**集め(a tsu me) ら(ra) れ(re) た(ta) よ(yo) う(u) な(na) こ(ko) の(no) 街(ma chi) で(de)**  
 
-#  愛    し て  い る こ  と を  言      葉  以    外  の      方      法  で
-# (a i) shi te. i ru ko. to wo (ko to. ba) (i ga i). no.    (ho u ho u) de. 
-  
-#  今    す ぐ   に     伝     え た い
-# (i ma) su gu.  ni  (tsu ta)  e ta i~
+**誰か(da re ka) を(wo) 心(ko ko ro) か(ka) ら(ra) 想え(o mo e) る(ru)**  
 
-# 微     笑 ん で  く れ  た    顔   も 
-# (ho ho e) n de. ku re/ ta (ka/ o) mo. 
+**幸せ(shi a wa se) を(wo) い(i) つ(tsu) ま(ma) で(de) も(mo) 忘れ(wa su re) た(ta) く(ku) な(na) い(i)**  
 
-#   怒    った    顔    も    愛    し  く て  仕      方  な  か った よ
-# (o ko)/ tta (ka/  o) mo/ (i to) shi ku te. (shi ka ta) na. ka tta yo 
+**す(su) ぐ(gu) に(ni) ヤ(ya) キ(ki) モ(mo) チ(chi) 焼く(ya ku) こ(ko) と(to) も(mo) 好き(su ki) だ(da) よ(yo)**  
 
-# 打 ち 明  け  て く   れ  た   過   去   も   
-# u chi a  ke  te ku.  re  ta.  (ka. ko)  mo.  
+**って(tte) か(ka) ら(ra) か(ka) って(tte) 笑う(wa ra u) 君(ki mi) に(ni) 甘え(a ma e) て(te) い(i) た(ta)**  
 
-# 二      人  が   見 た   青      空   も     忘   れ な い
-# (fu ta/ ri) ga/  mi ta (a/ o zo ra)  mo/ (wa su) re na i  
+**愛し(i to shi) て(te) い(i) る(ru) こ(ko) と(to) を(wo) 言葉(ko to ba) 以外(i ga i) の(no) 方法(ho u ho u) で(de)**  
 
+**今す(i ma su) ぐ(gu) に(ni) 伝え(tsu ta e) た(ta) い(i)**  
 
-###-----------------------3------------------------###
+**微笑ん(ho ho e n) で(de) く(ku) れ(re) た(ta) 顔(ka o) も(mo)**  
 
-# 一    緒  に 居   ら れ  る だ  け で
-# (i i sho) ni i.  ra re/ ru da/ ke de.
+**怒っ(i ka tsu) た(ta) 顔(ka o) も(mo) 愛し(i to shi) く(ku) て(te) 仕方なか(shi ka ta na ka) った(tta) よ(yo)**  
 
-# 手 と  手 を    重    ね  合 え る  だ  け で 良 か   っ  た ね
-# te to/ te o  (ka sa) ne. a  e ru  da. ke de yo ka. a~~ ta ne
+**打ち(u chi) 明け(a ke) て(te) く(ku) れ(re) た(ta) 過去(ka ko) も(mo)**  
 
-# 大        切  な    事   ほ ど   見 慣 れ た   場   所   で     輝      く の  か  も し  れ な い
-# (ta i se tsu) na/ ko to. ho do. mi na re ta. (ba sho)/ de (ka ga. ya) ku no ka/ mo shi re na i 
+**二人(fu ta ri) が(ga) 見た(mi ta) 青空(a o zo ra) も(mo) 忘れ(wa su re) な(na) い(i)**  
 
+**一緒に(i ssho ni) 居ら(i ra) れ(re) る(ru) だ(da) け(ke) で(de)**  
 
-# 微     笑 ん で  く れ  た    顔   も 
-# (ho ho e) n de. ku re/ ta (ka/ o) mo. 
+**手(te) と(to) 手(te) を(wo) 重ね(o mo ne) 合え(a e) る(ru) だ(da) け(ke) で(de) 良か(yo ka) った(tta) ね(ne)**  
 
-#   怒    った    顔    も    愛    し  く て  仕      方  な  か った よ
-# (o ko)/ tta (ka/  o) mo/ (i to) shi ku te. (shi ka ta) na. ka tta yo 
+**大切(ta i se tsu) な(na) 事(ko to) ほ(ho) ど(do) 見慣れ(mi na re) た(ta) 場所(ba sho) で(de) 輝く(ka ga ya ku) の(no) か(ka) も(mo) し(shi) れ(re) な(na) い(i)**  
 
-#   君    の    事     が  好 き  だ よ　  こ れ か  ら  も  ず  っ  と  
-# (ki mi) no (ko to)/ ga (su ki) da yo.   ko re ka ra/ mo zu   i  to  
- 
-#    君   を   抱   き  し  め た い
-# (ki mi) wo  (da/ ki) shi me ta i~
+**微笑ん(ho ho e n) で(de) く(ku) れ(re) た(ta) 顔(ka o) も(mo)**  
 
-#    君   を     強    く    抱  き   し  め た  い
-# (ki mi) wo/ (tsu yo) ku.  (da ki) shi  me ta  i
+**怒っ(i ka tsu) た(ta) 顔(ka o) も(mo) 愛し(i to shi) く(ku) て(te) 仕方なか(shi ka ta na ka) った(tta) よ(yo)**  
+
+**君(ki mi) の(no) 事(ko to) が(ga) 好き(su ki) だ(da) よ(yo) こ(ko) れ(re) か(ka) ら(ra) も(mo) ず(zu) っと(tto)**  
+
+**君(ki mi) を(wo) 抱き(da ki) し(shi) め(me) た(ta) い(i)**  
+
+**君(ki mi) を(wo) 強く(tsu yo ku) 抱き(da ki) し(shi) め(me) た(ta) い(i)**  
