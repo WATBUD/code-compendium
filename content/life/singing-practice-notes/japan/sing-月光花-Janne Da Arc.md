@@ -1,7 +1,16 @@
+# 月光花
+
+> 演唱：Janne Da Arc
+> 用途：日文歌詞、羅馬拼音與中文對照練唱
+
+## 第一段
+
+### 主歌 1
+
 在哀傷綻放的花朵中  
 **悲し(ka na shi) げ(ge) に(ni) 咲く(sa ku) 花(ha na) に(ni)**  
 
-看見了你的身影  
+你的身影，看見了  
 **君(ki mi) の(no) 面影(o mo ka ge) を(wo) 見た(mi ta)**  
 
 明明是我最喜歡的雨  
@@ -16,13 +25,15 @@
 一聲嘆息，一片花瓣墜落  
 **溜め息(ta me i ki) 一つ(hi to tsu) 堕ち(o chi) た(ta) 花びら(ha na bi ra)**  
 
-收集月亮碎片  
+### 副歌 1
+
+月亮的碎片，收集起來  
 **月(tsu ki) の(no) 欠片(ka ke ra) を(wo) 集め(a tsu me) て(te)**  
 
 點綴著夢境入睡  
 **夢(yu me) を(wo) 飾り(ka za ri) 眠る(ne mu ru)**  
 
-即使撒滿時間之沙  
+時間之沙，撒滿也  
 **時の(to ki no) 砂(su na) 散り(chi ri) ば(ba) め(me) て(te) も(mo)**  
 
 也回不到那段時光  
@@ -34,7 +45,7 @@
 我又再次尋找著你  
 **ま(ma) た(ta) 君(ki mi) を(wo) さ(sa) が(ga) し(shi) て(te) た(ta)**  
 
-要度過多少個夜晚  
+多少個夜晚，度過的話  
 **い(i) く(ku) つ(tsu) 夜(yo ru) を(wo) 越え(ko e) れ(re) ば(ba)**  
 
 淚水會化為堅強嗎？  
@@ -61,19 +72,25 @@
 如今你已經不在了  
 **今(i ma) は(ha) も(mo) う(u) 君(ki mi) は(ha) い(i) な(na) い(i) よ(yo)**  
 
-明知終將凋零的花朵，依然  
+## 第二段
+
+### 主歌 2
+
+知道將凋零的花朵，儘管如此  
 **散り(chi ri) 逝く(i ku) と(to) 知る(shi ru) 花(ha na) は(ha) そ(so) れ(re) で(de) も(mo)**  
 
 堅強地活著，色彩如此鮮明  
 **強く(tsu yo ku) 生き(i ki) て(te) る(ru) 色(i ro) 鮮(se n) や(ya) か(ka) に(ni)**  
 
-收集月亮碎片  
+### 副歌 2
+
+月亮的碎片，收集起來  
 **月(tsu ki) の(no) 欠片(ka ke ra) を(wo) 集め(a tsu me) て(te)**  
 
 點綴著夢境入睡  
 **夢(yu me) を(wo) 飾り(ka za ri) 眠る(ne mu ru)**  
 
-即使撒滿時間之沙  
+時間之沙，撒滿也  
 **時の(to ki no) 砂(su na) 散り(chi ri) ば(ba) め(me) て(te) も(mo)**  
 
 也回不到那段時光  
@@ -92,4 +109,4 @@
 **叶わ(ka na wa) な(na) い(i) 遠す(to o su) ぎ(gi) て(te)**  
 
 如今你已經不在了  
-**今(i ma) は(ha) も(mo) う(u) 君(ki mi) は(ha) い(i) な(na) い(i) よ(yo)**  
+**今(i ma) は(ha) も(mo) う(u) 君(ki mi) は(ha) い(i) な(na) い(i) よ(yo)**

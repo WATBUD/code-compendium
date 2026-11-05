@@ -33,7 +33,7 @@
 如今又回想起來  
 **思い出し(o mo i da shi) た(ta) ん(n) だ(da)**  
 
-願不願意和我一起跳舞？  
+和我，跳舞好嗎？  
 **僕(bo ku) と(to) 踊っ(o do tsu) て(te) く(ku) れ(re) な(na) い(i) か(ka)**  
 
 光與影交錯的 Winding Road  
@@ -51,7 +51,7 @@
 懷著愛、勇氣與驕傲  
 **愛(a i) と(to) 勇気(yu u ki) と(to) 誇り(ho ko ri) を(wo) 持っ(mo tsu) て(te)**  
 
-我仍會去戰鬥  
+戰鬥吧  
 **闘う(ta ta ka u) よ(yo)**  
 
 ### 副歌 1
@@ -65,10 +65,10 @@
 相信每個人  
 **き(ki) っと(tto) 誰も(da re mo) が(ga)**  
 
-都想把永恆握在手中  
+永恆，想得到  
 **永遠(e i e n) を(wo) 手に入れ(te ni i re) た(ta) い(i)**  
 
-即使裝作完全不在意  
+完全不在意，假裝著也  
 **ZEN ZEN 気に(ki ni) し(shi) な(na) い(i) フ(fu) リ(ri) し(shi) て(te) も(mo)**  
 
 看吧，我已愛上了你  
@@ -105,7 +105,7 @@
 即便如此，你還迷戀著那傢伙嗎？  
 **そ(so) れ(re) で(de) も(mo) あ(a) い(i) つ(tsu) に(ni) 夢中(mu chu u) な(na) の(no) ？**  
 
-明明還有更多話想問  
+更多想問的事情，明明還有  
 **も(mo) っと(tto) 聞き(ki ki) た(ta) い(i) こ(ko) と(to) が(ga) あ(a) った(tta) の(no) に(ni)**  
 
 兩人的對話卻被車聲  
@@ -122,7 +122,7 @@
 就連我自己也覺得不可思議  
 **自分(ji bu n) で(de) も(mo) 不思議(fu shi gi) な(na) ん(n) だ(da) け(ke) ど(do)**  
 
-一有什麼事  
+有什麼事時，立刻  
 **何か(na ni ka) あ(a) る(ru) と(to) す(su) ぐ(gu) に(ni)**  
 
 就會想打電話給你  
@@ -131,14 +131,14 @@
 即使裝作對你完全沒意思  
 **ZEN ZEN 気の(ki no) な(na) い(i) フ(fu) リ(ri) し(shi) て(te) も(mo)**  
 
-到頭來，我始終  
+到頭來，只有你的事  
 **結局(ke kkyo ku) 君(ki mi) の(no) こ(ko) と(to) だ(da) け(ke)**  
 
-只注視著你  
+注視著  
 **見て(mi te) い(i) た(ta)**  
 
 朝著大海的彼端  
 **海(u mi) の(no) 彼方(ka na ta) へ(e)**  
 
 一起飛奔而出吧，Hold my hand  
-**飛び出そ(to bi da so) う(u) よ(yo) Hold my hand**  
+**飛び出そ(to bi da so) う(u) よ(yo) Hold my hand**

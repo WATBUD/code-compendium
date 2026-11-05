@@ -1,3 +1,12 @@
+# 君が好きだと叫びたい
+
+> 演唱：BAAD
+> 用途：日文歌詞、羅馬拼音與中文對照練唱
+
+## 第一段
+
+### 主歌 1
+
 頂著耀眼的陽光  我在街頭奔跑著  
 **眩(ma bu) し(shi) い(i) 陽差(hi za) し(shi) を(wo) 背(se) に(ni) 走(ha shi) り(ri) 出(da) す(su) 街(ma chi) の(no) 中(na ka)**  
 
@@ -16,20 +25,26 @@
 無法放手，這份心意堅定不移  
 **離(ha na) さ(sa) な(na) い(i) 搖(yu) る(ru) が(ga) な(na) い(i)**  
 
+### 副歌 1
+
 # 離不開 搖不動
 # Crazy for you
 
 我想大叫我好喜歡你  明天改變一下如何  
 **君(ki mi) が(ga) 好(su) き(ki) だ(da) と(to) 叫(sa ke) び(bi) た(ta) い(i) 明日(a shi ta) を(wo) 変(ka) え(e) て(te) み(mi) よ(yo) う(u)**  
 
-我好想打碎凍結的時間  
+凍結下去的時間，想打碎  
 **り(ri) つ(tsu) い(i) て(te) く(ku) 時間(to ki) を(wo) ぶ(bu) ち(chi) 壞(ko wa) し(shi) た(ta) い(i)**  
 
 我想大叫我好喜歡你  勇敢地邁出去  
 **君(ki mi) が(ga) 好(su) き(ki) だ(da) と(to) 叫(sa ke) び(bi) た(ta) い(i) 勇氣(yu u ki) で(de) 踏(fu) み(mi) 出(da) そ(so) う(u)**  
 
-請你接受我熱情的思念  
+這份炙熱的思念，希望你接受  
 **こ(ko) の(no) 熱(a tsu) い(i) 想(o mo) い(i) を(wo) 受(u) け(ke) 止(to) め(me) て(te) ほ(ho) し(shi) い(i)**  
+
+## 第二段
+
+### 主歌 2
 
 嘎嘎作響的地板  越過熱鬧的桌間  
 **ざ(za) わ(wa) め(me) い(i) た(ta) フ(fu) ロ(ro) ア(a) に(ni) に(ni) ぎ(gi) わ(wa) う(u) テ(te) ブ(bu) ル(ru) 越(ko) し(shi)**  
@@ -49,32 +64,38 @@
 我想得到你  我想確認彼此的心  
 **屆(to do) け(ke) な(na) い(i) 確(ta shi) か(ka) め(me) た(ta) い(i)**  
 
+### 副歌 2
+
 # I take you away
 
 我好想大聲說我喜歡你  什麼我都不管了  
 **君(ki mi) が(ga) 好(su) き(ki) だ(da) と(to) 叫(sa ke) び(bi) た(ta) い(i) 何(na ni) も(mo) か(ka) も(mo) 脱(nu) ぎ(gi) 捨(su) て(te)**  
 
-我只想找出能融化你心的話  
+融化心的話語，想找出  
 **心(ko ko ro) と(to) か(ka) す(su) 言葉(ko to ba) を(wo) 見(mi) つ(tsu) け(ke) 出(da) し(shi) た(ta) い(i)**  
 
-我好想大聲說我喜歡你  今天我不回家  
+喜歡你，想大聲喊出，今晚不讓你回去  
 **君(ki mi) が(ga) 好(su) き(ki) だ(da) と(to) 叫(sa ke) び(bi) た(ta) い(i) 今夜(ko n ya) は(wa) 歸(ka e) さ(sa) な(na) い(i)**  
 
 讓我們結束   僅僅彼此注視的日子吧  
 **見(mi) つ(tsu) め(me) る(ru) だ(da) け(ke) の(no) 日(hi) 々((kurikaesi)) な(na) ん(n) て(te) 終(o) わ(wa) り(ri) に(ni) し(shi) よ(yo) う(u)**  
+
+## 重複副歌
+
+### 副歌 1
 
 # I wanna cry for you
 
 我想大叫我好喜歡你  明天改變一下如何  
 **君(ki mi) が(ga) 好(su) き(ki) だ(da) と(to) 叫(sa ke) び(bi) た(ta) い(i) 明日(a shi ta) を(wo) 変(ka) え(e) て(te) み(mi) よ(yo) う(u)**  
 
-我好想打碎凍結的時間  
+凍結下去的時間，想打碎  
 **凍(ko o) り(ri) つ(tsu) い(i) て(te) く(ku) 時間(to ki) を(wo) ぶ(bu) ち(chi) 壞(ko wa) し(shi) た(ta) い(i)**  
 
 我想大叫我好喜歡你  勇敢地邁出去  
 **君(ki mi) が(ga) 好(su) き(ki) だ(da) と(to) 叫(sa ke) び(bi) た(ta) い(i) 勇氣(yu u ki) で(de) 踏(fu) み(mi) 出(da) そ(so) う(u)**  
 
-請你接受我熱情的思念  
+這份炙熱的思念，希望你接受  
 **こ(ko) の(no) 熱(a tsu) い(i) 想(o mo) い(i) を(wo) 受(u) け(ke) 止(to) め(me) て(te) ほ(ho) し(shi) い(i)**  
 
 # I wanna cry for you

@@ -1,3 +1,12 @@
+# break up!
+
+> 演唱：宮崎歩
+> 用途：日文歌詞、羅馬拼音與中文對照練唱
+
+## 第一段
+
+### 主歌 1
+
 # la la la... la la la...
 
 胸中高喊著「我不想輸」的  
@@ -12,20 +21,22 @@
 不是別人，輪到你了  
 **誰(da re) で(de) も(mo) な(na) い(i) さ(sa) キ(ki) ミ(mi) の(no) 番(ba n) だ(da) よ(yo)**  
 
-不可以逃走  
+逃走是不可以的  
 **逃げ出し(ni ge da shi) ちゃ(cha) い(i) け(ke) な(na) い(i)**  
 
-賭上絕不退讓的明天  
+不能退讓的明天，賭上  
 **譲れ(yu zu re) な(na) い(i) 明日(a shi ta) を(wo) か(ka) け(ke) て(te) や(ya) る(ru) ん(n) だ(da)**  
 
-凝視著自己的手掌  
+手掌，凝視著  
 **手の(te no) ひ(hi) ら(ra) を(wo) 見つ(mi tsu) め(me) て(te)**  
 
-牢牢抓住  
+緊緊握住的話  
 **強く(tsu yo ku) 握り(ni gi ri) し(shi) め(me) た(ta) ら(ra)**  
 
 力量便從心中湧出  
 **コ(ko) コ(ko) ロ(ro) に(ni) チ(chi) カ(ka) ラ(ra) が(ga) 流れ(na ga re) 出す(da su)**  
+
+### 副歌 1
 
 # Get break up! to break up!
 
@@ -41,13 +52,17 @@
 # It's time to go!!
 # It's time to go!!
 
+## 第二段
+
+### 主歌 2
+
 說什麼「已經撐不下去了」  
 **こ(ko) れ(re) 以上(i jo u) も(mo) う(u) ム(mu) リ(ri) だ(da) よ(yo) な(na) ん(n) て(te)**  
 
 當你的膝蓋顫抖時  
 **ヒ(hi) ザ(za) が(ga) 震え(fu ru e) る(ru) 時(to ki)**  
 
-感受那相信著你的眼神  
+相信你的眼眸，感受著  
 **キ(ki) ミ(mi) の(no) コ(ko) ト(to) 信じ(shi n ji) る(ru) 瞳(hi to mi) 感じ(ka n ji) て(te)**  
 
 如同親手遞來一般，給了我勇氣  
@@ -68,12 +83,14 @@
 門慢慢打開  
 **扉(to bi ra) は(wa) 開き(hi ra ki) は(ha) じ(ji) め(me) て(te) い(i) る(ru)**  
 
+### 副歌 2
+
 # Get break up! to break up!
 
 湧現的力量，你已經察覺  
 **沸き(wa ki) 上が(a ga) る(ru) Power キ(ki) ミ(mi) は(ha) も(mo) う(u) 気づ(ki zu) い(i) て(te) い(i) る(ru)**  
 
-不能讓夢想只停留在夢裡  
+夢想，不能任其只是夢想  
 **夢(yu me) を(wo) 夢(yu me) で(de) ほ(ho) っと(tto) け(ke) な(na) い(i) よ(yo)**  
 
 必須將它實現  
@@ -81,6 +98,10 @@
 
 # It's time to go!!
 # It's time to go!!
+
+## 重複副歌
+
+### 副歌 1
 
 # Get break up! to break up!
 
@@ -96,12 +117,14 @@
 # It's time to go!!
 # It's time to go!!
 
+### 副歌 2
+
 # Get break up! to break up!
 
 湧現的力量，你已經察覺  
 **沸き(wa ki) 上が(a ga) る(ru) Power キ(ki) ミ(mi) は(ha) も(mo) う(u) 気づ(ki zu) い(i) て(te) い(i) る(ru)**  
 
-不能讓夢想只停留在夢裡  
+夢想，不能任其只是夢想  
 **夢(yu me) を(wo) 夢(yu me) で(de) ほ(ho) っと(tto) け(ke) な(na) い(i) よ(yo)**  
 
 必須將它實現  

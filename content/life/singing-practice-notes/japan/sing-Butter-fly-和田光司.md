@@ -10,13 +10,13 @@
 成為一隻心情愉快的蝴蝶  
 **ゴ(go) キ(ki) ゲ(ge) ン(n) な(na) 蝶(cho u) に(ni) な(na) って(tte)**  
 
-乘著閃耀的風  
+閃耀的風，乘上  
 **き(ki) ら(ra) め(me) く(ku) 風(ka ze) に(ni) 乗って(no tte)**  
 
 現在就立刻去見你吧  
 **今す(i ma su) ぐ(gu) キ(ki) ミ(mi) に(ni) 会い(a i) に(ni) 行こ(i ko) う(u)**  
 
-那些多餘的事情，還是忘掉比較好  
+多餘的事情之類，忘掉比較好  
 **余計(yo ke i) な(na) 事(ko to) な(na) ん(n) て(te) 忘れ(wa su re) た(ta) 方が(ho u ga) マ(ma) シ(shi) さ(sa)**  
 
 已經沒有時間繼續耍帥了  
@@ -42,13 +42,13 @@
 在這個一無所有的世界裡  
 **何も(na ni mo) な(na) い(i) 世の(yo no) 中(yo no na ka) じゃ(ja)**  
 
-是啊，雖然連珍愛的心意都快要認輸  
+沒錯，珍愛的心意也快要認輸，雖然如此  
 **そ(so) う(u) さ(sa) 愛しい(i to shi i) 想い(o mo i) も(mo) 負け(ma ke) そ(so) う(u) に(ni) な(na) る(ru) け(ke) ど(do)**  
 
 滿是停滯不前的印象  
 **Stay し(shi) が(ga) ち(chi) な(na) イ(i) メー(mee) ジ(ji) だ(da) ら(ra) け(ke) の(no)**  
 
-即使是一雙不可靠的翅膀  
+不可靠的翅膀，即使如此  
 **頼りない(ta yo ri na i) 翼(tsu ba sa) で(de) も(mo)**  
 
 也一定能夠飛翔，On My Love  
@@ -61,7 +61,7 @@
 化作一隻雀躍的蝴蝶  
 **ウ(u) カ(ka) レ(re) タ(ta) 蝶(cho u) に(ni) な(na) って(tte)**  
 
-乘著一心向前的風  
+一心一意的風，乘上  
 **一途(i chi zu) な(na) 風(ka ze) に(ni) 乗って(no tte)**  
 
 無論到哪裡，都要去見你  
@@ -73,7 +73,7 @@
 意外地很方便  
 **意外(i ga i) に(ni) 便利(be n ri) だ(da) って(tte)**  
 
-一邊聽著高聲吶喊的熱門歌曲  
+高聲唱著的熱門歌曲，聽著  
 **叫ん(sa ke n) で(de) る(ru) ヒ(hi) ット(tto) ソ(so) ン(n) グ(gu) 聴き(ki ki) な(na) が(ga) ら(ra)**  
 
 究竟會是什麼呢  
@@ -102,7 +102,7 @@
 染上了彷彿會停滯不前的印象  
 **Stay し(shi) そ(so) う(u) な(na) イ(i) メー(mee) ジ(ji) を(wo) 染め(so me) た(ta)**  
 
-即使是一雙笨拙的翅膀  
+笨拙的翅膀，即使如此  
 **ぎ(gi) こ(ko) ち(chi) な(na) い(i) 翼(tsu ba sa) で(de) も(mo)**  
 
 也一定能夠飛翔，On My Love  
@@ -118,13 +118,13 @@
 在這個一無所有的世界裡  
 **何も(na ni mo) な(na) い(i) 世の(yo no) 中(yo no na ka) じゃ(ja)**  
 
-是啊，雖然連珍愛的心意都快要認輸  
+沒錯，珍愛的心意也快要認輸，雖然如此  
 **そ(so) う(u) さ(sa) 愛しい(i to shi i) 想い(o mo i) も(mo) 負け(ma ke) そ(so) う(u) に(ni) な(na) る(ru) け(ke) ど(do)**  
 
 滿是停滯不前的印象  
 **Stay し(shi) が(ga) ち(chi) な(na) イ(i) メー(mee) ジ(ji) だ(da) ら(ra) け(ke) の(no)**  
 
-即使是一雙不可靠的翅膀  
+不可靠的翅膀，即使如此  
 **頼りない(ta yo ri na i) 翼(tsu ba sa) で(de) も(mo)**  
 
 也一定能夠飛翔，Oh Yeah  
@@ -144,8 +144,8 @@
 染上了彷彿會停滯不前的印象  
 **Stay し(shi) そ(so) う(u) な(na) イ(i) メー(mee) ジ(ji) を(wo) 染め(so me) た(ta)**  
 
-即使是一雙笨拙的翅膀  
+笨拙的翅膀，即使如此  
 **ぎ(gi) こ(ko) ち(chi) な(na) い(i) 翼(tsu ba sa) で(de) も(mo)**  
 
 也一定能夠飛翔，On My Love  
-**き(ki) っと(tto) 飛べ(to be) る(ru) さ(sa) On My Love**  
+**き(ki) っと(tto) 飛べ(to be) る(ru) さ(sa) On My Love**

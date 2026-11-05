@@ -1,3 +1,12 @@
+# おはよう。
+
+> 演唱：KENO
+> 用途：日文歌詞、羅馬拼音與中文對照練唱
+
+## 第一段
+
+### 主歌 1
+
 明明沒有拜託　早晨還是來了  
 **頼み(ta no mi) も(mo) し(shi) な(na) い(i) の(no) に(ni) 朝(a sa) は(ha) や(ya) って(tte) 来る(ku ru)**  
 
@@ -22,6 +31,8 @@
 那樣的一瞬間　是最重要的  
 **フ(fu) と(to) し(shi) た(ta) 瞬間(shu n ka n) が(ga) 大切(ta i se tsu) だ(da) って(tte)**  
 
+### 副歌 1
+
 對你道聲早安  
 **君(ki mi) に(ni) お(o) は(ha) よ(yo) う(u) って(tte) 言って(i tte)**  
 
@@ -31,10 +42,14 @@
 我的一天　必須開始啟程了  
 **僕(bo ku) の(no) 一日(tsu i ta chi) 始め(ha ji me) に(ni) 出掛け(de ka ke) な(na) きゃ(kya)**  
 
+## 第二段
+
+### 主歌 2
+
 彷彿什麼也沒發生過似的  
 **ま(ma) る(ru) で(de) 何も(na ni mo) な(na) か(ka) った(tta) み(mi) た(ta) い(i) に(ni)**  
 
-喜歡你打電話給我　說話的聲音  
+打電話來的你的聲音，是喜歡的  
 **電話(de n wa) し(shi) て(te) く(ku) る(ru) 君(ki mi) の(no) 声(ko e) が(ga) 好き(su ki) な(na) ん(n) だ(da)**  
 
 曾那樣地笨拙　打擾到了什麼  
@@ -43,7 +58,7 @@
 理所當然的事　              卻變得不可預測  
 **当たり前(a ta ri ma e) な(na) こ(ko) と(to) が(ga) 不透明(fu to u me i) に(ni) な(na) って(tte)**  
 
-比我還要更愛著我的人  
+比我更能好好愛我的，是  
 **僕(bo ku) よ(yo) り(ri) も(mo) 僕(bo ku) の(no) コ(ko) ト(to) を(wo) 上手く(u ma ku) 愛せ(a i se) る(ru) の(no) は(wa)**  
 
 明白只有你能如此，雖然有些不甘  
@@ -61,20 +76,24 @@
 也要踏出一步　尋求挽回  
 **始め(ha ji me) の(no) 一歩(i ppo) で(de) 救わ(su ku wa) れ(re) て(te) み(mi) る(ru)**  
 
+### 副歌 2
+
 與你肩並肩　與你手牽手  
 **君(ki mi) と(to) 肩(ka ta) を(wo) 組ん(ku n) で(de) 君(ki mi) と(to) 手(te) を(wo) 繋い(tsu na i) で(de)**  
 
-希望與你是情人也是朋友  
+是情人，也想是朋友的緣故  
 **恋人(ko i bi to) だ(da) った(tta) り(ri) 友達(to mo da chi) で(de) い(i) た(ta) い(i) か(ka) ら(ra)**  
 
 道聲早安  
 **お(o) は(ha) よ(yo) う(u) って(tte) 言って(i tte)**  
 
-再做一個美夢  
+再讓我看見夢  
 **ま(ma) た(ta) 夢(yu me) を(wo) 見せ(mi se) て(te)**  
 
 自然而然                  的生活 方式             就很好  
 **自然(shi ze n) な(na) そ(so) の(no) 生き方(i ki ka ta) で(de) い(i) い(i) か(ka) ら(ra) さ(sa)**  
+
+## 過門
 
 已經看習慣了　你那奇怪的字跡  
 **見慣れ(mi na re) て(te) い(i) た(ta) 君(ki mi) の(no) 変な(he n na) 字(ji) も(mo)**  
@@ -88,10 +107,12 @@
 卻也什麼都沒有傳達給你  
 **君(ki mi) に(ni) な(na) ん(n) に(ni) も(mo) 伝わ(tsu ta wa) ら(ra) な(na) い(i)**  
 
+## 最終副歌
+
 再說一聲早安  
 **ま(ma) た(ta) “ お(o) は(ha) よ(yo) う(u) って(tte) 言って(i tte)**  
 
-再做一個美夢  
+再讓我看見夢  
 **ま(ma) た(ta) 夢(yu me) を(wo) 見せ(mi se) て(te)**  
 
 今天也充滿活力地度過吧  
@@ -106,5 +127,5 @@
 睜開眼　所看見的夢想  
 **目(me) を(wo) 開け(hi ra ke) た(ta) ま(ma) ま(ma) 見る(mi ru) 夢(yu me)**  
 
-就朝著未知的   明天前進  
-**知ら(shi ra) な(na) い(i) 明日(a shi ta) へ(e) 運ぶ(ha ko bu)**  
+未知的明天，運送前往  
+**知ら(shi ra) な(na) い(i) 明日(a shi ta) へ(e) 運ぶ(ha ko bu)**

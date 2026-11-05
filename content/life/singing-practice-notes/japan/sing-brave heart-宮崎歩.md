@@ -19,7 +19,7 @@
 所以繼續走下去吧  
 **歩き(a ru ki) 続け(tsu zu ke) よ(yo) う(u)**  
 
-有些事情只有你才能做到  
+只有你能做到的事情，存在著  
 **君(ki mi) に(ni) し(shi) か(ka) で(de) き(ki) な(na) い(i) コ(ko) ト(to) が(ga) あ(a) る(ru)**  
 
 為了讓這顆藍色星球  
@@ -48,7 +48,7 @@
 未知的力量正寄宿其中  
 **知ら(shi ra) な(na) い(i) パ(pa) ワー(waa) が(ga) 宿る(ya do ru)**  
 
-當心中的火焰被點燃  
+心中，火點燃的話  
 **ハー(haa) ト(to) に(ni) 火(hi) が(ga) つ(tsu) い(i) た(ta) ら(ra)**  
 
 無論是什麼願望  
@@ -57,7 +57,7 @@
 都不會只是謊言  
 **嘘(u so) じゃ(ja) な(na) い(i)**  
 
-因為一定能夠實現……  
+一定能實現的緣故……  
 **き(ki) っと(tto) か(ka) な(na) う(u) か(ka) ら(ra) …**  
 
 **Show me your brave heart**
@@ -82,7 +82,7 @@
 人生並沒有指引方向的地圖  
 **生き(i ki) 方(i ki ka ta) に(ni) 地図(chi zu) な(na) ん(n) か(ka) な(na) い(i) け(ke) ど(do)**  
 
-所以我們才如此自由  
+所以自由  
 **だ(da) か(ka) ら(ra) 自由(ji yu u)**  
 
 無論哪裡都能前往  
@@ -105,19 +105,19 @@
 前往比天空更遙遠的地方  
 **空(so ra) よ(yo) り(ri) 遠く(to o ku)**  
 
-你一定會遇見嶄新的自己  
+嶄新的自己，能夠遇見啊  
 **新しい(a ta ra shi i) 自分(ji bu n) に(ni) 逢え(a e) る(ru) さ(sa)**  
 
 未知的勇氣正沉睡其中  
 **知ら(shi ra) な(na) い(i) 勇気(yu u ki) が(ga) 眠る(ne mu ru)**  
 
-當你的心察覺到它  
+那顆心，察覺到的話  
 **ハー(haa) ト(to) に(ni) 気が(ki ga) つ(tsu) い(i) た(ta) ら(ra)**  
 
 胸口那場傾盆大雨  
 **胸(mu ne) の(no) 中の(na ka no) どしゃ降り(do sha bu ri) も(mo)**  
 
-也一定會停歇……  
+一定會停歇的緣故……  
 **き(ki) っと(tto) 止む(ya mu) か(ka) ら(ra) …**  
 
 **Show me your brave heart**
@@ -155,7 +155,7 @@
 炙熱的心跳  
 **熱い(a tsu i) 鼓動(ko do u)**  
 
-會化為你的武器  
+武器，會成為的緣故  
 **武器(bu ki) に(ni) な(na) る(ru) か(ka) ら(ra)**  
 
 **Believe in your heart**
