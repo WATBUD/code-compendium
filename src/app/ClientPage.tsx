@@ -44,8 +44,10 @@ import {
   FaThermometerHalf,
   FaPuzzlePiece,
   FaSearch,
+  FaHtml5,
 } from 'react-icons/fa';
 import { SiTypescript, SiGo } from 'react-icons/si';
+import HtmlNote from './HtmlNote';
 
 const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: false });
 
@@ -87,9 +89,14 @@ const folderIcons: Record<string, React.ComponentType<{ className?: string }>> =
   typescript: SiTypescript,
 };
 
+const isNoteFile = (name: string) => name.endsWith('.md') || name.endsWith('.html');
+
 function getFileIcon(fileName: string) {
   if (fileName.endsWith('.md')) {
     return <FaFileAlt className="text-blue-500" />;
+  }
+  if (fileName.endsWith('.html')) {
+    return <FaHtml5 className="text-orange-500" />;
   }
   return <FaRegFileCode className="text-gray-500" />;
 }
@@ -141,7 +148,6 @@ export default function ClientPage({
   tree: TreeNode[];
 }) {
   const [flat, setFlat] = useState<TreeNode[]>([]);
-  const [content, setContent] = useState<string>('');
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
   const [sidebarWidth, setSidebarWidth] = useState(300);
   const [isDragging, setIsDragging] = useState(false);
@@ -156,6 +162,9 @@ export default function ClientPage({
   const router = useRouter();
   const searchParams = useSearchParams();
   const fileParam = searchParams.get('file');
+  // Derived straight from the URL so the first render after a navigation already has the new
+  // file's content (a state + effect would render one frame with the previous file's text).
+  const content = (fileParam && staticContent[fileParam]) || '';
 
   useEffect(() => {
     const checkMobile = () => {
@@ -184,11 +193,6 @@ export default function ClientPage({
 
   useEffect(() => {
     if (fileParam) {
-      const content = staticContent[fileParam];
-      if (content) {
-        setContent(content);
-      }
-
       const ancestorPaths = findAncestorFolderPaths(tree, fileParam);
       if (ancestorPaths) {
         setExpandedFolders((previous) => {
@@ -206,7 +210,7 @@ export default function ClientPage({
         });
       }
     }
-  }, [fileParam, staticContent, tree]);
+  }, [fileParam, tree]);
 
   useEffect(() => {
     if (!fileParam || searchQuery) return;
@@ -225,7 +229,7 @@ export default function ClientPage({
         (n) =>
           n.name.toLowerCase().includes(query.toLowerCase()) &&
           n.type === 'file' &&
-          n.name.endsWith('.md')
+          isNoteFile(n.name)
       );
       setSearchResults(filtered.map((n) => ({ path: n.path, content: [n.name] })));
       return;
@@ -296,7 +300,7 @@ export default function ClientPage({
           return (
             <li key={node.fullPath || node.path}>
               {node.type === 'file' ? (
-                node.name.endsWith('.md') && (
+                isNoteFile(node.name) && (
                   <Link
                     ref={fileParam === node.path ? selectedFileRef : undefined}
                     href={`/?file=${encodeURIComponent(node.path)}`}
@@ -376,7 +380,7 @@ export default function ClientPage({
   return (
     <div className="flex h-screen flex-col md:flex-row">
       <div
-        className={`fixed border-r border-gray-200 bg-white transition-all md:relative ${
+        className={`fixed shrink-0 border-r border-gray-200 bg-white transition-all md:relative ${
           isMobile ? (isCollapsed ? 'h-16' : 'h-screen') : 'h-screen'
         } overflow-y-auto`}
         style={{ width: isMobile ? '100%' : sidebarWidth }}
@@ -432,7 +436,7 @@ export default function ClientPage({
                         className="cursor-pointer rounded p-2 hover:bg-gray-100"
                       >
                         <div className="flex items-center gap-2 font-medium">
-                          <FaFileAlt className="text-blue-500" />
+                          {getFileIcon(result.path)}
                           {result.path}
                         </div>
                         {result.content.map((line, i) => (
@@ -461,11 +465,15 @@ export default function ClientPage({
       </div>
 
       <main
-        className={`flex-1 overflow-y-auto p-4 md:mt-0 ${
+        className={`min-w-0 flex-1 overflow-y-auto md:mt-0 ${
+          fileParam?.endsWith('.html') ? 'p-0' : 'p-4'
+        } ${
           isMobile ? (isCollapsed ? 'mt-16' : 'mt-0') : 'mt-0'
         } h-[calc(100vh-3rem)] md:h-screen`}
       >
-        {content ? (
+        {content && fileParam?.endsWith('.html') ? (
+          <HtmlNote path={fileParam} html={content} />
+        ) : content ? (
           <article className="prose prose-slate dark:prose-invert prose-headings:font-bold prose-headings:tracking-tight prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg prose-pre:bg-gray-900 prose-pre:text-gray-100 max-w-none">
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}

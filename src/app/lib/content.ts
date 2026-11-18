@@ -1,6 +1,9 @@
 import { readFileSync, readdirSync, statSync } from 'fs';
 import { join } from 'path';
 
+export const NOTE_EXTENSIONS = ['.md', '.html'];
+export const isNoteFile = (name: string) => NOTE_EXTENSIONS.some((ext) => name.endsWith(ext));
+
 const CONTENT_DIR = join(process.cwd(), 'content');
 
 type TreeNode = {
@@ -30,7 +33,7 @@ export function getAllFiles(dir: string): string[] {
 
 function buildTree(dir: string): TreeNode[] {
   const items = readdirSync(dir);
-  return items.map((name) => {
+  const nodes: TreeNode[] = items.map((name) => {
     const fullPath = join(dir, name);
     const relPath = fullPath.replace(CONTENT_DIR, '').replace(/^\//, '');
     const stat = statSync(fullPath);
@@ -50,6 +53,12 @@ function buildTree(dir: string): TreeNode[] {
       };
     }
   });
+
+  // Folders first, then files; each group sorted by name.
+  return nodes.sort((a, b) => {
+    if (a.type !== b.type) return a.type === 'folder' ? -1 : 1;
+    return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' });
+  });
 }
 
 export function getStaticContent() {
@@ -58,7 +67,7 @@ export function getStaticContent() {
   const tree = buildTree(CONTENT_DIR);
 
   for (const file of files) {
-    if (file.endsWith('.md')) {
+    if (isNoteFile(file)) {
       const relativePath = file.replace(CONTENT_DIR, '').replace(/^\//, '');
       const content = readFileSync(file, 'utf-8');
       contents[relativePath] = content;
