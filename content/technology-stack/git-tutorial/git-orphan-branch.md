@@ -11,8 +11,8 @@ The orphan branch starts as if it's a brand-new Git repository, with no prior co
 # No Impact on the Main Branch
 Any changes made on the orphan branch do not affect the main branch or any other branch in the repository.
 
-# Create a new orphan branch
-git checkout --orphan new-branch
+# Create a new orphan branch (e.g. to replace master with a fresh history)
+git checkout --orphan newBranchName
 
 # Add the current state of files to the new branch
 git add .
@@ -21,10 +21,10 @@ git add .
 git commit -m "Initial commit for the new branch"
 
 # Optionally, delete the old master branch (use with caution)
-git branch -D oldBranchName
+git branch -D master
 
-# Rename the new branch to master
-git branch -m newBranchName
+# Rename the current (new) branch to master
+git branch -m master
 
-# Force push the new branch to the remote repository
-git push origin newBranchName --force
+# Force push the new master to the remote repository (overwrites remote history; prefer --force-with-lease)
+git push origin master --force-with-lease

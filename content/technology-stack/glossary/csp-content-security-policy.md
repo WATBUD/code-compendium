@@ -47,6 +47,8 @@ Content-Security-Policy: default-src 'self'; script-src 'self' https://apis.goog
 
 - 只對 **自己這個 HTML 頁面生效 / Only effective for this HTML page**
 - 對 iframe 指向其他域名的頁面 **無效 / Ineffective for iframe from other domains**
+- ⚠️ **`frame-ancestors` 在 `<meta>` 中會被瀏覽器完全忽略**（`report-uri`/`report-to`、`sandbox` 也一樣），只有透過 **HTTP response header** 下發才有效；所以想防點擊劫持（禁止被 iframe 嵌入），一定要由伺服器回傳 `Content-Security-Policy: frame-ancestors ...`（或舊的 `X-Frame-Options`）。
+  / **`frame-ancestors` is ignored entirely when delivered via `<meta>`** (as are `report-uri`/`report-to` and `sandbox`); it only works as an HTTP header.
 
 ---
 
@@ -58,7 +60,7 @@ Content-Security-Policy: default-src 'self'; script-src 'self' https://apis.goog
 | `script-src`      | JS 來源 / JS sources                                   | `script-src 'self' https://cdn.example.com`  |
 | `style-src`       | CSS 來源 / CSS sources                                 | `style-src 'self' 'unsafe-inline'`           |
 | `img-src`         | 圖片來源 / Image sources                               | `img-src * data:`                            |
-| `frame-ancestors` | 哪些網站可以 `<iframe>` 嵌入 / Which sites can embed   | `frame-ancestors 'self' https://example.com` |
+| `frame-ancestors` | 哪些網站可以 `<iframe>` 嵌入（僅 HTTP header 有效）/ Which sites can embed (HTTP header only) | `frame-ancestors 'self' https://example.com` |
 | `connect-src`     | fetch/XHR/websocket 來源 / Fetch/XHR/WebSocket sources | `connect-src 'self' wss://example.com`       |
 
 ---
@@ -77,7 +79,7 @@ Content-Security-Policy: default-src 'self'; script-src 'self' https://apis.goog
 ## 5️⃣ 小結 / Summary
 
 - CSP 是 **瀏覽器安全政策 / Browser security policy**，由伺服器控制，前端只能補充
-- `frame-ancestors` 控制 **哪些網域可以 iframe 嵌入頁面 / Which domains can embed via iframe**
+- `frame-ancestors` 控制 **哪些網域可以 iframe 嵌入頁面 / Which domains can embed via iframe**，且**只能用 HTTP header 設定，寫在 `<meta>` 無效 / header only, ignored in `<meta>`**
 - 要允許 iframe Shopify → **官方修改 header（Shopify Plus 支援 / Shopify Plus supports official header modification）**
 
 ---

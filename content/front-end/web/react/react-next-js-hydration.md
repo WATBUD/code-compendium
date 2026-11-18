@@ -5,7 +5,7 @@
 3. **Hydration 只影響「互動性」，但不影響 SEO，因為 HTML 內容已經存在。**
 4. **避免 Hydration 問題的方法**：
    - 確保伺服器與客戶端輸出一致
-   - Lazy Hydration 或使用 React Server Components（未來支援）
+   - 延後載入非核心的互動元件，或使用 React Server Components（Next.js App Router 自 13.4 起為 stable，Server Components 為預設，不需要 hydrate）
 
 ## **📌 Hydration 的概念**
 當 Next.js 使用 **SSR (`getServerSideProps`) 或 SSG (`getStaticProps`)** 時，伺服器會先產生 HTML，然後發送給瀏覽器。但這些 HTML 本身是**靜態的**，沒有 React 的事件處理與狀態管理。  
@@ -24,7 +24,7 @@
 雖然 React 會「接手」頁面，但 Hydration **並不會改變 `getServerSideProps` 或 `getStaticProps` 傳遞的數據**。伺服器提供的 `props` 會在 Hydration 前就已經包含在 HTML 內，因此 Hydration **不會重新執行 `getServerSideProps`**，也不會再次請求 API。  
 
 ✅ **Hydration 不會影響 `getServerSideProps` 的數據**，只負責讓 React 接管 UI。  
-✅ **如果 Hydration 失敗，頁面仍然可以顯示內容（但無法互動）**，因為 HTML 早已渲染完成。  
+✅ **如果 JS 還沒載入或載入失敗，頁面仍然可以顯示內容（但無法互動）**，因為 HTML 早已渲染完成。若是 hydration 時內容不一致，React 18 起會改在客戶端重新渲染該區塊。  
 
 ---
 
@@ -33,27 +33,19 @@
 |------------------|--------------|------------|----------------|
 | **SSR (`getServerSideProps`)** | 頁面初始載入時就包含數據 | Hydration 後可互動 | 伺服器取得數據，直接嵌入 HTML |
 | **SSG (`getStaticProps`)** | 頁面初始載入時就包含數據 | Hydration 後可互動 | 構建時取得數據，靜態 HTML |
-| **CSR (`useEffect`)** | 初始 HTML 幾乎空白 | Hydration + API 請求後才可互動 | 瀏覽器執行 API 請求，填充 UI |
+| **CSR (`useEffect`)** | 初始 HTML 幾乎空白 | JS 載入並在客戶端渲染後可互動（沒有 Hydration），資料要等 API 回來才顯示 | 瀏覽器執行 API 請求，填充 UI |
 
 ---
 
 ## **📌 Hydration 可能的問題**
-1. **畫面閃爍 (Content mismatch)**
-   - 如果伺服器產生的 HTML 和客戶端 Hydration 結果不同，React 會拋出警告，如：
-     ```
-     Warning: Text content did not match. Server: "Hello" Client: "你好"
-     ```
-   - 這通常發生在：
-     - 伺服器和客戶端使用不同的 `Date()` 格式
-     - 客戶端 `useEffect` 在 Hydration 後改變內容
-     - 翻譯、隨機數等會導致不同輸出的變數
-   - **解決方案**：確保伺服器端和客戶端的輸出一致。
+1. **Hydration mismatch（伺服器與客戶端輸出不一致）**
+   - 原因與解法已整理成案例：`web/react/optimization-cases/react-hydration-mismatch.html`。
 
 2. **Hydration 太慢**
-   - 如果頁面太複雜（太多互動元件），Hydration 可能會拖慢首次可互動時間（TTI, Time to Interactive）。
+   - 如果頁面太複雜（太多互動元件），Hydration 可能會拖慢首次可互動的時間。
    - **解決方案**：
-     - **Lazy Hydration**：使用 `useEffect` 讓不影響核心內容的元件稍後才初始化。
-     - **部分 Hydration（Partial Hydration）**：Next.js 目前還不支援，但 React Server Components 可以減少不必要的 Hydration。
+     - **延後載入非核心元件**：用 `next/dynamic` 或 `React.lazy` + `<Suspense>` 拆分，React 18 的 selective hydration 會依 Suspense 邊界分段 hydrate，並優先處理使用者正在互動的區塊。
+     - **減少需要 hydrate 的元件**：Next.js App Router 的 Server Components 不送元件 JS 到瀏覽器、也不需要 hydrate，只有標記 `'use client'` 的元件會 hydrate。
 
 ---
 

@@ -5,10 +5,11 @@ ES 模組（ECMAScript 模組）和 CommonJS 模組是 JavaScript 中兩種不�
 ## 1. ECMAScript 模組（ES 模組）
 - 在 `package.json` 文件中加入 `"type": "module"`，即可使用 ES 模組。
 - 使用 `import` 和 `export` 關鍵字來導入和導出模組。
-- 靜態加載，模組在程式碼解析階段就會被加載，無法在執行時動態導入模組。
+- 靜態加載：頂層的 `import` 宣告在程式碼解析階段就會被分析並加載（必須寫在模組頂層，不能放在 `if` 或函式內）。
+- 需要在執行時動態導入時，可使用 `import()` 表達式，它會回傳 Promise，例如 `const math = await import('./math.mjs');`。
 - 模組中的變數預設是區域作用域，不會污染全域作用域。
 - 可以導出多個值，使用 `export` 關鍵字來導出變數、函數、類等。
-- 支援循環依賴，但只能導出空物件或空函數。
+- 支援循環依賴：導入的是 **live binding**（即時綁定），對方模組執行到賦值後就能讀到最新值；但若在對方模組尚未初始化該變數時就存取（例如 `let` / `const` / `class`），會拋出 `ReferenceError`（TDZ，暫時性死區）。`function` 宣告會被提升，因此可以正常呼叫。
 - 由於靜態加載的特性，加載速度更快，因為瀏覽器或 Node.js 可以在程式碼執行之前進行優化。
 
 ### 語法示例
@@ -85,8 +86,8 @@ console.log(global.myGlobalVariable); // Output: Hello from global!
 ### 動態加載導致加載速度相對較慢，因為需要在執行時解析和加載模組
  **CommonJS 模組** 中，模組加載是動態的，
  `require()` 導入模組時，Node.js 會在執行時解析並加載該模組。
- 會影響性能，因為每次調用 `require()` 都會進行一次 I/O 操作來讀取文件解析模組代碼。
- 當大量模組運行時被導入會導致比 **靜態加載**（ **ES 模組** ）更慢的性能。
+ 第一次 `require()` 某個模組時會同步進行 I/O 讀取文件並解析、執行模組代碼，之後結果會被快取在 `require.cache`，再次 `require()` 同一模組會直接回傳快取，不會重新讀取。
+ 由於加載是同步且在執行時才發生，若在執行路徑中才首次導入大量模組，會阻塞執行；也無法像 **靜態加載**（ **ES 模組** ）那樣事先分析依賴、做 tree shaking 等優化。
 
 ## 範例：動態加載影響性能
 ### `math.js` 模組
@@ -101,7 +102,7 @@ exports.add = function(a, b) {
 // main.js
 console.log('Start of main.js');
 
-// 模擬延遲：每次 require 都會導入並解析模組
+// 模擬延遲：第一次 require 時才會讀取並執行模組（之後會使用快取）
 setTimeout(() => {
     console.log('Before require math.js');
     const math = require('./math');  // 動態加載
@@ -128,10 +129,10 @@ Sum: 5
 | 設置方式 | `package.json` 中設定 `"type": "module"` | 預設支援 |
 | 導入語法 | `import` | `require()` |
 | 導出語法 | `export` / `export default` | `module.exports` / `exports` |
-| 加載方式 | 靜態加載 | 動態加載 |
+| 加載方式 | 靜態加載（另可用 `import()` 動態導入） | 動態加載（同步） |
 | 作用域 | 模組內部變數預設區域作用域 | 模組作用域，可使用 `global` 暴露到全域作用域 |
 | 導出多個值 | 支援 | 只能導出單個值（但 `exports` 物件可以包含多個屬性） |
-| 循環依賴處理 | 支援循環依賴，但只能導出空物件或空函數 | 支援循環依賴，但可能會得到未初始化的值 |
+| 循環依賴處理 | 支援，導入為 live binding；過早存取未初始化的 `let`/`const`/`class` 會拋出 `ReferenceError` | 支援，但可能拿到「尚未填完」的 `exports` 物件（部分屬性為 `undefined`） |
 | 加載速度 | 較快（靜態加載） | 較慢（動態加載） |
 
 ## 4. 總結

@@ -83,10 +83,15 @@
 
 ### 🚀 Code Example Using Go
 
+> 下面範例已設定持久化佇列、持久化訊息與手動 Ack，避免 RabbitMQ 重啟或消費者當掉時遺失訊息；完整原因與 Publisher Confirms 的用法見同資料夾 `optimization-cases/rabbitmq-message-loss.html`。
+> The example uses a durable queue, persistent messages and manual ack; see `optimization-cases/rabbitmq-message-loss.html` for details and publisher confirms.
+
 ### 📦 安裝套件
 
 ```bash
-go get github.com/streadway/amqp
+# streadway/amqp 已停止維護，改用 RabbitMQ 官方維護的 amqp091-go
+# streadway/amqp is unmaintained; use the official amqp091-go
+go get github.com/rabbitmq/amqp091-go
 ```
 
 ---
@@ -99,8 +104,11 @@ go get github.com/streadway/amqp
 package main
 
 import (
-    "github.com/streadway/amqp"
+    "context"
     "log"
+    "time"
+
+    amqp "github.com/rabbitmq/amqp091-go"
 )
 
 func main() {
@@ -124,7 +132,7 @@ func main() {
     // Declare a queue
     q, err := ch.QueueDeclare(
         "hello", // 佇列名稱 (queue name)
-        false,   // 是否持久化 (durable)
+        true,    // 持久化，重啟後佇列還在 (durable)
         false,   // 沒有使用會自動刪除 (delete when unused)
         false,   // 是否為專用 (exclusive)
         false,   // 是否阻塞 (no-wait)
@@ -137,14 +145,18 @@ func main() {
     // 發送一則訊息
     // Publish a message
     body := "Hello, RabbitMQ!"
-    err = ch.Publish(
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    defer cancel()
+
+    err = ch.PublishWithContext(ctx,
         "",       // exchange（空字串表示使用預設）
         q.Name,   // routing key（佇列名稱）
         false,    // mandatory
         false,    // immediate
         amqp.Publishing{
-            ContentType: "text/plain",
-            Body:        []byte(body),
+            DeliveryMode: amqp.Persistent, // 持久化訊息 (persistent message)
+            ContentType:  "text/plain",
+            Body:         []byte(body),
         },
     )
     if err != nil {
@@ -165,8 +177,9 @@ func main() {
 package main
 
 import (
-    "github.com/streadway/amqp"
     "log"
+
+    amqp "github.com/rabbitmq/amqp091-go"
 )
 
 func main() {
@@ -187,7 +200,7 @@ func main() {
     // 宣告佇列（要與 Producer 相同）
     q, err := ch.QueueDeclare(
         "hello", // queue name
-        false,
+        true,    // durable（必須與 Producer 相同 / must match the producer）
         false,
         false,
         false,
@@ -197,11 +210,16 @@ func main() {
         log.Fatal("宣告佇列失敗 (Queue declare failed):", err)
     }
 
+    // 每個消費者最多同時持有 10 則未確認訊息 (prefetch)
+    if err := ch.Qos(10, 0, false); err != nil {
+        log.Fatal("設定 Qos 失敗 (Qos failed):", err)
+    }
+
     // 接收訊息
     msgs, err := ch.Consume(
         q.Name, // 佇列名稱
         "",     // consumer tag
-        true,   // 自動 ack（true = 自動確認）
+        false,  // 手動 ack：處理完才確認 (manual ack)
         false,  // exclusive
         false,  // no-local
         false,  // no-wait
@@ -215,6 +233,7 @@ func main() {
 
     for msg := range msgs {
         log.Printf("📩 收到訊息 (Received message): %s", msg.Body)
+        msg.Ack(false) // 處理完成才確認；確認前斷線，訊息會重新排入佇列
     }
 }
 ```

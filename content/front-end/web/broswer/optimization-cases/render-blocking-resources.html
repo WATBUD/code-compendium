@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>瀏覽器優化案例：阻塞渲染的 CSS 與 JS（render-blocking resources）</title>
+<style>
+  :root {
+    --bg: #ffffff; --panel: #f5f6fa; --text: #1f2430; --muted: #6b7280; --border: #dfe3ec;
+    --bad: #d62f35; --bad-bg: rgba(229, 72, 77, .14);
+    --good: #12875a; --good-bg: rgba(31, 157, 99, .15);
+    --key: #8a5a00; --key-bg: rgba(255, 196, 0, .30);
+    --code-bg: #14161d; --code-text: #e6e9f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171e; --panel: #1e212b; --text: #e6e9f2; --muted: #9aa3b5; --border: #313646;
+      --bad: #ff7b80; --bad-bg: rgba(255, 107, 112, .18);
+      --good: #4cc38a; --good-bg: rgba(76, 195, 138, .18);
+      --key: #ffd666; --key-bg: rgba(255, 196, 0, .20);
+      --code-bg: #0e1015;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 56px; background: var(--bg); color: var(--text);
+    font: 15px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+  }
+  main { max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 24px; line-height: 1.3; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 30px 0 8px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; }
+  .badge.bad { background: var(--bad-bg); color: var(--bad); }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+  p { margin: 6px 0; }
+  .sub { color: var(--muted); margin: 0 0 6px; }
+  .bad  { color: var(--bad);  background: var(--bad-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .good { color: var(--good); background: var(--good-bg); padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .key  { color: var(--key);  background: var(--key-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .box { border: 1px solid var(--border); border-left-width: 4px; border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .box.bad-box { border-left-color: var(--bad); }
+  .box.good-box { border-left-color: var(--good); }
+  ol, ul { margin: 4px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92em; }
+  :not(pre) > code { background: var(--panel); border: 1px solid var(--border); padding: 0 5px; border-radius: 4px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text); border-radius: 10px;
+    padding: 12px 16px; overflow-x: auto; margin: 8px 0; font-size: 13px; line-height: 1.6;
+  }
+  pre .c { color: #7f8aa3; }
+  pre .r { color: #ff8a8f; font-weight: 700; }
+  pre .g { color: #7ee2a8; font-weight: 700; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; font-size: 13px; }
+  .flow span { padding: 4px 10px; border-radius: 6px; background: var(--bad-bg); color: var(--bad); font-weight: 600; }
+  .flow i { color: var(--muted); font-style: normal; }
+  .term { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .term b.name { color: var(--key); }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 10px 0; }
+  .steps li { counter-increment: s; position: relative; padding: 6px 0 6px 38px; margin: 0; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 6px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--good-bg); color: var(--good); font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .viewport { display: grid; grid-template-columns: 150px 1fr; gap: 14px; margin: 12px 0; align-items: stretch; }
+  .viewport .screen { border: 2px solid var(--good); border-radius: 8px; background: var(--bg); overflow: hidden; position: relative; min-height: 170px; }
+  .viewport .rowx { height: 22px; border-bottom: 1px solid var(--border); font-size: 11px; padding: 2px 8px; color: var(--muted); }
+  .viewport .rowx.off { opacity: .35; border-bottom-style: dashed; }
+  .viewport .sentinel { position: absolute; left: 0; right: 0; bottom: 20px; height: 22px; background: var(--key-bg); color: var(--key); font-size: 11px; font-weight: 700; text-align: center; line-height: 22px; border-top: 1px dashed var(--key); border-bottom: 1px dashed var(--key); }
+  .viewport .legend { font-size: 13px; }
+  .viewport .legend div { margin: 4px 0; }
+  @media (max-width: 560px) { .viewport { grid-template-columns: 1fr; } }
+  td, th { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+  th { background: var(--panel); }
+  .demo { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin: 12px 0; }
+  .demo button { font: inherit; font-size: 13px; padding: 5px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; margin-right: 6px; }
+  .demo button.primary { background: var(--good); border-color: var(--good); color: #fff; }
+  .demo button:disabled { opacity: .5; cursor: default; }
+  .counters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+  .counter { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; }
+  .counter .n { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .counter .l { font-size: 12px; color: var(--muted); }
+  .counter.bad .n { color: var(--bad); }
+  .counter.good .n { color: var(--good); }
+  .counter.key .n { color: var(--key); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>瀏覽器優化案例：阻塞渲染的 CSS 與 JS（render-blocking resources）</h1>
+<p class="sub">白畫面很久、LCP 慢 · 結論：<span class="key">首屏需要的 CSS 越少越早到越好；JS 一律 defer / async，不要擋住 HTML 解析</span></p>
+
+<h2><span class="badge bad">原因</span></h2>
+<div class="flow"><span>解析 HTML 遇到外部 CSS / 同步 script</span><i>→</i><span>CSS 沒到不繪製；script 沒跑完不繼續解析</span><i>→</i><span>首次繪製（FCP）延後</span><i>→</i><span>最大內容（LCP）更晚出現</span></div>
+<pre>&lt;head&gt;
+  <span class="r">&lt;link rel="stylesheet" href="/all.css"&gt;</span>     <span class="c">&lt;!-- 全站 CSS 一大包，首屏只用到一小部分，卻要整包下載完才繪製 --&gt;</span>
+  <span class="r">&lt;script src="/vendor.js"&gt;&lt;/script&gt;</span>          <span class="c">&lt;!-- 同步 script：HTML 解析停在這裡，等下載 + 執行 --&gt;</span>
+  <span class="r">&lt;script src="/analytics.js"&gt;&lt;/script&gt;</span>       <span class="c">&lt;!-- 第三方慢，整頁跟著等 --&gt;</span>
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;img src="/hero.webp"&gt;                         <span class="c">&lt;!-- LCP 圖片：要等上面都處理完才被解析到 --&gt;</span>
+&lt;/body&gt;</pre>
+<div class="box bad-box"><ol>
+<li>外部 CSS 是 <span class="bad">render-blocking</span>：瀏覽器在 CSS 下載、解析完之前不會繪製，避免先畫出沒樣式的畫面。</li>
+<li>沒有 <code>async</code> / <code>defer</code> 的 <code>&lt;script src&gt;</code> 是 <span class="bad">parser-blocking</span>：script 可能用 <code>document.write()</code> 或改 DOM，所以瀏覽器先停下解析，等它下載並執行完。</li>
+<li>同步 script 還要<span class="bad">等前面的 CSS</span>：script 可能讀取樣式（例如 <code>getComputedStyle</code>），所以 CSS 慢 → script 晚執行 → 解析更晚恢復。</li>
+<li>LCP 圖片、字型如果只寫在 CSS 或 body 深處，<span class="bad">被發現得太晚</span>，下載也跟著晚。</li>
+</ol></div>
+<div class="box bad-box"><span class="key">更正原筆記：</span><ol>
+<li>原筆記的範例 <code>&lt;script src="example.js" defer&gt;console.log(...)&lt;/script&gt;</code> 說「這段代碼會立即執行」—— <b>錯</b>。有 <code>src</code> 時，標籤裡面的程式碼<b>完全被忽略、不會執行</b>。另外，<code>defer</code> / <code>async</code> 對沒有 <code>src</code> 的一般 inline script 無效（會立即執行），<code>type="module"</code> 的 inline script 例外。</li>
+<li>「defer 不會影響 CRP」太絕對：defer 不擋解析與首次繪製，但 script 仍要下載、執行，<code>DOMContentLoaded</code> 會等它跑完，互動也要等它。</li>
+<li>原筆記的延遲載入範例 <code>&lt;img src="placeholder.jpg" data-src="image.jpg" loading="lazy"&gt;</code> 混用了兩種做法：<code>loading="lazy"</code> 延遲的是 <code>src</code>（佔位圖），<code>data-src</code> 沒有 JS 處理就永遠不會載入。原生寫法直接 <code>&lt;img src="image.jpg" loading="lazy" width="..." height="..."&gt;</code>；而且<b>首屏的 LCP 圖片不要 lazy</b>。</li>
+<li><code>media="print" onload</code> 不是「等主要內容渲染完才載入」：瀏覽器<b>照樣會立刻以低優先權下載</b>，只是不擋繪製，載完後再套用。</li>
+<li>SEO 筆記中「LCP 最影響排名，其次 INP，再來 CLS」沒有出處：Google 把三項 Core Web Vitals 都列為頁面體驗訊號之一，<b>沒有公開各自的權重</b>，內容相關性仍是主要因素。</li>
+</ol></div>
+
+<h2><span class="badge good">名詞</span> 先看懂這幾個詞</h2>
+<div class="term"><b class="name">關鍵渲染路徑（Critical Rendering Path，CRP）</b><br>瀏覽器從收到 HTML 到畫出第一個像素要走的步驟：
+<ol class="steps">
+<li>解析 HTML → <b>DOM</b>（頁面結構）</li>
+<li>解析 CSS → <b>CSSOM</b>（每個元素的樣式）</li>
+<li>DOM + CSSOM → <b>Render Tree</b>（只含要顯示的元素，<code>display: none</code> 不在裡面）</li>
+<li><b>Layout</b>：算出位置與大小</li>
+<li><b>Paint / Composite</b>：畫出像素、合成圖層</li>
+</ol>擋住第 1 或第 2 步的資源，就會延後整條路徑。</div>
+<div class="term"><b class="name">render-blocking vs parser-blocking</b><br><b>render-blocking</b>：HTML 可以繼續解析，但<b>不能畫</b>（外部 CSS）。<b>parser-blocking</b>：連 HTML 都<b>停止解析</b>（同步 script）。</div>
+<div class="term"><b class="name">FCP / LCP</b><br><b>FCP</b>（First Contentful Paint）：第一個文字或圖片畫出來的時間。<b>LCP</b>（Largest Contentful Paint）：視窗內最大的圖片或文字區塊畫出來的時間，Google 建議 <span class="key">2.5 秒內</span>為良好、超過 4 秒為差。</div>
+<div class="term"><b class="name">async / defer</b><br>都讓 script <b>邊解析 HTML 邊下載</b>。差在什麼時候執行：<code>async</code> 下載完<b>立刻執行</b>（執行時會暫停解析、順序不保證）；<code>defer</code> 等 <b>HTML 解析完</b>才依文件順序執行。<code>type="module"</code> 預設就是 defer 的行為；用 JS 動態建立並插入的 <code>&lt;script&gt;</code> 預設就是 async。</div>
+<div class="term"><b class="name">preload</b><br><code>&lt;link rel="preload"&gt;</code> 告訴瀏覽器「這個檔案等一下一定會用到，現在就先下載」，但<b>不會套用 / 執行</b>它。用在「藏在 CSS 裡、太晚才被發現」的關鍵資源（字型、LCP 圖片）。</div>
+<div class="term"><b class="name">media 屬性</b><br><code>&lt;link rel="stylesheet" media="print"&gt;</code> 表示這份 CSS 只用於列印，目前畫面用不到，所以<b>不擋繪製</b>。把它在 <code>onload</code> 時改成 <code>all</code>，就變成「不擋繪製、載完再套用」的非同步 CSS。</div>
+
+<h2><span class="badge good">解法 A</span> script 一律 defer 或 async</h2>
+<p>需要 DOM、彼此有先後順序的用 <span class="good">defer</span>；獨立、誰先跑都沒差的第三方用 <span class="good">async</span>。</p>
+<pre>&lt;head&gt;
+  &lt;script src="/vendor.js" <span class="g">defer</span>&gt;&lt;/script&gt;       <span class="c">&lt;!-- 依序執行：vendor 一定先於 app --&gt;</span>
+  &lt;script src="/app.js" <span class="g">defer</span>&gt;&lt;/script&gt;          <span class="c">&lt;!-- 放 head 也不擋解析，還能更早開始下載 --&gt;</span>
+  &lt;script src="/analytics.js" <span class="g">async</span>&gt;&lt;/script&gt;<span class="c">&lt;!-- 不依賴其他 script 與 DOM --&gt;</span>
+&lt;/head&gt;</pre>
+<table>
+<thead><tr><th></th><th>下載時繼續解析？</th><th>何時執行</th><th>順序</th></tr></thead>
+<tbody>
+<tr><td><code>&lt;script src&gt;</code></td><td><span class="bad">否，停下來等</span></td><td>下載完立刻</td><td>依文件順序</td></tr>
+<tr><td><code>async</code></td><td><span class="good">是</span></td><td>下載完立刻（執行時暫停解析）</td><td><span class="key">不保證</span></td></tr>
+<tr><td><code>defer</code></td><td><span class="good">是</span></td><td>HTML 解析完、<code>DOMContentLoaded</code> 之前</td><td>依文件順序</td></tr>
+</tbody></table>
+
+<h2><span class="badge good">解法 B</span> 關鍵 CSS 內嵌，其餘非同步載入</h2>
+<p>首屏需要的少量樣式直接寫在 <code>&lt;style&gt;</code>，<span class="good">不用等網路</span>；其他 CSS 改成不擋繪製。</p>
+<pre>&lt;head&gt;
+  <span class="g">&lt;style&gt;</span>
+    <span class="c">/* 只放首屏需要的：版面骨架、標題、主圖尺寸 */</span>
+    body { margin: 0; font-family: system-ui, sans-serif; }
+    .hero { aspect-ratio: 16 / 9; }
+  <span class="g">&lt;/style&gt;</span>
+
+  <span class="c">&lt;!-- 其餘樣式：以 print 載入（不擋繪製），載完改成 all 套用 --&gt;</span>
+  &lt;link rel="stylesheet" href="/rest.css" <span class="g">media="print" onload="this.media='all'"</span>&gt;
+  &lt;noscript&gt;&lt;link rel="stylesheet" href="/rest.css"&gt;&lt;/noscript&gt;   <span class="c">&lt;!-- 關閉 JS 時的退路 --&gt;</span>
+&lt;/head&gt;</pre>
+
+<h2><span class="badge good">解法 C</span> 讓 LCP 資源被早一點發現</h2>
+<p>LCP 圖片與首屏字型用 <span class="good">preload / fetchpriority</span> 提前下載，不要等 CSS 解析到才開始。</p>
+<pre>&lt;link rel="preload" href="/hero.webp" as="image" <span class="g">fetchpriority="high"</span>&gt;
+&lt;link rel="preload" href="/fonts/main.woff2" as="font" type="font/woff2" <span class="g">crossorigin</span>&gt;
+<span class="c">&lt;!-- 字型 preload 一定要 crossorigin（即使同網域），不然會被下載兩次 --&gt;</span>
+
+&lt;img src="/hero.webp" width="1200" height="675" <span class="g">fetchpriority="high"</span> alt=""&gt;
+<span class="c">&lt;!-- 首屏 LCP 圖片：不要 loading="lazy"；寫 width / height 預留空間避免 CLS --&gt;</span></pre>
+
+<h2><span class="badge good">判斷</span> 該用哪個</h2>
+<table>
+<thead><tr><th>資源</th><th>做法</th></tr></thead>
+<tbody>
+<tr><td>自己的主程式、有順序依賴</td><td><span class="good">defer</span>（或 <code>type="module"</code>）</td></tr>
+<tr><td>分析、廣告、客服等獨立第三方</td><td><span class="good">async</span>，或等 load 後再動態插入</td></tr>
+<tr><td>首屏版面必要的樣式</td><td><span class="good">內嵌 &lt;style&gt;</span>，保持很小</td></tr>
+<tr><td>首屏以下、彈窗、其他頁面的樣式</td><td><span class="good">media="print" onload</span> 非同步載入</td></tr>
+<tr><td>只在列印 / 特定螢幕寬度用的 CSS</td><td><span class="good">加正確的 media</span>（例如 <code>media="(min-width: 1024px)"</code>），不符合時不擋繪製</td></tr>
+<tr><td>LCP 圖片、首屏字型</td><td><span class="good">preload + fetchpriority="high"</span></td></tr>
+<tr><td>首屏以下的圖片</td><td><span class="good">loading="lazy"</span></td></tr>
+<tr><td>在 &lt;head&gt; 放同步的第三方 script</td><td><span class="bad">不要</span></td></tr>
+</tbody></table>
+
+<h2><span class="badge bad">取捨</span></h2>
+<div class="box bad-box"><ul>
+<li>內嵌 CSS <span class="bad">不能被快取</span>，每頁 HTML 都變大；只放首屏必要的，通常交給建置工具自動抽取，手動維護容易和正式 CSS 脫節。</li>
+<li>非同步 CSS 套用前，首屏以下的內容可能<span class="bad">先以無樣式出現</span>或跳動，所以首屏範圍要抓對。</li>
+<li><code>onload="..."</code> 是 inline 事件處理器，網站有嚴格 CSP（禁止 inline script）時會被擋。</li>
+<li><code>async</code> 執行順序不保證，有依賴關係的 script 用 async 會<span class="bad">偶發性壞掉</span>。</li>
+<li>preload 太多會互相搶頻寬，反而拖慢真正關鍵的資源；preload 了卻沒用到，主控台會出警告。</li>
+<li>這些都是減少「等待」，實際效果要用 Lighthouse / DevTools Performance 量測，不要假設一定變快。</li>
+</ul></div>
+
+</main>
+
+</body>
+</html>

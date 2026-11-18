@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python 優化案例：在 list 裡逐一找物件 → 改用 dict 索引</title>
+<style>
+  :root {
+    --bg: #ffffff; --panel: #f5f6fa; --text: #1f2430; --muted: #6b7280; --border: #dfe3ec;
+    --bad: #d62f35; --bad-bg: rgba(229, 72, 77, .14);
+    --good: #12875a; --good-bg: rgba(31, 157, 99, .15);
+    --key: #8a5a00; --key-bg: rgba(255, 196, 0, .30);
+    --code-bg: #14161d; --code-text: #e6e9f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171e; --panel: #1e212b; --text: #e6e9f2; --muted: #9aa3b5; --border: #313646;
+      --bad: #ff7b80; --bad-bg: rgba(255, 107, 112, .18);
+      --good: #4cc38a; --good-bg: rgba(76, 195, 138, .18);
+      --key: #ffd666; --key-bg: rgba(255, 196, 0, .20);
+      --code-bg: #0e1015;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 56px; background: var(--bg); color: var(--text);
+    font: 15px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+  }
+  main { max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 24px; line-height: 1.3; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 30px 0 8px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; }
+  .badge.bad { background: var(--bad-bg); color: var(--bad); }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+  p { margin: 6px 0; }
+  .sub { color: var(--muted); margin: 0 0 6px; }
+  .bad  { color: var(--bad);  background: var(--bad-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .good { color: var(--good); background: var(--good-bg); padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .key  { color: var(--key);  background: var(--key-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .box { border: 1px solid var(--border); border-left-width: 4px; border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .box.bad-box { border-left-color: var(--bad); }
+  .box.good-box { border-left-color: var(--good); }
+  ol, ul { margin: 4px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92em; }
+  :not(pre) > code { background: var(--panel); border: 1px solid var(--border); padding: 0 5px; border-radius: 4px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text); border-radius: 10px;
+    padding: 12px 16px; overflow-x: auto; margin: 8px 0; font-size: 13px; line-height: 1.6;
+  }
+  pre .c { color: #7f8aa3; }
+  pre .r { color: #ff8a8f; font-weight: 700; }
+  pre .g { color: #7ee2a8; font-weight: 700; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; font-size: 13px; }
+  .flow span { padding: 4px 10px; border-radius: 6px; background: var(--bad-bg); color: var(--bad); font-weight: 600; }
+  .flow i { color: var(--muted); font-style: normal; }
+  .term { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .term b.name { color: var(--key); }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 10px 0; }
+  .steps li { counter-increment: s; position: relative; padding: 6px 0 6px 38px; margin: 0; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 6px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--good-bg); color: var(--good); font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .viewport { display: grid; grid-template-columns: 150px 1fr; gap: 14px; margin: 12px 0; align-items: stretch; }
+  .viewport .screen { border: 2px solid var(--good); border-radius: 8px; background: var(--bg); overflow: hidden; position: relative; min-height: 170px; }
+  .viewport .rowx { height: 22px; border-bottom: 1px solid var(--border); font-size: 11px; padding: 2px 8px; color: var(--muted); }
+  .viewport .rowx.off { opacity: .35; border-bottom-style: dashed; }
+  .viewport .sentinel { position: absolute; left: 0; right: 0; bottom: 20px; height: 22px; background: var(--key-bg); color: var(--key); font-size: 11px; font-weight: 700; text-align: center; line-height: 22px; border-top: 1px dashed var(--key); border-bottom: 1px dashed var(--key); }
+  .viewport .legend { font-size: 13px; }
+  .viewport .legend div { margin: 4px 0; }
+  @media (max-width: 560px) { .viewport { grid-template-columns: 1fr; } }
+  td, th { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+  th { background: var(--panel); }
+  .demo { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin: 12px 0; }
+  .demo button { font: inherit; font-size: 13px; padding: 5px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; margin-right: 6px; }
+  .demo button.primary { background: var(--good); border-color: var(--good); color: #fff; }
+  .demo button:disabled { opacity: .5; cursor: default; }
+  .counters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+  .counter { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; }
+  .counter .n { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .counter .l { font-size: 12px; color: var(--muted); }
+  .counter.bad .n { color: var(--bad); }
+  .counter.good .n { color: var(--good); }
+  .counter.key .n { color: var(--key); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>Python 優化案例：在 list 裡逐一找物件 → 改用 dict 索引</h1>
+<p class="sub">用 list 依屬性找物件，資料一多就變慢 · 結論：<span class="key">需要「依 key 反覆查找」時，先建一次 dict 索引，之後每次查找平均 O(1)</span></p>
+
+<h2><span class="badge bad">原因</span></h2>
+<div class="flow"><span>依 id 找物件</span><i>→</i><span>list 只能從頭比到尾（O(n)）</span><i>→</i><span>在迴圈裡又找 m 次</span><i>→</i><span>總共約 n × m 次比較</span></div>
+
+<p>原本的寫法：</p>
+<pre>def find_user(users, user_id):
+    <span class="r">for u in users:</span>                  <span class="c"># 每次都從第一個開始比</span>
+        if u.id == user_id:
+            return u
+    return None
+
+for order in orders:                  <span class="c"># m 筆訂單</span>
+    user = <span class="r">find_user(users, order.user_id)</span>   <span class="c"># 每筆都掃一次 n 個使用者</span>
+    ...</pre>
+
+<div class="box bad-box"><ol>
+<li>list 只能用<b>位置（index）</b>快速存取；要依「內容 / 屬性」找，就<span class="bad">只能逐一比較</span>，平均要看一半、找不到時要看全部。</li>
+<li>單次查找看不出問題，但<span class="bad">放進迴圈裡，成本是 n × m</span>：使用者和訂單各多 10 倍，比較次數就多 100 倍（這是從程式結構推算，不是實測）。</li>
+<li><code>x in my_list</code>、<code>my_list.remove(x)</code>、<code>my_list.index(x)</code> 也都是 <span class="bad">O(n)</span>，常被忽略。</li>
+</ol></div>
+
+<h2><span class="badge good">名詞</span> 先看懂這幾個詞</h2>
+<div class="term"><b class="name">O(1)、O(n)（時間複雜度）</b><br>描述「資料變多時，工作量怎麼增加」。<b>O(n)</b>：資料多 10 倍，工作量約多 10 倍；<b>O(1)</b>：不管資料多少，工作量大致固定。不是實際秒數，而是成長的趨勢。</div>
+<div class="term"><b class="name">list 的內部結構</b><br>list 是一段連續的<b>指標陣列</b>，每格存的是「指向物件的參照」，物件本身散落在記憶體各處。所以 <code>my_list[i]</code> 能直接算出位置（O(1)），但要找「id 是 42 的物件」只能一格一格看。</div>
+<div class="term"><b class="name">dict（雜湊表，hash table）</b><br>把 key 丟進雜湊函式（<code>hash()</code>）算出一個數字，直接跳到對應的位置存取，所以<b>查找、新增、刪除平均都是 O(1)</b>。比喻：list 像一疊沒分類的名片，要一張張翻；dict 像依編號分好格的收納櫃。</div>
+<div class="term"><b class="name">可雜湊（hashable）</b><br>能當 dict key 的值：在生命週期內 <code>hash()</code> 不變，例如 int、str、tuple（內容也可雜湊時）。list、dict 這類可變物件<b>不能</b>當 key。</div>
+<div class="term"><b class="name">索引（index）dict</b><br>不是把資料搬走，而是<b>另外建一個「key → 物件」的對照表</b>。dict 存的也是參照，物件本身不會被複製一份。</div>
+<div class="term"><b class="name">collections.deque</b><br>雙端佇列，<b>兩端</b>新增 / 移除都是 O(1)。需要「從前面拿出來」的佇列時，用它取代 list。</div>
+
+<h2><span class="badge good">解法</span> 先建一次 dict 索引，之後用 key 查</h2>
+<pre><span class="g">users_by_id = {u.id: u for u in users}</span>   <span class="c"># 建索引：O(n)，只做一次</span>
+
+for order in orders:
+    user = <span class="g">users_by_id.get(order.user_id)</span>   <span class="c"># 平均 O(1)；找不到回傳 None</span>
+    ...</pre>
+<p>總成本從約 <span class="bad">n × m</span> 變成 <span class="good">n + m</span>。</p>
+
+<p><span class="good">同一個 key 對應多個物件時</span>，用 <code>defaultdict(list)</code> 分組：</p>
+<pre>from collections import defaultdict
+
+orders_by_user = defaultdict(list)       <span class="c"># 第一次用到某個 key 時自動建立空 list</span>
+for o in orders:
+    orders_by_user[o.user_id].append(o)
+
+orders_by_user.get(42, [])               <span class="c"># 用 .get 查詢才不會順手建立空的 key</span></pre>
+
+<p><span class="good">從前面取出的佇列，用 deque</span>：</p>
+<pre>from collections import deque
+
+task_queue = <span class="g">deque()</span>
+task_queue.append("task-1")              <span class="c"># 右端加入：O(1)</span>
+task_queue.append("task-2")
+next_task = <span class="g">task_queue.popleft()</span>        <span class="c"># 左端取出：O(1)；list.pop(0) 是 O(n)</span></pre>
+
+<h2><span class="badge good">判斷</span> 用 list 還是 dict</h2>
+<table>
+<thead><tr><th>需求</th><th>選擇</th></tr></thead>
+<tbody>
+<tr><td>依某個 key（id、名稱）反覆查找 / 更新 / 刪除</td><td><span class="good">dict</span></td></tr>
+<tr><td>只查一兩次、資料很少</td><td>list 直接掃就好，<span class="key">建索引本身也要 O(n)</span></td></tr>
+<tr><td>依位置存取、排序、切片、允許重複</td><td><span class="good">list</span></td></tr>
+<tr><td>保持插入順序</td><td>list 和 dict <b>都可以</b>（dict 從 Python 3.7 起保證插入順序）</td></tr>
+<tr><td>只想知道「有沒有出現過」</td><td><span class="good">set</span>（同樣是雜湊，<code>x in s</code> 平均 O(1)）</td></tr>
+<tr><td>先進先出佇列</td><td><span class="good">collections.deque</span>；<span class="bad">不要</span>用 <code>list.pop(0)</code> / <code>list.insert(0, x)</code></td></tr>
+</tbody></table>
+
+<h2><span class="badge bad">取捨</span> 注意</h2>
+<div class="box bad-box"><ul>
+<li><span class="key">dict 比 list 佔更多記憶體</span>：雜湊表要保留空位才能維持 O(1)。</li>
+<li><span class="key">索引要跟資料同步</span>：同時保留 list 和 dict 時，新增 / 刪除都要兩邊一起改，否則會查到舊資料。只要「依 key 查 + 保持順序」，<b>單一個 dict 就夠了</b>（<code>list(d.values())</code> 即依插入順序）。</li>
+<li>key 重複時，<code>{u.id: u for u in users}</code> 只會留下<b>最後一個</b>，不會報錯；不確定是否唯一時要先檢查或用 <code>defaultdict(list)</code>。</li>
+<li>O(1) 是「平均」：大量雜湊碰撞時會變慢，但對一般 int / str key 幾乎不用擔心。</li>
+</ul></div>
+
+<div class="box bad-box"><span class="key">更正原筆記：</span><ul>
+<li>原筆記把 <code>task_queue.pop(0)</code> 當作「適合 list 的場景」。<code>list.pop(0)</code> 要把後面所有元素往前搬，是 <b>O(n)</b>；佇列應該用 <span class="good">collections.deque.popleft()</span>（O(1)）。</li>
+<li>原筆記一邊寫 dict「無固定順序」，一邊寫「3.7+ 保證插入順序」，互相矛盾。正確是：<b>Python 3.7 起 dict 保證保留插入順序</b>（CPython 3.6 已是如此，但當時只是實作細節）。所以「需要維護順序就用 list」也不成立，「list + dict 混合」只在需要依位置存取或重新排序時才有必要。</li>
+<li>原筆記說 list 是「連續記憶體空間」，容易誤解成物件連續存放。實際上連續的是<b>指標陣列</b>，物件本身各自存在別處；dict 存的也是指標，所以建索引不會複製物件。</li>
+</ul></div>
+
+</main>
+
+</body>
+</html>

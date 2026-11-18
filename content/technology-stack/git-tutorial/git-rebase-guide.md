@@ -33,7 +33,9 @@ git rebase --continue
 git rebase -i HEAD~n
 
 # Force push the changes to the remote branch
-git push origin feature --force
+# Prefer --force-with-lease over --force: it refuses to push if the remote branch
+# has commits you haven't fetched (e.g. a teammate pushed), so you won't silently overwrite them
+git push origin feature --force-with-lease
 
 
 

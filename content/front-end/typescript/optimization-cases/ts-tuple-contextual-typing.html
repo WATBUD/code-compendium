@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TypeScript 常見錯誤：陣列先存成變數，就不再是 tuple</title>
+<style>
+  :root {
+    --bg: #ffffff; --panel: #f5f6fa; --text: #1f2430; --muted: #6b7280; --border: #dfe3ec;
+    --bad: #d62f35; --bad-bg: rgba(229, 72, 77, .14);
+    --good: #12875a; --good-bg: rgba(31, 157, 99, .15);
+    --key: #8a5a00; --key-bg: rgba(255, 196, 0, .30);
+    --code-bg: #14161d; --code-text: #e6e9f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171e; --panel: #1e212b; --text: #e6e9f2; --muted: #9aa3b5; --border: #313646;
+      --bad: #ff7b80; --bad-bg: rgba(255, 107, 112, .18);
+      --good: #4cc38a; --good-bg: rgba(76, 195, 138, .18);
+      --key: #ffd666; --key-bg: rgba(255, 196, 0, .20);
+      --code-bg: #0e1015;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 56px; background: var(--bg); color: var(--text);
+    font: 15px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+  }
+  main { max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 24px; line-height: 1.3; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 30px 0 8px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; }
+  .badge.bad { background: var(--bad-bg); color: var(--bad); }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+  p { margin: 6px 0; }
+  .sub { color: var(--muted); margin: 0 0 6px; }
+  .bad  { color: var(--bad);  background: var(--bad-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .good { color: var(--good); background: var(--good-bg); padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .key  { color: var(--key);  background: var(--key-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .box { border: 1px solid var(--border); border-left-width: 4px; border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .box.bad-box { border-left-color: var(--bad); }
+  .box.good-box { border-left-color: var(--good); }
+  ol, ul { margin: 4px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92em; }
+  :not(pre) > code { background: var(--panel); border: 1px solid var(--border); padding: 0 5px; border-radius: 4px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text); border-radius: 10px;
+    padding: 12px 16px; overflow-x: auto; margin: 8px 0; font-size: 13px; line-height: 1.6;
+  }
+  pre .c { color: #7f8aa3; }
+  pre .r { color: #ff8a8f; font-weight: 700; }
+  pre .g { color: #7ee2a8; font-weight: 700; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; font-size: 13px; }
+  .flow span { padding: 4px 10px; border-radius: 6px; background: var(--bad-bg); color: var(--bad); font-weight: 600; }
+  .flow i { color: var(--muted); font-style: normal; }
+  .term { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .term b.name { color: var(--key); }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 10px 0; }
+  .steps li { counter-increment: s; position: relative; padding: 6px 0 6px 38px; margin: 0; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 6px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--good-bg); color: var(--good); font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .viewport { display: grid; grid-template-columns: 150px 1fr; gap: 14px; margin: 12px 0; align-items: stretch; }
+  .viewport .screen { border: 2px solid var(--good); border-radius: 8px; background: var(--bg); overflow: hidden; position: relative; min-height: 170px; }
+  .viewport .rowx { height: 22px; border-bottom: 1px solid var(--border); font-size: 11px; padding: 2px 8px; color: var(--muted); }
+  .viewport .rowx.off { opacity: .35; border-bottom-style: dashed; }
+  .viewport .sentinel { position: absolute; left: 0; right: 0; bottom: 20px; height: 22px; background: var(--key-bg); color: var(--key); font-size: 11px; font-weight: 700; text-align: center; line-height: 22px; border-top: 1px dashed var(--key); border-bottom: 1px dashed var(--key); }
+  .viewport .legend { font-size: 13px; }
+  .viewport .legend div { margin: 4px 0; }
+  @media (max-width: 560px) { .viewport { grid-template-columns: 1fr; } }
+  td, th { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+  th { background: var(--panel); }
+  .demo { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin: 12px 0; }
+  .demo button { font: inherit; font-size: 13px; padding: 5px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; margin-right: 6px; }
+  .demo button.primary { background: var(--good); border-color: var(--good); color: #fff; }
+  .demo button:disabled { opacity: .5; cursor: default; }
+  .counters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+  .counter { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; }
+  .counter .n { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .counter .l { font-size: 12px; color: var(--muted); }
+  .counter.bad .n { color: var(--bad); }
+  .counter.good .n { color: var(--good); }
+  .counter.key .n { color: var(--key); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>TypeScript 常見錯誤：陣列先存成變數，就不再是 tuple</h1>
+<p class="sub">inline 傳 <code>[10, 20]</code> 沒事，先存成變數再傳就報錯 · 結論：<span class="key">在宣告變數時就標註型別（或用 satisfies），不要靠 as</span></p>
+
+<h2><span class="badge bad">原因</span></h2>
+<div class="flow"><span><code>const pt = [10, 20]</code> 沒有任何型別線索</span><i>→</i><span>TS 推論成 <code>number[]</code></span><i>→</i><span><code>number[]</code> 長度不固定</span><i>→</i><span>不能指派給 <code>[number, number]</code></span></div>
+<pre>type Props = { point: [number, number] }        <span class="c">// 必須剛好兩個數字</span>
+const PointDisplay = ({ point }: Props) =&gt; &lt;div&gt;X: {point[0]}, Y: {point[1]}&lt;/div&gt;
+
+<span class="c">// inline：OK，TS 知道這個位置要 [number, number]，照著推論</span>
+&lt;PointDisplay point={[10, 20]} /&gt;
+
+<span class="c">// 先存變數：報錯</span>
+const pt = <span class="r">[10, 20]</span>                              <span class="c">// 推論為 number[]</span>
+&lt;PointDisplay point={<span class="r">pt</span>} /&gt;
+<span class="c">// Type 'number[]' is not assignable to type '[number, number]'.</span>
+<span class="c">//   Target requires 2 element(s) but source may have fewer.</span></pre>
+<div class="box bad-box"><ol>
+<li>直接寫在 props 位置時，TS 用<b>上下文</b>（這個 prop 要什麼型別）來推論 <code>[10, 20]</code>，所以得到 tuple。</li>
+<li>先存成變數時，宣告那一行<span class="bad">沒有上下文</span>，TS 用預設規則推成最常用的 <code>number[]</code>。</li>
+<li>型別在宣告時就決定了，之後傳給誰都不會再改；<code>number[]</code> 可能是 0 個或 100 個元素，<span class="bad">不符合「剛好兩個」</span>。</li>
+</ol></div>
+<div class="box bad-box"><span class="key">更正原筆記：</span><ol>
+<li>原筆記把 <code>as [number, number]</code> 列為解法之一。<code>as</code> 是<b>型別斷言</b>，意思是「相信我」，<b>比標註弱</b>：例如 <code>nums as [number, number]</code>（<code>nums</code> 是 <code>number[]</code>）可以編譯，但實際只有一個元素時 <code>point[1]</code> 就是 <code>undefined</code>。應優先用型別標註或 <code>satisfies</code>。</li>
+<li>常見的另一個寫法 <code>as const</code> 得到的是 <code>readonly [10, 20]</code>，<b>不能指派給可變的 <code>[number, number]</code></b>（錯誤：is 'readonly' and cannot be assigned to the mutable type）。要用 <code>as const</code>，props 型別要改成 <code>readonly [number, number]</code>。</li>
+<li>原筆記結尾有多餘的程式碼區塊標記（<code>````</code> 與未閉合的 <code>```</code>），已移除。</li>
+</ol></div>
+
+<h2><span class="badge good">名詞</span> 先看懂這幾個詞</h2>
+<div class="term"><b class="name">tuple（元組）</b><br>長度與每個位置型別都固定的陣列。<code>[number, number]</code> = 剛好兩個數字；<code>number[]</code> = 任意個數字。tuple 可以當成 <code>number[]</code> 用，反過來不行。</div>
+<div class="term"><b class="name">Contextual Typing（上下文型別推論）</b><br>TS 看「這個值要放到哪裡」來決定它的型別。例如寫在型別為 <code>[number, number]</code> 的 prop 上，<code>[10, 20]</code> 就被推成 tuple。<span class="key">離開那個位置（先存變數），上下文就沒了。</span></div>
+<div class="term"><b class="name">型別標註（annotation）</b><br><code>const pt: [number, number] = ...</code>：宣告「這個變數必須是這個型別」，右邊的值<b>會被檢查</b>，少一個元素就報錯。</div>
+<div class="term"><b class="name">型別斷言（as）</b><br><code>value as T</code>：告訴 TS「把它當成 T」，只要兩個型別有關聯就放行，<b>不檢查實際內容</b>。適合 TS 真的不知道、而你確定的情況，不適合拿來修推論問題。</div>
+<div class="term"><b class="name">satisfies（TS 4.9+）</b><br><code>expr satisfies T</code>：檢查值是否符合 T，並以 T 作為上下文推論，但<b>變數保留推論出來的精確型別</b>。等於「給它上下文，又不放寬型別」。</div>
+
+<h2><span class="badge good">解法 A</span> 宣告時標註型別（首選）</h2>
+<p>直接把<span class="good">上下文補回來</span>。</p>
+<pre>const pt<span class="g">: [number, number]</span> = [10, 20]         <span class="c">// 宣告時就檢查：[10] 或 [10, 20, 30] 都會報錯</span>
+&lt;PointDisplay point={pt} /&gt;                     <span class="c">// OK</span>
+
+<span class="c">// 不想重寫一次型別：直接引用元件的 props 型別，元件改了這裡也跟著變</span>
+const pt2<span class="g">: Props['point']</span> = [10, 20]</pre>
+
+<h2><span class="badge good">解法 B</span> satisfies</h2>
+<p>想<span class="good">保留推論、又要檢查</span>時用。</p>
+<pre>const pt = [10, 20] <span class="g">satisfies [number, number]</span>   <span class="c">// 型別為 [number, number]，且內容經過檢查</span>
+&lt;PointDisplay point={pt} /&gt;                     <span class="c">// OK</span></pre>
+
+<h2><span class="badge good">解法 C</span> 要用 as const 時，props 接受 readonly</h2>
+<pre>type Props = { point: <span class="g">readonly</span> [number, number] }  <span class="c">// 元件本來就不該改 props，readonly 更貼切</span>
+const pt = [10, 20] as const                        <span class="c">// readonly [10, 20]</span>
+&lt;PointDisplay point={pt} /&gt;                         <span class="c">// OK；一般的 [number, number] 也仍可傳入</span></pre>
+
+<h2><span class="badge good">判斷</span> 該用哪個</h2>
+<table>
+<thead><tr><th>情境</th><th>用</th></tr></thead>
+<tbody>
+<tr><td>一般變數</td><td><span class="good">型別標註</span>（可引用 <code>Props['point']</code>）</td></tr>
+<tr><td>要檢查，又想保留更精確的推論（例如設定物件）</td><td><span class="good">satisfies</span></td></tr>
+<tr><td>常數資料、不會被修改</td><td><span class="good">as const</span> + props 用 <code>readonly</code></td></tr>
+<tr><td>為了消除錯誤而寫 <code>as [number, number]</code></td><td><span class="bad">不要</span>，會把真正的錯一起藏掉</td></tr>
+</tbody></table>
+
+<h2><span class="badge bad">注意</span></h2>
+<div class="box bad-box"><ul>
+<li><code>satisfies</code> 需要 TypeScript 4.9 以上；舊版本只能用標註。</li>
+<li>tuple 只在型別層保護長度：<code>pt.push(30)</code> 在可變 tuple 上仍然能編譯，要真正防止修改請用 <code>readonly</code>。</li>
+</ul></div>
+
+</main>
+
+</body>
+</html>

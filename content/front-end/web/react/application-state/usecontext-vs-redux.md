@@ -1,11 +1,9 @@
 # `useContext` 與 `Redux` 的差異
 `useContext` 和 `Redux` 是在 React 管理狀態的方式
 
-### useContext [React 16.3] 引入，組件能夠訂閱 React Context
 ### **`useContext`**
-`useContext`/`useReducer` 
-React 版本：16.8.0
-發布日期：2019 年 2 月 6 日
+- `createContext`（新版 Context API）：React 16.3 引入。
+- `useContext` / `useReducer` Hook：React 16.8.0 引入（2019 年 2 月 6 日），讓函式組件能直接訂閱 Context。
 ```javascript
 import React, { createContext, useContext, useState } from 'react';
 
@@ -42,10 +40,10 @@ export default App;
 ```
 
 ### **`Redux`**
-`Redux` 通過 `store` 管理全局狀態，使用 `action` 和 `reducer` 處理狀態變化：
+`Redux` 通過 `store` 管理全局狀態，使用 `action` 和 `reducer` 處理狀態變化（`createStore` 已標為 deprecated，官方建議用 Redux Toolkit 的 `configureStore`）：
 
 ```javascript
-import { createStore } from 'redux';
+import { configureStore } from '@reduxjs/toolkit';
 import { Provider, useSelector, useDispatch } from 'react-redux';
 
 // Reducer
@@ -60,7 +58,7 @@ const themeReducer = (state = initialState, action) => {
 };
 
 // Store
-const store = createStore(themeReducer);
+const store = configureStore({ reducer: themeReducer });
 
 const ThemedButton = () => {
   const theme = useSelector((state) => state.theme);
@@ -109,7 +107,7 @@ const App = () => (
   </ThemeProvider>
 );
 ```
-## Reducer => combineReducers :解決 Provider Hell 的方案
+## Reducer => combineReducers：多個狀態仍只需一個 store / Provider
 - 每個 Reducer 負責管理特定狀態的一部分：
 ```javascript
 const themeReducer = (state = 'light', action) => {
@@ -134,31 +132,29 @@ const authReducer = (state = { isLoggedIn: false }, action) => {
 
 ```
 # combineReducers
-當應用中有多個狀態（如主題、認證、語言等）時，combineReducers 將多個 Reducer 合併為一個總的 Reducer，而不需要為每個狀態分配一個獨立的 Provider。
+當應用中有多個狀態（如主題、認證、語言等）時，combineReducers 將多個 Reducer 合併為一個總的 Reducer，全部放在同一個 store，而不需要為每個狀態分配一個獨立的 Provider。combineReducers 只負責拆分管理邏輯（每個 reducer 只處理自己的部分）；「只有相關組件重新渲染」是 `useSelector` 的選擇性訂閱做到的，不是 combineReducers。
 ```javascript
-import { combineReducers, createStore } from 'redux';
+import { combineReducers } from 'redux';
+import { configureStore } from '@reduxjs/toolkit';
 
 const rootReducer = combineReducers({
     theme: themeReducer,
     auth: authReducer,
 });
 
-const store = createStore(rootReducer);
-
+const store = configureStore({ reducer: rootReducer });
+// configureStore 也可以直接傳物件，會自動呼叫 combineReducers：
+// configureStore({ reducer: { theme: themeReducer, auth: authReducer } })
 ```
 
-### Provider Hell 
-combineReducers:可以將管理邏輯拆分，每個 reducer 只負責處理自己的部分，部分狀態改變時，只有相關的組件會重新渲染。
-useContext:合併的Context的任何部分數據（如 auth）改變時，整個 AppContext.Provider值會更新，導致所有使用 useContext(AppContext) 的組件重新渲染，即使它們只需要其中的某一部分數據（如 theme）
+> 「合併的 Context 值一變，所有 consumer 都重新渲染」的原因與解法（拆 Context、useMemo、selector 訂閱），已移到優化案例：`optimization-cases/react-context-value-rerender.html`。
 
 ### **`useContext`**
 
 [優勢]:
 React內建Api，無需額外安裝 適合小型應用少量共享狀態。
 [劣勢]:
-狀態頻繁更新可能導致所有使用該 Context 的組件重渲染
-使用 useContext 時，如果 Context 的值更新，所有使用該 Context 的子組件都會重新渲染，即使它們實際上並不需要更新的數據
-解決方案：可以通過將 Context 的值拆分為更細的粒度，或者搭配 useMemo、useReducer 等方式減少不必要的渲染。
+Context 值更新時，所有使用該 Context 的組件都會重新渲染（沒有 selector，詳見上方優化案例）
 無法方便地進行狀態追踪或調試（不像 Redux 有 DevTools）
 
 ### **`Redux`**
@@ -167,8 +163,7 @@ React內建Api，無需額外安裝 適合小型應用少量共享狀態。
 Redux DevTools 提供強大的調試功能
 支持中間件（如 Thunk, Saga）處理異步邏輯
 不可變數據（Immutable Data）。每次狀態更新時，會創建一個新的狀態樹，舊的狀態樹保持不變。
-淺比較（shallow equality check）確定哪部分狀態改變，從而觸發相關組件的重渲染。
-選擇性訂閱（Selective Subscription） useSelector 或 connect 會讓組件僅訂閱它需要的狀態片段，而非整個狀態樹。
+選擇性訂閱（Selective Subscription）：useSelector 或 connect 會讓組件僅訂閱它需要的狀態片段，而非整個狀態樹。store 更新時重跑 selector，`useSelector` 預設用 `===`（參照比較）判斷選出的值有沒有變，沒變就不重渲染；`connect` 則對 mapStateToProps 的結果做淺比較。
 
 [劣勢]: 
 外部依賴多（需額外安裝 Redux 和相關工具庫）

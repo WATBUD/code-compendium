@@ -9,16 +9,17 @@
   ```jsx
   import { useMemo } from "react";
 
-  function ExpensiveComponent({ num }) {
-    const squared = useMemo(() => {
-      console.log("計算平方...");
-      return num * num;
-    }, [num]);
+  function ExpensiveComponent({ items, keyword }) {
+    const filtered = useMemo(() => {
+      console.log("過濾大量資料...");
+      return items.filter((item) => item.name.includes(keyword));
+    }, [items, keyword]);
 
-    return <div>平方值: {squared}</div>;
+    return <div>符合筆數: {filtered.length}</div>;
   }
   ```
-  **解釋**：只有當 `num` 變更時，`squared` 才會重新計算，否則會返回上次的計算結果。
+  **解釋**：只有當 `items` 或 `keyword` 變更時，`filtered` 才會重新計算，否則會返回上次的計算結果。
+  > ⚠️ 注意：像 `num * num` 這種極輕量的計算不值得用 `useMemo`，比對依賴陣列與保存快取的成本可能比直接計算還高。只有在計算真的耗時（如大量資料過濾、排序），或需要維持物件/陣列的引用穩定（例如傳給 `React.memo` 子組件、作為 `useEffect` 依賴）時才使用。
 
 ---
 

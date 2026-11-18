@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>優化案例：錯的內容 push 到共用分支後的復原</title>
+<style>
+  :root {
+    --bg: #ffffff; --panel: #f5f6fa; --text: #1f2430; --muted: #6b7280; --border: #dfe3ec;
+    --bad: #d62f35; --bad-bg: rgba(229, 72, 77, .14);
+    --good: #12875a; --good-bg: rgba(31, 157, 99, .15);
+    --key: #8a5a00; --key-bg: rgba(255, 196, 0, .30);
+    --code-bg: #14161d; --code-text: #e6e9f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171e; --panel: #1e212b; --text: #e6e9f2; --muted: #9aa3b5; --border: #313646;
+      --bad: #ff7b80; --bad-bg: rgba(255, 107, 112, .18);
+      --good: #4cc38a; --good-bg: rgba(76, 195, 138, .18);
+      --key: #ffd666; --key-bg: rgba(255, 196, 0, .20);
+      --code-bg: #0e1015;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 56px; background: var(--bg); color: var(--text);
+    font: 15px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+  }
+  main { max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 24px; line-height: 1.3; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 30px 0 8px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; }
+  .badge.bad { background: var(--bad-bg); color: var(--bad); }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+  p { margin: 6px 0; }
+  .sub { color: var(--muted); margin: 0 0 6px; }
+  .bad  { color: var(--bad);  background: var(--bad-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .good { color: var(--good); background: var(--good-bg); padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .key  { color: var(--key);  background: var(--key-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .box { border: 1px solid var(--border); border-left-width: 4px; border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .box.bad-box { border-left-color: var(--bad); }
+  .box.good-box { border-left-color: var(--good); }
+  ol, ul { margin: 4px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92em; }
+  :not(pre) > code { background: var(--panel); border: 1px solid var(--border); padding: 0 5px; border-radius: 4px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text); border-radius: 10px;
+    padding: 12px 16px; overflow-x: auto; margin: 8px 0; font-size: 13px; line-height: 1.6;
+  }
+  pre .c { color: #7f8aa3; }
+  pre .r { color: #ff8a8f; font-weight: 700; }
+  pre .g { color: #7ee2a8; font-weight: 700; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; font-size: 13px; }
+  .flow span { padding: 4px 10px; border-radius: 6px; background: var(--bad-bg); color: var(--bad); font-weight: 600; }
+  .flow i { color: var(--muted); font-style: normal; }
+  .term { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .term b.name { color: var(--key); }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 10px 0; }
+  .steps li { counter-increment: s; position: relative; padding: 6px 0 6px 38px; margin: 0; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 6px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--good-bg); color: var(--good); font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .viewport { display: grid; grid-template-columns: 150px 1fr; gap: 14px; margin: 12px 0; align-items: stretch; }
+  .viewport .screen { border: 2px solid var(--good); border-radius: 8px; background: var(--bg); overflow: hidden; position: relative; min-height: 170px; }
+  .viewport .rowx { height: 22px; border-bottom: 1px solid var(--border); font-size: 11px; padding: 2px 8px; color: var(--muted); }
+  .viewport .rowx.off { opacity: .35; border-bottom-style: dashed; }
+  .viewport .sentinel { position: absolute; left: 0; right: 0; bottom: 20px; height: 22px; background: var(--key-bg); color: var(--key); font-size: 11px; font-weight: 700; text-align: center; line-height: 22px; border-top: 1px dashed var(--key); border-bottom: 1px dashed var(--key); }
+  .viewport .legend { font-size: 13px; }
+  .viewport .legend div { margin: 4px 0; }
+  @media (max-width: 560px) { .viewport { grid-template-columns: 1fr; } }
+  td, th { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+  th { background: var(--panel); }
+  .demo { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin: 12px 0; }
+  .demo button { font: inherit; font-size: 13px; padding: 5px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; margin-right: 6px; }
+  .demo button.primary { background: var(--good); border-color: var(--good); color: #fff; }
+  .demo button:disabled { opacity: .5; cursor: default; }
+  .counters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+  .counter { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; }
+  .counter .n { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .counter .l { font-size: 12px; color: var(--muted); }
+  .counter.bad .n { color: var(--bad); }
+  .counter.good .n { color: var(--good); }
+  .counter.key .n { color: var(--key); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>優化案例：錯的內容 push 到共用分支後的復原</h1>
+<p class="sub">把錯的 commit push（或 force push）到 release/staging · 結論：<span class="key">用 reflog 找回好的 commit，用 --force-with-lease 推回；別人可能已經 pull 就改用 git revert</span></p>
+
+<h2><span class="badge bad">原因</span></h2>
+<div class="flow">
+  <span>本地分支指到錯的 commit</span><i>→</i>
+  <span>push 到共用分支</span><i>→</i>
+  <span>遠端分支也指到錯的 commit</span><i>→</i>
+  <span>隊友 pull / CI 部署拿到錯的內容</span>
+</div>
+<pre><span class="c"># 情境：在共用分支上 merge 了還不該上的功能，然後 push</span>
+git switch release/staging
+git merge feature/ABC-123                    <span class="c"># 這個功能還沒要上 staging</span>
+git push origin release/staging              <span class="c"># 錯的內容上了遠端</span>
+
+<span class="c"># 原筆記的復原方式</span>
+git reset --hard a1b2c3d
+git push origin release/staging <span class="r">--force</span>      <span class="c"># 不檢查遠端現況，直接覆蓋</span></pre>
+<div class="box bad-box">
+  <ol>
+    <li>分支只是一個「指向某個 commit 的指標」，push 會把<span class="bad">遠端的指標也移到錯的 commit</span>，之後誰 pull 都拿到錯的內容。</li>
+    <li>用 <code>--force</code> 推回時 git <span class="bad">不檢查遠端在這段時間有沒有新 commit</span>，隊友剛推上去的東西會被默默蓋掉。</li>
+    <li>已經 pull 過錯內容的人，本地還留著那些 commit；遠端被改回去後，<span class="bad">他下次 push 或 merge 可能又把錯的 commit 帶回來</span>。</li>
+  </ol>
+</div>
+
+<h2><span class="badge good">名詞</span> 先看懂這幾個詞</h2>
+
+<div class="term">
+  <b class="name">reflog</b><br>
+  本地 git 的「移動紀錄」：每次 commit、checkout、reset、merge、pull，HEAD 或分支指到哪裡都會記一筆。
+  所以就算分支已經被移走，<span class="good">原本那個好的 commit 還能從 reflog 找到</span>。
+  <pre style="margin:6px 0">git reflog
+<span class="c"># 9f8e7d6 HEAD@{0}: merge feature/ABC-123: Merge made by the 'ort' strategy.</span>
+<span class="c"># a1b2c3d HEAD@{1}: checkout: moving from feature/ABC-123 to release/staging   ← merge 之前的狀態</span></pre>
+  <b>注意：</b>reflog 只存在<b>你自己的電腦</b>，不會 push，也會過期（預設約 30～90 天）。
+</div>
+
+<div class="term">
+  <b class="name">HEAD@{n}</b><br>
+  「HEAD 在 n 次移動之前指到哪裡」。<code>HEAD@{0}</code> 是現在，<code>HEAD@{1}</code> 是上一步。可以直接拿來當 commit 用，但數字會隨每次操作改變，<span class="key">復原時建議抄下 commit hash</span>。
+</div>
+
+<div class="term">
+  <b class="name">git reflog show origin/release/staging</b><br>
+  <code>origin/release/staging</code> 是你本地對遠端分支的「記憶」，每次 fetch / pull / push 都會更新，它也有自己的 reflog。
+  如果錯的 push 是別人做的，看這個可以知道<b>你上次 fetch 時遠端指在哪</b>。
+</div>
+
+<div class="term">
+  <b class="name">救援分支</b><br>
+  在動手 reset 之前，先開一個分支指向好的 commit：<code>git branch rescue/staging-good a1b2c3d</code>。
+  分支就是一個指標，開它幾乎不花成本，但能保證<span class="good">好的 commit 不會因為 reflog 過期或手誤而找不到</span>。
+</div>
+
+<div class="term">
+  <b class="name">git reset --hard &lt;commit&gt;</b><br>
+  把<b>目前的分支指標</b>移到指定的 commit，並把工作目錄改成那個 commit 的樣子。
+  <span class="bad">還沒 commit 的修改會直接消失</span>，執行前先 <code>git status</code> 確認是乾淨的。
+</div>
+
+<div class="term">
+  <b class="name">force push（--force）與 --force-with-lease</b><br>
+  一般 push 只能「往前加 commit」。reset 之後本地比遠端「少」了 commit，一般 push 會被拒絕，所以要 force。
+  <ul>
+    <li><code>--force</code>：不管遠端現在是什麼，<span class="bad">直接蓋掉</span>。</li>
+    <li><code>--force-with-lease</code>：先確認遠端還是<b>你上次看到的那個 commit</b>才覆蓋；如果有人在你之後推了新東西，<span class="good">push 會失敗，不會蓋掉別人的 commit</span>。</li>
+  </ul>
+  比喻：<code>--force</code> 是直接把別人的檔案存檔覆蓋；<code>--force-with-lease</code> 是「如果檔案還是我剛才打開的版本才存檔」。
+</div>
+
+<div class="term">
+  <b class="name">git revert</b><br>
+  不改寫歷史，而是<b>新增一個「反向」的 commit</b>，把指定 commit 的變更抵銷掉。
+  歷史只會往前加，<span class="good">一般 push 就能推上去，已經 pull 的人照常 pull 就好</span>。
+  revert 一個 merge commit 時要加 <code>-m 1</code>，表示「以第 1 個 parent（merge 前的共用分支）為主線」。
+</div>
+
+<h2><span class="badge good">解法 A</span> 剛推、確定還沒人 pull：reset + --force-with-lease</h2>
+<p><span class="good">先找好 commit、先釘住，再改指標，最後用 lease 推回</span></p>
+<ol class="steps">
+  <li>拿遠端最新狀態，確認錯的 commit 之後沒有別人的新 commit。</li>
+  <li>從 reflog 找出 push 錯之前的 commit。</li>
+  <li>開救援分支釘住它。</li>
+  <li>把共用分支 reset 回去。</li>
+  <li>用 <code>--force-with-lease</code> 推回，並通知隊友。</li>
+</ol>
+<pre><span class="c"># 1. 看遠端現在指在哪，順便確認沒有別人在你之後推東西</span>
+git fetch origin
+git log --oneline -5 origin/release/staging
+
+<span class="c"># 2. 找出好的 commit（自己推錯：看 HEAD 的 reflog；別人推錯：看遠端追蹤分支的 reflog）</span>
+git reflog
+git reflog show origin/release/staging
+
+<span class="c"># 3. 先釘住好的 commit，之後怎麼操作都找得回來</span>
+<span class="g">git branch rescue/staging-good a1b2c3d</span>
+
+<span class="c"># 4. 確認工作目錄乾淨，再把共用分支指回好的 commit</span>
+git switch release/staging
+git status
+git reset --hard a1b2c3d
+
+<span class="c"># 5. 遠端還是「錯的那個 commit」才覆蓋；有人在這之後推了東西就會被拒絕</span>
+git push <span class="g">--force-with-lease</span> origin release/staging
+
+<span class="c"># 更嚴格：直接寫出預期遠端現在的 commit（9f8e7d6 = 錯的那個）</span>
+git push <span class="g">--force-with-lease=release/staging:9f8e7d6</span> origin release/staging
+
+<span class="c"># 也可以不動本地分支，直接把救援分支推到遠端的 release/staging</span>
+git push <span class="g">--force-with-lease</span> origin rescue/staging-good:release/staging</pre>
+<div class="box good-box">
+  <span class="key">推回後一定要通知隊友：</span>說明哪個分支被改回哪個 commit。已經 pull 過錯內容的人，確認自己沒有要保留的本地修改後，執行：
+  <pre style="margin:6px 0">git fetch origin
+git switch release/staging
+git reset --hard origin/release/staging   <span class="c"># 丟掉本地那份錯的歷史，和遠端對齊</span></pre>
+  否則他們下次 push 可能把錯的 commit 再推回來。
+</div>
+
+<h2><span class="badge good">解法 B</span> 可能有人已經 pull / 已部署：git revert</h2>
+<p><span class="good">不改寫歷史，新增一個抵銷的 commit，用一般 push 推上去</span></p>
+<pre>git switch release/staging
+git pull --ff-only                          <span class="c"># 先和遠端對齊，避免 revert 在舊的基礎上</span>
+
+<span class="c"># 錯的是一個 merge commit：以第 1 個 parent（merge 前的 staging）為主線抵銷</span>
+<span class="g">git revert -m 1 9f8e7d6</span>
+
+<span class="c"># 錯的是一串一般 commit：抵銷 a1b2c3d 之後的全部（由新到舊逐一 revert）</span>
+<span class="g">git revert --no-edit a1b2c3d..HEAD</span>
+
+git push origin release/staging             <span class="c"># 一般 push 就好，不需要 force</span></pre>
+
+<h2><span class="badge good">判斷</span></h2>
+<table>
+  <thead><tr><th>情況</th><th>做法</th></tr></thead>
+  <tbody>
+    <tr><td>剛推，確定沒人 pull、CI 還沒部署</td><td><span class="good">reset + <code>--force-with-lease</code></span>，並通知隊友</td></tr>
+    <tr><td>可能已有人 pull、已部署，或分支有保護不能 force push</td><td><span class="good"><code>git revert</code></span>，一般 push</td></tr>
+    <tr><td>不確定有沒有人 pull</td><td>選 <code>git revert</code>，它不會弄壞任何人的本地歷史</td></tr>
+    <tr><td>要覆蓋遠端分支</td><td><span class="bad">不要</span>用 <code>--force</code>，改用 <code>--force-with-lease</code></td></tr>
+    <tr><td>好的 commit 只存在 reflog 裡</td><td>先開救援分支釘住，再做任何 reset</td></tr>
+  </tbody>
+</table>
+
+<h2><span class="badge bad">取捨 / 注意</span></h2>
+<div class="box bad-box">
+  <ul>
+    <li><b>reset + force push</b>：歷史乾淨，但<span class="bad">改寫了共用歷史</span>，每個已 pull 的人都要手動對齊。</li>
+    <li><b>--force-with-lease 的盲點</b>：它比對的是 <code>origin/release/staging</code>。如果編輯器在背景自動 fetch，這個記憶會被更新成最新，保護就失效。<span class="key">要更保險就寫出預期的 commit</span>（<code>--force-with-lease=分支:commit</code>）。</li>
+    <li><b>git revert</b>：歷史會多出「加了又撤掉」的 commit。<span class="key">revert 過的 merge 之後要再 merge 同一個功能時，git 會認為那些 commit 已經 merge 過</span>，需要先 revert 那個 revert commit，才能把功能帶回來。</li>
+    <li><b>reflog 只在本地</b>：錯的 push 若是別人做的，你的 reflog 只記得你上次 fetch 時的狀態；更早的內容要請推錯的人從他的 reflog 找。</li>
+  </ul>
+</div>
+
+<h2><span class="badge bad">更正</span> 原筆記的問題</h2>
+<div class="box bad-box">
+  <ol>
+    <li>原筆記用 <code>git push ... <span class="bad">--force</span></code> 推回。<span class="key">應改用 <code>--force-with-lease</code></span>：遠端在這段時間若有人推了新 commit，<code>--force</code> 會直接蓋掉，<code>--force-with-lease</code> 會拒絕。</li>
+    <li>原筆記<span class="bad">沒提到通知隊友</span>。改寫共用分支後，已 pull 的人要 <code>reset --hard origin/分支</code> 對齊，否則錯的 commit 會被再推回來。</li>
+    <li>原筆記<span class="bad">只給了改寫歷史一種做法</span>。已經有人 pull 或分支禁止 force push 時，應該用 <code>git revert</code>。</li>
+  </ol>
+</div>
+
+</main>
+</body>
+</html>

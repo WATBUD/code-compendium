@@ -10,6 +10,12 @@ JSON Web Token（JWT）是一種開放標準（RFC 7519），用於安全地傳�
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMjMsInVzZXJuYW1lIjoiZXhhbXBsZV91c2VyIiY
 發送給後端，用於進行身份驗證和授權。
 
+### Token 存放位置的取捨（安全性）
+- **localStorage / sessionStorage**：實作簡單，但頁面上執行的任何 JavaScript 都能讀取，一旦網站有 **XSS** 漏洞（含被汙染的第三方套件），token 可直接被竊取並在別處冒用。若採用此方式，務必做好 XSS 防護（輸出編碼、CSP 等），並讓 token 短效期。
+- **HttpOnly Cookie**（建議搭配 `Secure`、`SameSite=Lax/Strict`）：JavaScript 讀不到 token，可降低 XSS 竊取風險；但瀏覽器會自動帶上 cookie，因此需要 **CSRF 防護**（`SameSite`、CSRF token、檢查 `Origin`/`Referer` 等）。
+- 常見折衷做法：短效 access token 放在記憶體中，搭配存在 HttpOnly Cookie 的 refresh token 換發新的 access token。
+- 注意：HttpOnly Cookie 只能防止 token 被「讀走」，若存在 XSS，攻擊者仍可在使用者頁面上直接以其身分發送請求，XSS 防護依然必要。
+
 ###  JWT 結構
 JWT 由三個部分組成，通過點號分隔：
 1. Header（頭部）：包含令牌信息，例如使用的簽名算法等。

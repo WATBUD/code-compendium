@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>React 優化案例：RTK Query 的 skip 沒生效</title>
+<style>
+  :root {
+    --bg: #ffffff; --panel: #f5f6fa; --text: #1f2430; --muted: #6b7280; --border: #dfe3ec;
+    --bad: #d62f35; --bad-bg: rgba(229, 72, 77, .14);
+    --good: #12875a; --good-bg: rgba(31, 157, 99, .15);
+    --key: #8a5a00; --key-bg: rgba(255, 196, 0, .30);
+    --code-bg: #14161d; --code-text: #e6e9f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171e; --panel: #1e212b; --text: #e6e9f2; --muted: #9aa3b5; --border: #313646;
+      --bad: #ff7b80; --bad-bg: rgba(255, 107, 112, .18);
+      --good: #4cc38a; --good-bg: rgba(76, 195, 138, .18);
+      --key: #ffd666; --key-bg: rgba(255, 196, 0, .20);
+      --code-bg: #0e1015;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 56px; background: var(--bg); color: var(--text);
+    font: 15px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+  }
+  main { max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 24px; line-height: 1.3; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 30px 0 8px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; }
+  .badge.bad { background: var(--bad-bg); color: var(--bad); }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+  p { margin: 6px 0; }
+  .sub { color: var(--muted); margin: 0 0 6px; }
+  .bad  { color: var(--bad);  background: var(--bad-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .good { color: var(--good); background: var(--good-bg); padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .key  { color: var(--key);  background: var(--key-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .box { border: 1px solid var(--border); border-left-width: 4px; border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .box.bad-box { border-left-color: var(--bad); }
+  .box.good-box { border-left-color: var(--good); }
+  ol, ul { margin: 4px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92em; }
+  :not(pre) > code { background: var(--panel); border: 1px solid var(--border); padding: 0 5px; border-radius: 4px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text); border-radius: 10px;
+    padding: 12px 16px; overflow-x: auto; margin: 8px 0; font-size: 13px; line-height: 1.6;
+  }
+  pre .c { color: #7f8aa3; }
+  pre .r { color: #ff8a8f; font-weight: 700; }
+  pre .g { color: #7ee2a8; font-weight: 700; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; font-size: 13px; }
+  .flow span { padding: 4px 10px; border-radius: 6px; background: var(--bad-bg); color: var(--bad); font-weight: 600; }
+  .flow i { color: var(--muted); font-style: normal; }
+  .term { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .term b.name { color: var(--key); }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 10px 0; }
+  .steps li { counter-increment: s; position: relative; padding: 6px 0 6px 38px; margin: 0; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 6px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--good-bg); color: var(--good); font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .viewport { display: grid; grid-template-columns: 150px 1fr; gap: 14px; margin: 12px 0; align-items: stretch; }
+  .viewport .screen { border: 2px solid var(--good); border-radius: 8px; background: var(--bg); overflow: hidden; position: relative; min-height: 170px; }
+  .viewport .rowx { height: 22px; border-bottom: 1px solid var(--border); font-size: 11px; padding: 2px 8px; color: var(--muted); }
+  .viewport .rowx.off { opacity: .35; border-bottom-style: dashed; }
+  .viewport .sentinel { position: absolute; left: 0; right: 0; bottom: 20px; height: 22px; background: var(--key-bg); color: var(--key); font-size: 11px; font-weight: 700; text-align: center; line-height: 22px; border-top: 1px dashed var(--key); border-bottom: 1px dashed var(--key); }
+  .viewport .legend { font-size: 13px; }
+  .viewport .legend div { margin: 4px 0; }
+  @media (max-width: 560px) { .viewport { grid-template-columns: 1fr; } }
+  td, th { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+  th { background: var(--panel); }
+  .demo { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin: 12px 0; }
+  .demo button { font: inherit; font-size: 13px; padding: 5px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; margin-right: 6px; }
+  .demo button.primary { background: var(--good); border-color: var(--good); color: #fff; }
+  .demo button:disabled { opacity: .5; cursor: default; }
+  .counters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+  .counter { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; }
+  .counter .n { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .counter .l { font-size: 12px; color: var(--muted); }
+  .counter.bad .n { color: var(--bad); }
+  .counter.good .n { color: var(--good); }
+  .counter.key .n { color: var(--key); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>React 優化案例：RTK Query 的 skip 沒生效</h1>
+<p class="sub">寫了 useGetUserQuery({ skip: true }) 請求還是送出 · 結論：<span class="key">第一個參數是 query 的參數，選項要放第二個：useGetUserQuery(undefined, { skip })，或傳 skipToken</span></p>
+
+<h2><span class="badge bad">原因</span> </h2>
+<div class="flow"><span>{ skip } 寫在第一個參數</span><i>→</i><span>被當成 query 的參數 arg</span><i>→</i><span>hook 沒收到任何選項</span><i>→</i><span>照常發請求，skip 被忽略</span></div>
+<pre><span class="c">// API 定義：這個 query 不需要參數</span>
+getUser: builder.query&lt;User, void&gt;({
+  query: () =&gt; '/users/me',
+}),
+
+<span class="c">// 元件裡</span>
+const { data } = useGetUserQuery(<span class="r">{ skip: !isLoggedIn }</span>)
+<span class="c">// 這個物件是「傳給 query 的參數」，不是 hook 選項 → 未登入也會打 /users/me</span></pre>
+<div class="box bad-box"><ol>
+<li><span class="bad">hook 的參數位置固定</span>：<code>useXxxQuery(arg, options)</code>。第一個永遠是 <code>arg</code>，會原封不動交給 <code>query(arg)</code>，也拿來當快取的 key。</li>
+<li><span class="bad">選項放錯位置不會報執行錯誤</span>：在 JS 裡它只是被當成 arg，<code>query</code> 不使用它，請求照送，所以很難發現。</li>
+</ol></div>
+<div class="box bad-box"><span class="key">更正原筆記：</span>
+<ul>
+<li>原筆記只說放錯「會錯」。更精確的行為是：<span class="key">JS 不會報錯，請求照常送出，skip 和其他選項全部被忽略</span>；若 query 的參數型別標成 <code>void</code>，TypeScript 才會在編譯時報錯。</li>
+<li>原筆記說略過查詢「必須」寫 <code>undefined, { skip }</code>。另一個官方做法是傳 <code>skipToken</code>，在參數可能還沒準備好時更好用（見解法 2）。</li>
+</ul></div>
+
+<h2><span class="badge good">名詞</span> 先看懂這幾個詞</h2>
+<div class="term"><b class="name">builder.query</b><br>在 <code>createApi</code> 的 <code>endpoints</code> 裡定義一個「讀資料」的 API。RTK Query 會自動產生對應的 hook：<code>getUser</code> → <code>useGetUserQuery</code>。</div>
+<div class="term"><b class="name">query 參數（arg）</b><br>hook 的<b>第一個</b>參數，會傳給 <code>query: (arg) =&gt; …</code> 組出網址。它也是快取的 key：arg 不同就是不同的快取、會各自發請求。不需要參數時就是 <code>undefined</code>。</div>
+<div class="term"><b class="name">hook 選項（options）</b><br>hook 的<b>第二個</b>參數，控制 hook 本身的行為：<code>skip</code>（先不要發請求）、<code>refetchOnMountOrArgChange</code>（掛載或 arg 改變時強制重抓）、<code>pollingInterval</code>（定時重抓）等。</div>
+<div class="term"><b class="name">skipToken</b><br>RTK Query 提供的特殊值，<b>放在第一個參數的位置</b>，意思是「現在先不要查」。等條件成立時改傳真正的 arg，就會自動開始查。</div>
+
+<h2><span class="badge good">解法 1</span> 不需要參數的 query：第一個傳 undefined，選項放第二個</h2>
+<p><span class="good">arg 位置明確給 <code>undefined</code>，選項才會被當成 options</span>。</p>
+<pre>const { data } = useGetUserQuery(<span class="g">undefined</span>, <span class="g">{ skip: !isLoggedIn }</span>)
+<span class="c">// 第一個：沒有參數 → undefined</span>
+<span class="c">// 第二個：hook 選項 → 未登入時不發請求，登入後自動開始查</span></pre>
+
+<h2><span class="badge good">解法 2</span> 用 skipToken 取代 skip</h2>
+<p><span class="good">「還不能查」直接寫在 arg 位置</span>，特別適合「參數可能還沒準備好」的情況，TypeScript 也不會抱怨 arg 可能是 <code>undefined</code>。</p>
+<pre>import { <span class="g">skipToken</span> } from '@reduxjs/toolkit/query/react'
+
+<span class="c">// 不需要參數的 query</span>
+const { data: me } = useGetUserQuery(isLoggedIn ? undefined : <span class="g">skipToken</span>)
+
+<span class="c">// 需要參數的 query：getUserById: builder.query&lt;User, string&gt;({ query: (id) =&gt; `/users/${id}` })</span>
+const { data: user } = useGetUserByIdQuery(<span class="g">userId ?? skipToken</span>)   <span class="c">// userId 還沒有時不查</span>
+<span class="c">// 一樣可以帶選項：useGetUserByIdQuery(userId ?? skipToken, { refetchOnMountOrArgChange: true })</span></pre>
+
+<h2><span class="badge good">判斷</span> </h2>
+<table><thead><tr><th>寫法</th><th>結果</th></tr></thead><tbody>
+<tr><td><code>useGetUserQuery()</code></td><td>正常查詢（不需要參數）</td></tr>
+<tr><td><code>useGetUserQuery(undefined, { skip: true })</code></td><td><span class="good">正確</span>：略過查詢</td></tr>
+<tr><td><code>useGetUserQuery(skipToken)</code></td><td><span class="good">正確</span>：略過查詢</td></tr>
+<tr><td><code>useGetUserByIdQuery(userId ?? skipToken)</code></td><td><span class="good">正確</span>：參數還沒準備好時不查</td></tr>
+<tr><td><code>useGetUserQuery({ skip: true })</code></td><td><span class="bad">錯誤</span>：<code>{ skip: true }</code> 被當成 arg，照常發請求</td></tr>
+</tbody></table>
+<div class="box bad-box"><span class="key">注意：</span>
+<ul>
+<li>從「查」切到 skip 時，hook 回傳的 <code>data</code> 會變回 <code>undefined</code>，畫面要能處理沒有資料的狀態。</li>
+<li>arg 用物件時，RTK Query 會序列化成快取 key，內容相同就共用快取；但不要把每次都會變的值（例如時間戳）放進 arg，否則每次 render 都會重新請求。</li>
+</ul></div>
+
+</main>
+
+</body>
+</html>

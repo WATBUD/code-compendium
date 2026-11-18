@@ -1,8 +1,11 @@
+> **注意 / Note**：以下是 SQL 的「**邏輯處理順序**（logical processing order）」，用來理解每個子句「看得到」哪些欄位與結果；它**不是**資料庫實際的**物理執行順序**。實際執行計畫由查詢優化器決定（例如可能先套用 `WHERE` 過濾再做 JOIN、使用索引等），只要結果與邏輯順序一致即可。  
+> This is the **logical** processing order of a `SELECT` statement, not the **physical** execution order; the optimizer may reorder operations as long as the result is the same.
+
 ### 1. **FROM**  
    - **作用**：指定資料來源（表格、視圖、聯結等）。  
    - **Role**: Specifies the data source (tables, views, joins, etc.).  
-   - 這是查詢執行的第一步，決定從哪個資料來源擷取資料。  
-   - This is the first step in the query execution, determining from which source to retrieve the data.
+   - 這是邏輯處理的第一步，決定從哪個資料來源擷取資料。  
+   - This is the first step in logical query processing, determining from which source to retrieve the data.
 
 ---
 
@@ -49,8 +52,21 @@
 ### 7. **SELECT**  
    - **作用**：指定查詢回傳的欄位或表達式。  
    - **Role**: Specifies the columns or expressions to be returned in the result set.  
-   - 這一步決定了最終回傳的欄位，但它是在資料來源（表格）、聯結、篩選及分組之後才會執行。  
-   - This step determines which columns will appear in the final result, but it is executed after the data has been filtered and grouped.
+   - 這一步決定了最終回傳的欄位，但它是在資料來源（表格）、聯結、篩選及分組之後才會處理。  
+   - This step determines which columns will appear in the final result, but it is logically processed after the data has been filtered and grouped.
+   - **常見陷阱**：因為 `WHERE`（以及 `GROUP BY`、`HAVING`）在 `SELECT` 之前處理，所以 **`WHERE` 不能使用 `SELECT` 中定義的別名**；反之 `ORDER BY` 在 `SELECT` 之後，可以使用別名。（部分資料庫如 MySQL 對 `GROUP BY`/`HAVING` 使用別名有額外放寬，但 `WHERE` 一律不行。）  
+   - **Classic trap**: `WHERE` cannot reference a column alias defined in `SELECT`, because `WHERE` is processed before `SELECT`; `ORDER BY` can.
+
+```sql
+-- ❌ 錯誤：WHERE 看不到 SELECT 的別名 total
+SELECT price * qty AS total FROM orders WHERE total > 100;
+
+-- ✅ 正確：在 WHERE 重寫表達式（或改用子查詢 / CTE）
+SELECT price * qty AS total FROM orders WHERE price * qty > 100;
+
+-- ✅ ORDER BY 可以使用別名
+SELECT price * qty AS total FROM orders ORDER BY total DESC;
+```
 
 ---
 
@@ -78,9 +94,9 @@
 
 ---
 
-### SQL Execution Order Diagram:
+### SQL Logical Processing Order Diagram:
 ```
-1. FROM -> 2. JOIN -> 3. ON -> 4. WHERE -> 5. GROUP BY -> 6. HAVING -> 7. SELECT -> 8. DISTINCT -> 9. ORDER BY -> 10. LIMIT/OFFSET
+1. FROM -> 2. ON -> 3. JOIN -> 4. WHERE -> 5. GROUP BY -> 6. HAVING -> 7. SELECT -> 8. DISTINCT -> 9. ORDER BY -> 10. LIMIT/OFFSET
 ```
 
 ---

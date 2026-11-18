@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>React 優化案例：量測 DOM 後再定位會閃一下 → useLayoutEffect</title>
+<style>
+  :root {
+    --bg: #ffffff; --panel: #f5f6fa; --text: #1f2430; --muted: #6b7280; --border: #dfe3ec;
+    --bad: #d62f35; --bad-bg: rgba(229, 72, 77, .14);
+    --good: #12875a; --good-bg: rgba(31, 157, 99, .15);
+    --key: #8a5a00; --key-bg: rgba(255, 196, 0, .30);
+    --code-bg: #14161d; --code-text: #e6e9f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171e; --panel: #1e212b; --text: #e6e9f2; --muted: #9aa3b5; --border: #313646;
+      --bad: #ff7b80; --bad-bg: rgba(255, 107, 112, .18);
+      --good: #4cc38a; --good-bg: rgba(76, 195, 138, .18);
+      --key: #ffd666; --key-bg: rgba(255, 196, 0, .20);
+      --code-bg: #0e1015;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 56px; background: var(--bg); color: var(--text);
+    font: 15px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+  }
+  main { max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 24px; line-height: 1.3; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 30px 0 8px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; }
+  .badge.bad { background: var(--bad-bg); color: var(--bad); }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+  p { margin: 6px 0; }
+  .sub { color: var(--muted); margin: 0 0 6px; }
+  .bad  { color: var(--bad);  background: var(--bad-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .good { color: var(--good); background: var(--good-bg); padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .key  { color: var(--key);  background: var(--key-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .box { border: 1px solid var(--border); border-left-width: 4px; border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .box.bad-box { border-left-color: var(--bad); }
+  .box.good-box { border-left-color: var(--good); }
+  ol, ul { margin: 4px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92em; }
+  :not(pre) > code { background: var(--panel); border: 1px solid var(--border); padding: 0 5px; border-radius: 4px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text); border-radius: 10px;
+    padding: 12px 16px; overflow-x: auto; margin: 8px 0; font-size: 13px; line-height: 1.6;
+  }
+  pre .c { color: #7f8aa3; }
+  pre .r { color: #ff8a8f; font-weight: 700; }
+  pre .g { color: #7ee2a8; font-weight: 700; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; font-size: 13px; }
+  .flow span { padding: 4px 10px; border-radius: 6px; background: var(--bad-bg); color: var(--bad); font-weight: 600; }
+  .flow i { color: var(--muted); font-style: normal; }
+  .term { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .term b.name { color: var(--key); }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 10px 0; }
+  .steps li { counter-increment: s; position: relative; padding: 6px 0 6px 38px; margin: 0; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 6px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--good-bg); color: var(--good); font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .viewport { display: grid; grid-template-columns: 150px 1fr; gap: 14px; margin: 12px 0; align-items: stretch; }
+  .viewport .screen { border: 2px solid var(--good); border-radius: 8px; background: var(--bg); overflow: hidden; position: relative; min-height: 170px; }
+  .viewport .rowx { height: 22px; border-bottom: 1px solid var(--border); font-size: 11px; padding: 2px 8px; color: var(--muted); }
+  .viewport .rowx.off { opacity: .35; border-bottom-style: dashed; }
+  .viewport .sentinel { position: absolute; left: 0; right: 0; bottom: 20px; height: 22px; background: var(--key-bg); color: var(--key); font-size: 11px; font-weight: 700; text-align: center; line-height: 22px; border-top: 1px dashed var(--key); border-bottom: 1px dashed var(--key); }
+  .viewport .legend { font-size: 13px; }
+  .viewport .legend div { margin: 4px 0; }
+  @media (max-width: 560px) { .viewport { grid-template-columns: 1fr; } }
+  td, th { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+  th { background: var(--panel); }
+  .demo { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin: 12px 0; }
+  .demo button { font: inherit; font-size: 13px; padding: 5px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; margin-right: 6px; }
+  .demo button.primary { background: var(--good); border-color: var(--good); color: #fff; }
+  .demo button:disabled { opacity: .5; cursor: default; }
+  .counters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+  .counter { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; }
+  .counter .n { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .counter .l { font-size: 12px; color: var(--muted); }
+  .counter.bad .n { color: var(--bad); }
+  .counter.good .n { color: var(--good); }
+  .counter.key .n { color: var(--key); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>React 優化案例：量測 DOM 後再定位會閃一下 → useLayoutEffect</h1>
+<p class="sub">Tooltip / 彈窗先出現在錯的位置再跳到對的位置 · 結論：<span class="key">「量測 DOM → setState 改位置」要放在 useLayoutEffect，在瀏覽器繪製前完成</span></p>
+
+<h2><span class="badge bad">原因</span> </h2>
+<div class="flow"><span>第一次 render：還不知道高度，用預設位置</span><i>→</i><span>瀏覽器先把這個錯的位置畫出來</span><i>→</i><span>useEffect 量測高度 → setState</span><i>→</i><span>再 render、再畫一次 → 看到跳動</span></div>
+<pre>import { useEffect, useRef, useState } from 'react'
+
+function Tooltip({ targetTop, children }) {
+  const ref = useRef(null)
+  const [height, setHeight] = useState(0)          <span class="c">// 第一次 render 還不知道真實高度</span>
+
+  <span class="r">useEffect</span>(() =&gt; {                                <span class="c">// 在瀏覽器「已經畫出畫面」之後才執行</span>
+    setHeight(ref.current.getBoundingClientRect().height)
+  }, [])
+
+  <span class="c">// 第一幀：height = 0 → 位置錯；量到後第二幀才移到 targetTop 正上方</span>
+  return &lt;div ref={ref} style={{ position: 'absolute', top: targetTop - height }}&gt;{children}&lt;/div&gt;
+}</pre>
+<div class="box bad-box"><ol>
+<li><span class="bad">useEffect 在繪製之後才跑</span>：React 把 DOM 更新完，瀏覽器通常已經先畫了一幀，effect 才執行。</li>
+<li><span class="bad">畫面要靠量測結果決定</span>：第一幀只能用預設值（height = 0），使用者會看到一幀錯誤位置，然後跳到正確位置。</li>
+</ol></div>
+<div class="box bad-box"><span class="key">更正原筆記：</span>
+<ul>
+<li>原筆記說 <code>useEffect</code>「在瀏覽器閒暇時間（idle time）執行」。<span class="bad">不準確</span>：React 不是等瀏覽器閒下來，而是在 commit 之後排程執行，<b>通常在瀏覽器繪製之後</b>。由使用者操作（例如點擊）觸發的更新，React 18 起甚至可能在繪製前就同步執行完 effect。重點是：<span class="key">useEffect 不保證在繪製前跑，useLayoutEffect 保證</span>。</li>
+<li>原筆記範例用了 <code>useState</code> 卻只 <code>import { useEffect }</code>，少 import <code>useState</code>（本頁範例已補上）。</li>
+</ul></div>
+
+<h2><span class="badge good">名詞</span> 先看懂這幾個詞</h2>
+<div class="term"><b class="name">繪製（paint）</b><br>瀏覽器把算好的版面真正畫到螢幕上的那一步。畫出來的那一幀使用者就看得到，哪怕只有十幾毫秒。</div>
+<div class="term"><b class="name">React 更新的順序</b>
+<ol class="steps">
+<li>render：執行元件函式，算出要長怎樣。</li>
+<li>commit：把變更寫進真實 DOM。</li>
+<li><b>useLayoutEffect</b> 執行（DOM 已更新、畫面還沒畫）。這裡 setState，React 會在繪製前同步再 render 一次。</li>
+<li>瀏覽器繪製。</li>
+<li><b>useEffect</b> 執行（一般情況）。</li>
+</ol></div>
+<div class="term"><b class="name">量測 DOM（layout 讀取）</b><br>例如 <code>getBoundingClientRect()</code>、<code>offsetHeight</code>，讀出元素實際的大小與位置。只有 DOM 真的放進畫面後才量得到，所以只能在 effect 裡做。</div>
+<div class="term"><b class="name">阻塞繪製</b><br>useLayoutEffect 裡的程式跑完之前，瀏覽器不會畫下一幀。跑得久，整個畫面就會卡住。</div>
+
+<h2><span class="badge good">解法</span> 換成 useLayoutEffect，在繪製前量好、改好</h2>
+<p><span class="good">量測和 setState 都在繪製前完成，使用者只會看到最終位置</span>。</p>
+<pre>import { <span class="g">useLayoutEffect</span>, useRef, useState } from 'react'
+
+function Tooltip({ targetTop, children }) {
+  const ref = useRef(null)
+  const [height, setHeight] = useState(0)
+
+  <span class="g">useLayoutEffect</span>(() =&gt; {                          <span class="c">// DOM 已更新、瀏覽器還沒畫</span>
+    setHeight(ref.current.getBoundingClientRect().height)   <span class="c">// 這裡 setState 會在繪製前同步重 render</span>
+  }, [])
+
+  <span class="c">// 第一幀畫出來時，height 已經是真實高度 → 不會跳</span>
+  return &lt;div ref={ref} style={{ position: 'absolute', top: targetTop - height }}&gt;{children}&lt;/div&gt;
+}</pre>
+
+<h2><span class="badge good">判斷</span> </h2>
+<table><thead><tr><th>情況</th><th>用哪個</th></tr></thead><tbody>
+<tr><td>要先量 DOM（大小、位置、捲動）再決定畫面長相</td><td><span class="good">useLayoutEffect</span></td></tr>
+<tr><td>打 API、訂閱、log、設定 timer</td><td>useEffect；<span class="bad">不要</span>用 useLayoutEffect，會白白阻塞繪製</td></tr>
+<tr><td>閃爍其實來自資料還沒回來（loading）</td><td>useLayoutEffect <span class="bad">救不了</span>，要處理 loading 畫面或預先取資料</td></tr>
+<tr><td>只是要算衍生值（不需量 DOM）</td><td>兩個都不用，直接在 render 裡算</td></tr>
+</tbody></table>
+<div class="box bad-box"><span class="key">取捨：</span>
+<ul>
+<li><span class="bad">會阻塞繪製</span>：裡面的程式和它觸發的重 render 都在畫面出現前跑完，太重會讓畫面卡頓。只放「量測 + 改位置」這種輕量工作。</li>
+<li>伺服器端渲染（SSR）時 useLayoutEffect 不會執行；需要 SSR 的元件要另外處理（例如只在客戶端掛載後才顯示 tooltip）。</li>
+</ul></div>
+
+</main>
+
+</body>
+</html>

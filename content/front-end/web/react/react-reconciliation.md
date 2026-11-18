@@ -28,14 +28,18 @@ React 協調算法（Reconciliation）如何進行新舊虛擬 DOM 比較：
 <MyComponent key="1" />  // 類型是 MyComponent
 
 ```
-#### 3.相同 key 和不同元素類型:
+#### 3. 相同 key 和不同元素類型:
 ```jsx
+// 舊的虛擬 DOM
 <div key="1">Hello</div>
-<input key="1">World</span> 換成 input
-<span key="1">World</span> 換成 span
-```
 
-在這些情況下，React 比較的 **類型** 是 `div` 或 `MyComponent`，而不是元素內的內容或其他屬性。如果 `key` 相同且類型相同，React 會重用現有的 DOM 元素並更新屬性。如果 `key` 或類型不同，React 會進行重新渲染。
+// 新的虛擬 DOM：key 相同，但類型從 div 換成 span
+<span key="1">Hello</span>
+```
+雖然 `key` 和內容都一樣，但類型從 `div` 變成 `span`，React 會銷毀舊的 `<div>`（連同其子樹與狀態），再建立新的 `<span>`。
+（同理，換成 `<input key="1" />` 也一樣；注意 `input` 是空元素，不能有子內容。）
+
+在這些情況下，React 比較的 **類型** 是 `div` 或 `MyComponent`，而不是元素內的內容或其他屬性。如果 `key` 相同且類型相同，React 會重用現有的 DOM 元素並更新屬性。如果 `key` 或類型不同，React 會卸載舊元素並重新建立新元素。
 
 ### 總結：
 - **原生 DOM 元素類型**：如 `div`、`span` 等 HTML 標籤。
@@ -91,12 +95,12 @@ React 協調算法（Reconciliation）如何進行新舊虛擬 DOM 比較：
 3. **處理新增、刪除和移動**：
    - **刪除**：舊列表中的 `key="1"` 的元素被刪除。
    - **新增**：新列表中有 `key="4"` 的元素，但舊列表中沒有，React 會創建並插入 `<div key="4">D</div>`。
-   - **移動**：`key="2"` 和 `key="3"` 在新舊列表中的位置發生了變動，React 會根據新的順序移動它們。
+   - **移動**：`key="2"` 和 `key="3"` 的索引雖然改變了，但兩者的 **相對順序** 沒變（仍是 B 在 C 前），刪除 A 之後它們自然就在正確位置，React 不需要對它們做 DOM 移動。
 
 ### 最終的 DOM 更新：
 - 舊的 `<div key="1">A</div>` 被刪除。
 - 新的 `<div key="4">D</div>` 被創建並添加。
-- `key="2"` 和 `key="3"` 會根據新順序移動。
+- `key="2"` 和 `key="3"` 的 DOM 節點被保留重用，相對順序不變，不需要移動。
 
 ### 實際代碼範例：
 
@@ -156,5 +160,5 @@ export default List;
 
 React 會根據 `key` 檢查新舊列表的差異，並進行以下操作：
 - **刪除** `A`（因為 `key="1"` 在新列表中不存在）。
-- **移動** `B` 和 `C` 到新順序。
+- **保留** `B` 和 `C`（重用原有 DOM 節點，相對順序不變，不需移動）。
 - **新增** `D`（因為 `key="4"` 在舊列表中不存在）。

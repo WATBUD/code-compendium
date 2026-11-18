@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JavaScript 觀念陷阱：for + var + setTimeout 印出五次 5</title>
+<style>
+  :root {
+    --bg: #ffffff; --panel: #f5f6fa; --text: #1f2430; --muted: #6b7280; --border: #dfe3ec;
+    --bad: #d62f35; --bad-bg: rgba(229, 72, 77, .14);
+    --good: #12875a; --good-bg: rgba(31, 157, 99, .15);
+    --key: #8a5a00; --key-bg: rgba(255, 196, 0, .30);
+    --code-bg: #14161d; --code-text: #e6e9f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171e; --panel: #1e212b; --text: #e6e9f2; --muted: #9aa3b5; --border: #313646;
+      --bad: #ff7b80; --bad-bg: rgba(255, 107, 112, .18);
+      --good: #4cc38a; --good-bg: rgba(76, 195, 138, .18);
+      --key: #ffd666; --key-bg: rgba(255, 196, 0, .20);
+      --code-bg: #0e1015;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 56px; background: var(--bg); color: var(--text);
+    font: 15px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+  }
+  main { max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 24px; line-height: 1.3; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 30px 0 8px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; }
+  .badge.bad { background: var(--bad-bg); color: var(--bad); }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+  p { margin: 6px 0; }
+  .sub { color: var(--muted); margin: 0 0 6px; }
+  .bad  { color: var(--bad);  background: var(--bad-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .good { color: var(--good); background: var(--good-bg); padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .key  { color: var(--key);  background: var(--key-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .box { border: 1px solid var(--border); border-left-width: 4px; border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .box.bad-box { border-left-color: var(--bad); }
+  .box.good-box { border-left-color: var(--good); }
+  ol, ul { margin: 4px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92em; }
+  :not(pre) > code { background: var(--panel); border: 1px solid var(--border); padding: 0 5px; border-radius: 4px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text); border-radius: 10px;
+    padding: 12px 16px; overflow-x: auto; margin: 8px 0; font-size: 13px; line-height: 1.6;
+  }
+  pre .c { color: #7f8aa3; }
+  pre .r { color: #ff8a8f; font-weight: 700; }
+  pre .g { color: #7ee2a8; font-weight: 700; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; font-size: 13px; }
+  .flow span { padding: 4px 10px; border-radius: 6px; background: var(--bad-bg); color: var(--bad); font-weight: 600; }
+  .flow i { color: var(--muted); font-style: normal; }
+  .term { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .term b.name { color: var(--key); }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 10px 0; }
+  .steps li { counter-increment: s; position: relative; padding: 6px 0 6px 38px; margin: 0; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 6px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--good-bg); color: var(--good); font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .viewport { display: grid; grid-template-columns: 150px 1fr; gap: 14px; margin: 12px 0; align-items: stretch; }
+  .viewport .screen { border: 2px solid var(--good); border-radius: 8px; background: var(--bg); overflow: hidden; position: relative; min-height: 170px; }
+  .viewport .rowx { height: 22px; border-bottom: 1px solid var(--border); font-size: 11px; padding: 2px 8px; color: var(--muted); }
+  .viewport .rowx.off { opacity: .35; border-bottom-style: dashed; }
+  .viewport .sentinel { position: absolute; left: 0; right: 0; bottom: 20px; height: 22px; background: var(--key-bg); color: var(--key); font-size: 11px; font-weight: 700; text-align: center; line-height: 22px; border-top: 1px dashed var(--key); border-bottom: 1px dashed var(--key); }
+  .viewport .legend { font-size: 13px; }
+  .viewport .legend div { margin: 4px 0; }
+  @media (max-width: 560px) { .viewport { grid-template-columns: 1fr; } }
+  td, th { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+  th { background: var(--panel); }
+  .demo { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin: 12px 0; }
+  .demo button { font: inherit; font-size: 13px; padding: 5px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; margin-right: 6px; }
+  .demo button.primary { background: var(--good); border-color: var(--good); color: #fff; }
+  .demo button:disabled { opacity: .5; cursor: default; }
+  .counters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+  .counter { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; }
+  .counter .n { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .counter .l { font-size: 12px; color: var(--muted); }
+  .counter.bad .n { color: var(--bad); }
+  .counter.good .n { color: var(--good); }
+  .counter.key .n { color: var(--key); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>JavaScript 觀念陷阱：for + var + setTimeout 印出五次 5</h1>
+<p class="sub">預期印出 0 1 2 3 4，實際印出 5 5 5 5 5 · 結論：<span class="key">var 整個迴圈只有一個 i，所有回呼共用它；改用 let，每一圈都有自己的 i</span></p>
+
+<h2><span class="badge bad">原因</span></h2>
+<div class="flow"><span>var i 只有一個（函式作用域）</span><i>→</i><span>5 個回呼都記住「同一個 i」</span><i>→</i><span>迴圈同步跑完，i 變成 5</span><i>→</i><span>1 秒後回呼才去讀 i</span><i>→</i><span>5 5 5 5 5</span></div>
+<pre><span class="c">// 原本的寫法</span>
+for (<span class="r">var i</span> = 0; i &lt; 5; i++) {        <span class="c">// var：整個函式（或全域）只有這一個 i</span>
+  setTimeout(() =&gt; {
+    console.log(<span class="r">i</span>)                     <span class="c">// 讀的是「執行當下」的 i，不是排程當下的值</span>
+  }, 1000)
+}
+<span class="c">// 1 秒後幾乎同時印出：5 5 5 5 5</span></pre>
+<div class="box bad-box"><ol>
+<li><code>var</code> 是<span class="bad">函式作用域</span>：<code>for</code> 的大括號不會產生新的 <code>i</code>，五次迭代改的是同一個變數。</li>
+<li>箭頭函式是<b>閉包</b>，記住的是「變數本身」，<span class="bad">不是當時的值</span>。</li>
+<li><code>for</code> 迴圈是同步的，會先一口氣跑完（<code>i</code> 停在 5），計時器的回呼要等 1 秒後才執行，那時讀到的就是 5。</li>
+<li>為什麼「同時」印出？五個計時器幾乎在同一瞬間排程、延遲都是 1000ms，所以幾乎同時到期，<b>一個接一個</b>執行，看起來像一次印完。想要每秒印一個，延遲要寫成 <code>1000 * i</code>。</li>
+</ol></div>
+<div class="box bad-box"><span class="key">更正原筆記：</span>原筆記說「所有回呼在同一個事件循環階段中處理」。更精確地說，<b>每個計時器回呼都是各自獨立的 macrotask</b>：瀏覽器每執行完一個 task 就會清空 microtask 佇列（Promise 回呼），中間也可能插入畫面更新；Node.js 雖然在同一個 timers 階段處理到期的計時器，但從 v11 起每個回呼之間也會清空 microtask。它們只是到期時間相同、接連執行而已。</div>
+
+<h2><span class="badge good">名詞</span> 先看懂這幾個詞</h2>
+<div class="term"><b class="name">函式作用域 vs 區塊作用域</b><br><code>var</code> 的有效範圍是<b>整個函式</b>，在 <code>{ }</code> 區塊裡宣告也一樣看得到。<code>let</code> / <code>const</code> 的範圍是<b>最近的 <code>{ }</code></b>。比喻：<code>var</code> 是整層樓共用一塊白板，<code>let</code> 是每個房間各一塊。</div>
+<div class="term"><b class="name">閉包（closure）</b><br>函式會「記住」建立它時外面的變數，之後執行時去讀那個變數<b>當下的值</b>。五個回呼記住同一個 <code>i</code>，就會讀到同一個值。</div>
+<div class="term"><b class="name">setTimeout 與 macrotask</b><br><code>setTimeout(fn, 1000)</code> 不會暫停程式，只是登記「1 秒後把 fn 排進任務佇列」。目前的同步程式（整個 for 迴圈）一定先跑完，fn 之後才會被當成一個獨立任務（macrotask）執行。</div>
+<div class="term"><b class="name">for 迴圈裡的 let</b><br><code>for (let i = ...)</code> 有特殊規則：<b>每一圈都建立一個新的 <code>i</code></b>，並把上一圈的值複製過來。所以每個回呼記住的是不同的 <code>i</code>。</div>
+<div class="term"><b class="name">IIFE（立即執行函式）</b><br><code>(function (j) { ... })(i)</code>：定義完馬上呼叫。呼叫時把當下的 <code>i</code> 當參數傳進去，函式內的 <code>j</code> 是一個新的變數，等於手動為每一圈造一個作用域。在 <code>let</code> 出現（ES2015）之前的標準解法。</div>
+
+<h2><span class="badge good">解法 A</span> 改用 let（首選）</h2>
+<p>一個字的修改：<span class="good">每一圈都有自己的 i</span>。</p>
+<pre>for (<span class="g">let i</span> = 0; i &lt; 5; i++) {        <span class="c">// 每次迭代建立新的 i</span>
+  setTimeout(() =&gt; console.log(i), 1000)   <span class="c">// 每個回呼記住自己那一圈的 i</span>
+}
+<span class="c">// 1 秒後印出：0 1 2 3 4</span></pre>
+
+<h2><span class="badge good">解法 B</span> IIFE（舊環境 / 只能用 var 時）</h2>
+<p>用函式參數<span class="good">把當下的值複製一份</span>。</p>
+<pre>for (var i = 0; i &lt; 5; i++) {
+  <span class="g">(function (j) {</span>                       <span class="c">// j 是每次呼叫各自的新變數</span>
+    setTimeout(() =&gt; console.log(j), 1000)
+  <span class="g">})(i)</span>                                 <span class="c">// 立即呼叫，傳入此刻的 i</span>
+}</pre>
+
+<h2><span class="badge good">解法 C</span> 用 setTimeout 的額外參數傳值</h2>
+<p><code>setTimeout</code> 第三個之後的參數會<span class="good">在排程當下被記下</span>，執行時傳給回呼。</p>
+<pre>for (var i = 0; i &lt; 5; i++) {
+  setTimeout((n) =&gt; console.log(n), 1000, <span class="g">i</span>)   <span class="c">// 排程時就把 i 的值傳進去</span>
+}</pre>
+
+<h2><span class="badge good">補充</span> 想要每秒印一個</h2>
+<pre>for (let i = 0; i &lt; 5; i++) {
+  setTimeout(() =&gt; console.log(i), <span class="g">1000 * i</span>)   <span class="c">// 0s、1s、2s… 各自到期</span>
+}</pre>
+
+<h2><span class="badge good">判斷</span> 該用哪個</h2>
+<table>
+<thead><tr><th>情境</th><th>用</th></tr></thead>
+<tbody>
+<tr><td>一般程式碼</td><td><span class="good">let</span>（不會重新賦值的變數用 const）</td></tr>
+<tr><td>必須在不支援 ES2015 的環境直接執行</td><td><span class="good">IIFE</span> 或 setTimeout 額外參數</td></tr>
+<tr><td>新程式碼裡用 <code>var</code> 宣告迴圈變數</td><td><span class="bad">不要</span></td></tr>
+</tbody></table>
+
+<h2><span class="badge bad">注意</span></h2>
+<div class="box bad-box"><ul>
+<li>把 <code>let</code> 宣告在迴圈外面：<code>let i; for (i = 0; i &lt; 5; i++)</code> —— 這樣<span class="bad">又只剩一個 i</span>，結果一樣是五次 5。每圈新變數的規則只適用於寫在 <code>for (let ...)</code> 括號裡的宣告。</li>
+<li>同樣的問題不只發生在 setTimeout：迴圈裡綁事件監聽、建立 Promise 回呼，只要「之後才執行、又讀迴圈變數」都一樣。</li>
+</ul></div>
+
+</main>
+
+</body>
+</html>

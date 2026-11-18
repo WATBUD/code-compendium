@@ -35,8 +35,10 @@ useEffect(() => {
 const obj = useMemo(() => ({ value: 1 }), []);
 useEffect(() => {
   console.log("Object changed!");
-}, [obj]); // 只有當 obj 內容真的改變時才會重新執行
+}, [obj]); // useMemo 的依賴是 []，obj 在元件生命週期內永遠是同一個引用 → Effect 只在掛載時執行一次
 ```
+若物件內容依賴某個值，就把該值放進 `useMemo` 的依賴陣列，例如 `useMemo(() => ({ value }), [value])`，這樣只有 `value` 改變時才會產生新物件、觸發 Effect。
+（像這種完全不依賴 props/state 的常數，也可以直接移到元件外部宣告。）
 
 ---
 
@@ -55,7 +57,7 @@ useEffect(() => {
 const arr = useMemo(() => [1, 2, 3], []);
 useEffect(() => {
   console.log("Array changed!");
-}, [arr]); // 只有當 arr 內容真的變時才執行
+}, [arr]); // 依賴是 []，arr 永遠是同一個引用 → Effect 只在掛載時執行一次
 ```
 
 ---

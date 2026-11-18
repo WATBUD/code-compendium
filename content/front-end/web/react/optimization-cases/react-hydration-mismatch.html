@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>React 優化案例：Hydration mismatch（伺服器與客戶端輸出不一致）</title>
+<style>
+  :root {
+    --bg: #ffffff; --panel: #f5f6fa; --text: #1f2430; --muted: #6b7280; --border: #dfe3ec;
+    --bad: #d62f35; --bad-bg: rgba(229, 72, 77, .14);
+    --good: #12875a; --good-bg: rgba(31, 157, 99, .15);
+    --key: #8a5a00; --key-bg: rgba(255, 196, 0, .30);
+    --code-bg: #14161d; --code-text: #e6e9f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171e; --panel: #1e212b; --text: #e6e9f2; --muted: #9aa3b5; --border: #313646;
+      --bad: #ff7b80; --bad-bg: rgba(255, 107, 112, .18);
+      --good: #4cc38a; --good-bg: rgba(76, 195, 138, .18);
+      --key: #ffd666; --key-bg: rgba(255, 196, 0, .20);
+      --code-bg: #0e1015;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 56px; background: var(--bg); color: var(--text);
+    font: 15px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+  }
+  main { max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 24px; line-height: 1.3; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 30px 0 8px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; }
+  .badge.bad { background: var(--bad-bg); color: var(--bad); }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+  p { margin: 6px 0; }
+  .sub { color: var(--muted); margin: 0 0 6px; }
+  .bad  { color: var(--bad);  background: var(--bad-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .good { color: var(--good); background: var(--good-bg); padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .key  { color: var(--key);  background: var(--key-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .box { border: 1px solid var(--border); border-left-width: 4px; border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .box.bad-box { border-left-color: var(--bad); }
+  .box.good-box { border-left-color: var(--good); }
+  ol, ul { margin: 4px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92em; }
+  :not(pre) > code { background: var(--panel); border: 1px solid var(--border); padding: 0 5px; border-radius: 4px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text); border-radius: 10px;
+    padding: 12px 16px; overflow-x: auto; margin: 8px 0; font-size: 13px; line-height: 1.6;
+  }
+  pre .c { color: #7f8aa3; }
+  pre .r { color: #ff8a8f; font-weight: 700; }
+  pre .g { color: #7ee2a8; font-weight: 700; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; font-size: 13px; }
+  .flow span { padding: 4px 10px; border-radius: 6px; background: var(--bad-bg); color: var(--bad); font-weight: 600; }
+  .flow i { color: var(--muted); font-style: normal; }
+  .term { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .term b.name { color: var(--key); }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 10px 0; }
+  .steps li { counter-increment: s; position: relative; padding: 6px 0 6px 38px; margin: 0; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 6px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--good-bg); color: var(--good); font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .viewport { display: grid; grid-template-columns: 150px 1fr; gap: 14px; margin: 12px 0; align-items: stretch; }
+  .viewport .screen { border: 2px solid var(--good); border-radius: 8px; background: var(--bg); overflow: hidden; position: relative; min-height: 170px; }
+  .viewport .rowx { height: 22px; border-bottom: 1px solid var(--border); font-size: 11px; padding: 2px 8px; color: var(--muted); }
+  .viewport .rowx.off { opacity: .35; border-bottom-style: dashed; }
+  .viewport .sentinel { position: absolute; left: 0; right: 0; bottom: 20px; height: 22px; background: var(--key-bg); color: var(--key); font-size: 11px; font-weight: 700; text-align: center; line-height: 22px; border-top: 1px dashed var(--key); border-bottom: 1px dashed var(--key); }
+  .viewport .legend { font-size: 13px; }
+  .viewport .legend div { margin: 4px 0; }
+  @media (max-width: 560px) { .viewport { grid-template-columns: 1fr; } }
+  td, th { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+  th { background: var(--panel); }
+  .demo { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin: 12px 0; }
+  .demo button { font: inherit; font-size: 13px; padding: 5px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; margin-right: 6px; }
+  .demo button.primary { background: var(--good); border-color: var(--good); color: #fff; }
+  .demo button:disabled { opacity: .5; cursor: default; }
+  .counters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+  .counter { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; }
+  .counter .n { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .counter .l { font-size: 12px; color: var(--muted); }
+  .counter.bad .n { color: var(--bad); }
+  .counter.good .n { color: var(--good); }
+  .counter.key .n { color: var(--key); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>React 優化案例：Hydration mismatch（伺服器與客戶端輸出不一致）</h1>
+<p class="sub">主控台出現 hydration 錯誤、某段內容被整段換掉 · 結論：<span class="key">第一次渲染要跟伺服器輸出一模一樣；會變的內容等 mount 之後再算</span></p>
+
+<h2><span class="badge bad">原因</span></h2>
+<div class="flow"><span>伺服器渲染出 HTML（值 A）</span><i>→</i><span>瀏覽器 hydrate 時再跑一次元件（值 B）</span><i>→</i><span>A ≠ B</span><i>→</i><span>React 報 mismatch，改用客戶端重新渲染該區塊</span></div>
+<pre><span class="c">// 原本：第一次渲染就用「每次執行結果都不同」的值</span>
+function Clock() {
+  return &lt;p&gt;現在時間：{<span class="r">new Date().toLocaleTimeString()</span>}&lt;/p&gt;   <span class="c">// 伺服器與瀏覽器的「現在」不同，時區也可能不同</span>
+}
+
+function Card() {
+  const id = <span class="r">Math.random()</span>                                <span class="c">// 兩邊各抽一次，必然不同</span>
+  return &lt;label htmlFor={'f' + id}&gt;名稱&lt;/label&gt;
+}
+
+function Price({ n }) {
+  return &lt;span&gt;{<span class="r">n.toLocaleString()</span>}&lt;/span&gt;                  <span class="c">// 伺服器用 Node 的預設語系，瀏覽器用使用者的</span>
+}
+
+function ThemeLabel() {
+  const dark = <span class="r">typeof window !== 'undefined'</span> &amp;&amp; localStorage.theme === 'dark'
+  return &lt;span&gt;{dark ? '深色' : '淺色'}&lt;/span&gt;                <span class="c">// 伺服器永遠走「淺色」分支</span>
+}</pre>
+<div class="box bad-box"><ol>
+<li>Hydration 時 React 會在瀏覽器<b>再執行一次</b>元件，並假設結果和伺服器送來的 HTML <span class="bad">完全相同</span>。</li>
+<li>時間、亂數、語系 / 時區格式化、<code>typeof window</code> 或 <code>localStorage</code> 分支，都會讓<span class="bad">兩邊的第一次渲染結果不同</span>。</li>
+<li>不一致時（React 18 起）React 會<span class="bad">丟掉這段伺服器 HTML，改在客戶端重新渲染</span>（範圍到最近的 <code>&lt;Suspense&gt;</code> 邊界，沒有就是整個 root），開發模式會印出錯誤。SSR 的好處在那一段就沒了，還多做一次渲染。</li>
+</ol></div>
+<div class="box bad-box"><span class="key">更正原筆記：</span><ol>
+<li>原筆記把 mismatch 稱為「畫面閃爍」。<b>mismatch 是 React 比對結果不一致的錯誤 / 警告</b>；內容被換掉而跳一下只是可能的後果之一，兩者不是同一件事。</li>
+<li>原筆記把「客戶端 <code>useEffect</code> 在 Hydration 後改變內容」列為成因 —— <b>這不會造成 mismatch</b>。<code>useEffect</code> 在 hydration 完成之後才執行，此時比對已經結束；這反而是下面的<span class="good">解法</span>。</li>
+<li>原筆記說 React Server Components 是「未來支援」。Next.js App Router 在 <b>13.4 起已標為 stable</b>，Server Components 是預設，現在就能用。</li>
+</ol></div>
+
+<h2><span class="badge good">名詞</span> 先看懂這幾個詞</h2>
+<div class="term"><b class="name">Hydration</b><br>伺服器先送來「已經長好的 HTML」，瀏覽器載入 JS 後，React 不重建 DOM，而是<b>沿用現有 DOM、綁上事件與 state</b>，讓頁面變成可互動。比喻：伺服器送來組好的家具，React 只負責接上電源，所以它必須確認家具跟說明書一模一樣。</div>
+<div class="term"><b class="name">Hydration mismatch</b><br>React 在 hydrate 時算出來的內容（文字、屬性、結構）和伺服器 HTML 不一樣。常見訊息如「Text content does not match server-rendered HTML」或「Hydration failed because the server rendered text didn't match the client」（依 React 版本而異）。</div>
+<div class="term"><b class="name">useEffect 的執行時機</b><br><code>useEffect</code> <b>只在瀏覽器、而且在畫面 commit 之後</b>才執行，伺服器渲染時完全不跑。所以「放在 useEffect 裡才算的值」不會出現在第一次渲染，兩邊自然一致。</div>
+<div class="term"><b class="name">suppressHydrationWarning</b><br>加在單一元素上的屬性，告訴 React「這個元素的文字 / 屬性兩邊本來就會不同，別報錯」。<span class="key">只壓警告、只作用一層</span>，React 不會幫你把文字修成客戶端的值。</div>
+<div class="term"><b class="name">useId</b><br>React 18 的 Hook，產生在伺服器與客戶端<b>保證相同</b>的 id，用來取代 <code>Math.random()</code> 產生的 id（例如 <code>htmlFor</code>、<code>aria-describedby</code>）。</div>
+
+<h2><span class="badge good">解法 A</span> 讓兩邊輸出一致</h2>
+<p>值在伺服器決定好、當資料傳下去；格式化時<span class="good">固定語系與時區</span>；id 用 <span class="good">useId</span>。</p>
+<pre><span class="c">// 時間：用資料裡的固定時間點，並固定 locale 與 timeZone</span>
+const fmt = new Intl.DateTimeFormat('zh-TW', {
+  <span class="g">timeZone: 'Asia/Taipei'</span>,                  <span class="c">// 不固定的話，伺服器（常是 UTC）和使用者時區會算出不同字串</span>
+  dateStyle: 'medium', timeStyle: 'short',
+})
+function PostTime({ createdAt }) {             <span class="c">// createdAt 來自資料，伺服器與客戶端拿到同一個值</span>
+  return &lt;time dateTime={createdAt}&gt;{<span class="g">fmt.format(new Date(createdAt))</span>}&lt;/time&gt;
+}
+
+<span class="c">// 數字：一樣指定語系</span>
+const price = n.toLocaleString(<span class="g">'zh-TW'</span>)
+
+<span class="c">// id：兩邊相同</span>
+function Card() {
+  const id = <span class="g">useId()</span>
+  return &lt;&gt;&lt;label htmlFor={id}&gt;名稱&lt;/label&gt;&lt;input id={id} /&gt;&lt;/&gt;
+}</pre>
+
+<h2><span class="badge good">解法 B</span> 只屬於瀏覽器的內容，mount 之後再渲染</h2>
+<p>第一次渲染輸出<span class="good">兩邊都一樣的佔位</span>，真正的值在 <code>useEffect</code> 裡才算。</p>
+<pre>function Clock() {
+  const [now, setNow] = useState(<span class="g">null</span>)            <span class="c">// 伺服器與 hydrate 時都是 null → 一致</span>
+  useEffect(() =&gt; {
+    <span class="g">setNow(new Date())</span>                              <span class="c">// 只在瀏覽器、hydration 之後才執行</span>
+    const t = setInterval(() =&gt; setNow(new Date()), 1000)
+    return () =&gt; clearInterval(t)                     <span class="c">// 卸載時清掉計時器</span>
+  }, [])
+  return &lt;p&gt;現在時間：{now ? now.toLocaleTimeString() : '--:--:--'}&lt;/p&gt;
+}
+
+function ThemeLabel() {
+  const [dark, setDark] = useState(false)             <span class="c">// 先用伺服器也會得到的預設值</span>
+  useEffect(() =&gt; { <span class="g">setDark(localStorage.theme === 'dark')</span> }, [])  <span class="c">// mount 後才讀 localStorage</span>
+  return &lt;span&gt;{dark ? '深色' : '淺色'}&lt;/span&gt;
+}</pre>
+<p class="sub">整個元件都只能在瀏覽器跑（例如地圖、依賴 <code>window</code> 的套件）時，Next.js 可用 <code>dynamic(() =&gt; import('./Map'), { ssr: false })</code> 跳過伺服器渲染；App Router 中這個寫法要放在 Client Component（<code>'use client'</code>）裡。</p>
+
+<h2><span class="badge good">解法 C</span> 無法避免的單一文字：suppressHydrationWarning</h2>
+<p>像「依使用者時區顯示的時間戳」這種<span class="good">本來就該不同、又只是一段文字</span>的情況，可以只壓掉那一個元素的警告。</p>
+<pre>&lt;time dateTime={iso} <span class="g">suppressHydrationWarning</span>&gt;    <span class="c">// 只對這個元素本身的文字 / 屬性有效，不影響子元素</span>
+  {new Date(iso).toLocaleString()}
+&lt;/time&gt;</pre>
+
+<h2><span class="badge good">判斷</span> 該用哪個</h2>
+<table>
+<thead><tr><th>情境</th><th>用</th><th>原因</th></tr></thead>
+<tbody>
+<tr><td>文章時間、價格、數字格式</td><td><span class="good">A 固定 locale / timeZone</span></td><td>可以讓兩邊一致，SEO 也拿得到內容</td></tr>
+<tr><td>元素 id（label、aria）</td><td><span class="good">A useId</span></td><td>專門為 SSR 設計</td></tr>
+<tr><td>倒數、時鐘、「3 分鐘前」、讀 localStorage / 視窗大小</td><td><span class="good">B mount 後再算</span></td><td>伺服器根本不知道正確值</td></tr>
+<tr><td>只能在瀏覽器跑的整個元件</td><td><span class="good">B dynamic + ssr: false</span></td><td>不在伺服器渲染就不會不一致</td></tr>
+<tr><td>單一元素、文字本來就該不同</td><td><span class="key">C suppressHydrationWarning</span></td><td>最後手段，範圍要小</td></tr>
+<tr><td>用 <code>typeof window</code> 在 render 裡分支</td><td><span class="bad">不要</span></td><td>這正是 mismatch 的典型來源</td></tr>
+</tbody></table>
+
+<h2><span class="badge bad">取捨</span></h2>
+<div class="box bad-box"><ul>
+<li>解法 B 的內容要等 JS 載入、hydrate 完才出現：<span class="bad">搜尋引擎與首屏看到的是佔位</span>；佔位要預留尺寸，不然會造成版面位移（CLS）。</li>
+<li><code>suppressHydrationWarning</code> 只是不報錯，畫面會<span class="bad">保留伺服器的文字</span>直到下次更新；到處加會把真正的 bug 一起藏起來。</li>
+<li>瀏覽器擴充功能（翻譯、密碼管理器）改動 DOM 也會觸發 mismatch 訊息，這類不是你的程式錯，排查時先用無痕視窗確認。</li>
+</ul></div>
+
+</main>
+
+</body>
+</html>

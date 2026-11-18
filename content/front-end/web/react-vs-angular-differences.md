@@ -44,8 +44,8 @@
 ---
 | 框架 | 變更檢測機制 | 運作方式 | 優勢 | 劣勢 |
 |------|------------|--------|------|------|
-| **React** | **Virtual DOM** | `diffing` 演算法比較新舊 DOM | 更新最小範圍，效能高 | 記憶體開銷較大 |
-| **Angular** | **Zone.js + Change Detection** | 監聽變數變化，自動執行變更檢測 | 原生支援雙向綁定，開發體驗好 | 預設會檢查整棵組件樹，可能影響效能 |
+| **React** | **Virtual DOM** | `diffing` 演算法比較新舊虛擬 DOM | 更新最小範圍，效能高 | 記憶體開銷較大 |
+| **Angular** | **Zone.js + Change Detection** | Zone.js 攔截非同步 API（事件、`setTimeout`、Promise、HTTP 等），在其完成後自動觸發變更檢測 | 原生支援雙向綁定，開發體驗好 | 預設會檢查整棵組件樹，可能影響效能 |
 
 
 ## 5. 性能優化
@@ -56,7 +56,7 @@
 
 - **Angular [沒有] Virtual DOM**:  
   - 使用 **髒檢查機制（Dirty Checking）**。  
-  - 借助 Zone.js 監聽數據變化並更新視圖。  
+  - 借助 Zone.js 得知「何時」該執行變更檢測（非同步任務完成後），再逐一比對模板綁定值並更新視圖。Zone.js 本身並不監聽變數。  
   - 變更檢測方式用 `OnPush` 和 `TrackBy` 等技巧來手動優化效能。
 
 ### **1. Virtual DOM 的運作方式（React）只更新必要的 UI，減少不必要的 DOM 操作，提高效能。**
@@ -67,9 +67,11 @@
 
 ### **2. Angular 的變更檢測（Change Detection）**
 - 預設情況下，Angular 會 **遍歷整個組件樹** 來檢查變更，可能會影響效能。
-- **Angular 使用 "Zone.js" 來監測變數變化**，當變數變更時，會：
+- **Angular 使用 "Zone.js" 來 patch 非同步 API**（DOM 事件、`setTimeout`、Promise、XHR 等），它並不直接監測變數，而是在這些非同步任務結束後，會：
   1. **觸發變更檢測（Change Detection）**。
-  2. **重新渲染整個組件樹**（但可用 `OnPush` 優化）。
+  2. **從根元件開始檢查整棵組件樹的模板綁定**，只更新值有變化的 DOM（可用 `OnPush` 跳過不需檢查的子樹）。
+
+> 💡 新版 Angular（v16+）引入 **Signals**，可以精確知道哪些值改變；v18 起也提供實驗性的 **zoneless** 變更檢測（`provideExperimentalZonelessChangeDetection()`，v20 起改為 `provideZonelessChangeDetection()`），可不再依賴 Zone.js。
 
 ## **Angular 如何優化變更檢測？**
 ### **1. 使用 `OnPush` 更改檢測策略**
@@ -83,10 +85,15 @@ export class ExampleComponent {
   @Input() data: any;
 }
 ```
-**OnPush 只會在 `@Input` 變更時觸發變更檢測，減少不必要的計算。**
+**OnPush 元件只在以下情況才會被標記為需要檢查，減少不必要的計算：**
+- `@Input` 的 **引用** 改變（物件內部被修改不算）。
+- 元件本身或其子元件的模板中觸發了事件（如 `(click)`）。
+- 模板中 `async` pipe 收到新值。
+- 手動呼叫 `ChangeDetectorRef.markForCheck()`（或執行 `detectChanges()`）。
+- 模板中讀取的 Signal 值改變（新版 Angular）。
 
 ### **2. 使用 `TrackBy` 減少 DOM 重新渲染**
-在 `*ngFor` 迴圈中，Angular 預設會 **全部重新渲染**，即使只有一個元素改變。
+在 `*ngFor` 迴圈中，Angular 預設以 **物件引用（identity）** 來比對新舊項目，引用相同的項目會重用 DOM。但若資料是重新取得的（例如 API 重新回傳、immutable 更新），每個項目都是新物件，Angular 就會銷毀並重建所有 DOM 節點。`trackBy` 讓 Angular 改用穩定的 ID 比對，即使物件引用改變也能重用 DOM。（新版的 `@for` 控制流程語法則強制要求寫 `track`。）
 ```html
 <div *ngFor="let item of items; trackBy: trackByFn">
   {{ item.name }}
@@ -94,16 +101,17 @@ export class ExampleComponent {
 ```
 ```typescript
 trackByFn(index: number, item: any) {
-  return item.id; // 只更新 id 變更的項目
+  return item.id; // 以 id 識別項目，id 相同就重用 DOM
 }
 ```
 
-### **3. 使用 `DetactChanges` 手動控制變更檢測**
+### **3. 使用 `detectChanges` 手動控制變更檢測**
 ```typescript
 constructor(private cd: ChangeDetectorRef) {}
 
 someMethod() {
-  this.cd.detectChanges(); // 只觸發當前元件的變更檢測
+  this.cd.detectChanges(); // 立即對當前元件及其子元件執行變更檢測
+  // this.cd.markForCheck(); // 標記此元件及祖先為需檢查（OnPush 常用），等下一輪變更檢測時處理
 }
 ```
 
@@ -136,7 +144,7 @@ someMethod() {
 | 類型              | 庫 (Library)              | 框架 (Framework)          |
 | 數據綁定          | 單向數據流                | 雙向數據綁定               |
 | 使用語言          | JavaScript + JSX          | TypeScript + 模板語法       |
-| 性能優化機制      | 虛擬 DOM + 手動優化       | 髒檢查機制 + DI            |
+| 性能優化機制      | 虛擬 DOM + 手動優化       | 髒檢查（變更檢測）+ OnPush / trackBy |
 | 學習曲線          | 簡單（小專案）複雜（大專案）| 陡峭                     |
 | 自由度            | 高，自由選擇工具和庫      | 低，官方一體化解決方案     |
 | 應用場景          | 中小型專案，或元件驅動開發 | 企業級複雜應用             |

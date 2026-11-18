@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JavaScript 常見錯誤：用 || 或三元運算子給預設值，把 0 和 "" 吃掉</title>
+<style>
+  :root {
+    --bg: #ffffff; --panel: #f5f6fa; --text: #1f2430; --muted: #6b7280; --border: #dfe3ec;
+    --bad: #d62f35; --bad-bg: rgba(229, 72, 77, .14);
+    --good: #12875a; --good-bg: rgba(31, 157, 99, .15);
+    --key: #8a5a00; --key-bg: rgba(255, 196, 0, .30);
+    --code-bg: #14161d; --code-text: #e6e9f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171e; --panel: #1e212b; --text: #e6e9f2; --muted: #9aa3b5; --border: #313646;
+      --bad: #ff7b80; --bad-bg: rgba(255, 107, 112, .18);
+      --good: #4cc38a; --good-bg: rgba(76, 195, 138, .18);
+      --key: #ffd666; --key-bg: rgba(255, 196, 0, .20);
+      --code-bg: #0e1015;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 56px; background: var(--bg); color: var(--text);
+    font: 15px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+  }
+  main { max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 24px; line-height: 1.3; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 30px 0 8px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; }
+  .badge.bad { background: var(--bad-bg); color: var(--bad); }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+  p { margin: 6px 0; }
+  .sub { color: var(--muted); margin: 0 0 6px; }
+  .bad  { color: var(--bad);  background: var(--bad-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .good { color: var(--good); background: var(--good-bg); padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .key  { color: var(--key);  background: var(--key-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .box { border: 1px solid var(--border); border-left-width: 4px; border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .box.bad-box { border-left-color: var(--bad); }
+  .box.good-box { border-left-color: var(--good); }
+  ol, ul { margin: 4px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92em; }
+  :not(pre) > code { background: var(--panel); border: 1px solid var(--border); padding: 0 5px; border-radius: 4px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text); border-radius: 10px;
+    padding: 12px 16px; overflow-x: auto; margin: 8px 0; font-size: 13px; line-height: 1.6;
+  }
+  pre .c { color: #7f8aa3; }
+  pre .r { color: #ff8a8f; font-weight: 700; }
+  pre .g { color: #7ee2a8; font-weight: 700; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; font-size: 13px; }
+  .flow span { padding: 4px 10px; border-radius: 6px; background: var(--bad-bg); color: var(--bad); font-weight: 600; }
+  .flow i { color: var(--muted); font-style: normal; }
+  .term { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .term b.name { color: var(--key); }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 10px 0; }
+  .steps li { counter-increment: s; position: relative; padding: 6px 0 6px 38px; margin: 0; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 6px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--good-bg); color: var(--good); font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .viewport { display: grid; grid-template-columns: 150px 1fr; gap: 14px; margin: 12px 0; align-items: stretch; }
+  .viewport .screen { border: 2px solid var(--good); border-radius: 8px; background: var(--bg); overflow: hidden; position: relative; min-height: 170px; }
+  .viewport .rowx { height: 22px; border-bottom: 1px solid var(--border); font-size: 11px; padding: 2px 8px; color: var(--muted); }
+  .viewport .rowx.off { opacity: .35; border-bottom-style: dashed; }
+  .viewport .sentinel { position: absolute; left: 0; right: 0; bottom: 20px; height: 22px; background: var(--key-bg); color: var(--key); font-size: 11px; font-weight: 700; text-align: center; line-height: 22px; border-top: 1px dashed var(--key); border-bottom: 1px dashed var(--key); }
+  .viewport .legend { font-size: 13px; }
+  .viewport .legend div { margin: 4px 0; }
+  @media (max-width: 560px) { .viewport { grid-template-columns: 1fr; } }
+  td, th { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+  th { background: var(--panel); }
+  .demo { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin: 12px 0; }
+  .demo button { font: inherit; font-size: 13px; padding: 5px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; margin-right: 6px; }
+  .demo button.primary { background: var(--good); border-color: var(--good); color: #fff; }
+  .demo button:disabled { opacity: .5; cursor: default; }
+  .counters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+  .counter { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; }
+  .counter .n { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .counter .l { font-size: 12px; color: var(--muted); }
+  .counter.bad .n { color: var(--bad); }
+  .counter.good .n { color: var(--good); }
+  .counter.key .n { color: var(--key); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>JavaScript 常見錯誤：用 || 或三元運算子給預設值，把 0 和 "" 吃掉</h1>
+<p class="sub">使用者明明輸入 0、空字串或 false，卻變成預設值 · 結論：<span class="key">只想處理「沒有值」（null / undefined）就用 ??</span></p>
+
+<h2><span class="badge bad">原因</span></h2>
+<div class="flow"><span><code>x || d</code> / <code>x ? x : d</code> 判斷的是真假值</span><i>→</i><span>0、""、false、NaN 都算 falsy</span><i>→</i><span>被當成「沒有值」</span><i>→</i><span>有效輸入被換成預設值</span></div>
+<pre><span class="c">// 原本的寫法</span>
+const count = input.count <span class="r">||</span> 10                         <span class="c">// count = 0 → 變成 10</span>
+const name  = user.nickname <span class="r">? user.nickname :</span> '匿名'      <span class="c">// 使用者故意清空 "" → 變成 '匿名'</span>
+const muted = options.muted <span class="r">||</span> true                      <span class="c">// 傳 false → 變成 true，永遠關不掉</span></pre>
+<div class="box bad-box"><ol>
+<li><code>||</code> 是最常見的元凶：它在左邊為 <span class="bad">falsy</span> 時就回傳右邊，而不是只在「沒有值」時。</li>
+<li><code>x ? x : d</code> 和 <code>x || d</code> <span class="bad">行為完全一樣</span>，只是寫得比較長。</li>
+<li>0（數量、價格、音量）、<code>""</code>（使用者清空的欄位）、<code>false</code>（關閉的開關）都是<b>合法的值</b>，卻被當成沒填。</li>
+</ol></div>
+
+<h2><span class="badge good">名詞</span> 先看懂這幾個詞</h2>
+<div class="term"><b class="name">falsy（假值）</b><br>放進 <code>if</code> 會被當成 <code>false</code> 的值：<code>false</code>、<code>0</code>、<code>-0</code>、<code>0n</code>、<code>""</code>、<code>null</code>、<code>undefined</code>、<code>NaN</code>。其他都是 truthy（包括 <code>"0"</code>、<code>[]</code>、<code>{}</code>）。</div>
+<div class="term"><b class="name">nullish</b><br>只有 <code>null</code> 和 <code>undefined</code> 兩個，意思是「真的沒有值」。是 falsy 的子集合。</div>
+<div class="term"><b class="name"><code>??</code>（Nullish Coalescing，空值合併）</b><br><code>a ?? b</code>：<b>只有 a 是 null 或 undefined</b> 時才回傳 b，其他（包括 0、""、false）都保留 a。ES2020 加入。</div>
+<div class="term"><b class="name"><code>?.</code>（Optional Chaining）</b><br><code>user?.settings?.volume</code>：中間任何一層是 null / undefined 就直接得到 <code>undefined</code>，不會報錯。常和 <code>??</code> 搭配。</div>
+<div class="term"><b class="name"><code>??=</code></b><br><code>a ??= b</code> 等於 <code>a ?? (a = b)</code>：只有 a 是 null / undefined 時才賦值。ES2021 加入。</div>
+
+<h2><span class="badge good">對照</span> 同樣的輸入，結果差在哪</h2>
+<table>
+<thead><tr><th><code>x</code> 的值</th><th><code>x || 'D'</code> / <code>x ? x : 'D'</code></th><th><code>x ?? 'D'</code></th></tr></thead>
+<tbody>
+<tr><td><code>null</code></td><td><code>'D'</code></td><td><code>'D'</code></td></tr>
+<tr><td><code>undefined</code></td><td><code>'D'</code></td><td><code>'D'</code></td></tr>
+<tr><td><code>0</code></td><td><span class="bad">'D'</span></td><td><span class="good">0</span></td></tr>
+<tr><td><code>""</code></td><td><span class="bad">'D'</span></td><td><span class="good">""</span></td></tr>
+<tr><td><code>false</code></td><td><span class="bad">'D'</span></td><td><span class="good">false</span></td></tr>
+<tr><td><code>NaN</code></td><td><span class="bad">'D'</span></td><td><span class="good">NaN</span></td></tr>
+</tbody></table>
+
+<h2><span class="badge good">解法 A</span> 改用 ??</h2>
+<p>只在<span class="good">真的沒有值</span>時才套預設。</p>
+<pre>const count = input.count <span class="g">??</span> 10              <span class="c">// 0 保留，只有沒傳才是 10</span>
+const name  = user.nickname <span class="g">??</span> '匿名'         <span class="c">// "" 保留</span>
+const muted = options.muted <span class="g">??</span> true          <span class="c">// false 保留</span></pre>
+
+<h2><span class="badge good">解法 B</span> 深層屬性：?. 加 ??</h2>
+<pre>const volume = <span class="g">user?.settings?.volume ?? 50</span>   <span class="c">// 任一層不存在 → 50；volume 是 0 → 0</span></pre>
+
+<h2><span class="badge good">解法 C</span> 補預設值到物件上：??=</h2>
+<pre>options.retries <span class="g">??=</span> 3                         <span class="c">// 只在沒設定時寫入，0 次重試不會被蓋掉</span></pre>
+
+<h2><span class="badge good">補充</span> 參數 / 解構預設值只看 undefined</h2>
+<pre>function setVolume(v <span class="g">= 50</span>) { return v }      <span class="c">// 預設值只在 v === undefined 時生效</span>
+setVolume(0)          <span class="c">// 0 ✓</span>
+setVolume(undefined)  <span class="c">// 50</span>
+setVolume(<span class="r">null</span>)       <span class="c">// null —— 不會用預設值，要處理 null 時改用 v ?? 50</span></pre>
+
+<h2><span class="badge good">判斷</span> 該用哪個</h2>
+<table>
+<thead><tr><th>情境</th><th>用</th></tr></thead>
+<tbody>
+<tr><td>數字、布林、使用者輸入的字串，0 / false / "" 是合法值</td><td><span class="good">??</span></td></tr>
+<tr><td>空字串也要顯示預設文字（例如空白的暱稱顯示「匿名」）</td><td><span class="key">||</span>（這時 falsy 都要換掉是刻意的）</td></tr>
+<tr><td>只想排除 undefined（函式參數沒傳）</td><td>參數預設值 <code>v = 50</code></td></tr>
+<tr><td>不確定時用 <code>||</code> 給數字預設值</td><td><span class="bad">不要</span></td></tr>
+</tbody></table>
+
+<h2><span class="badge bad">注意</span></h2>
+<div class="box bad-box"><ul>
+<li><code>??</code> 不能直接和 <code>||</code> / <code>&amp;&amp;</code> 混寫：<code>a || b ?? c</code> 是 <span class="bad">SyntaxError</span>，要加括號 <code>(a || b) ?? c</code>。</li>
+<li><code>??</code> 是 ES2020 語法，要支援很舊的瀏覽器需要經過 Babel / TypeScript 轉譯。</li>
+<li><code>??</code> 會保留 <code>NaN</code>：若 NaN 也要當成「沒有值」，要另外用 <code>Number.isNaN()</code> 判斷。</li>
+</ul></div>
+
+</main>
+
+</body>
+</html>

@@ -191,17 +191,25 @@ async function task() {
 ### Python
 ```python
 # CPU密集型：使用多進程
-from multiprocessing import Pool
+from concurrent.futures import ProcessPoolExecutor
 
 # I/O密集型：使用協程
 import asyncio
 
+def cpu_intensive_task(n):
+    return sum(i * i for i in range(n))
+
 # 混合使用
 async def main():
-    loop = asyncio.get_event_loop()
-    with Pool() as pool:
-        # CPU密集型任務使用進程池
-        await loop.run_in_executor(None, cpu_intensive_task)
+    loop = asyncio.get_running_loop()
+    with ProcessPoolExecutor() as pool:
+        # CPU密集型任務丟給「進程池」執行，才能繞開 GIL
+        # 注意：run_in_executor(None, ...) 用的是預設的 ThreadPoolExecutor，仍受 GIL 限制
+        result = await loop.run_in_executor(pool, cpu_intensive_task, 10_000_000)
+        print(result)
+
+if __name__ == '__main__':
+    asyncio.run(main())
 ```
 
 ### Go
@@ -252,15 +260,3 @@ async function main() {
    - 根據語言特性選擇合適的並發模型
    - 考慮應用場景的具體需求
    - 權衡性能和開發複雜度
-
-
-這個文檔詳細比較了Process、Thread和Coroutine在不同語言中的實現和差異。主要包括：
-
-1. 基本概念解釋
-2. 不同語言的具體實現
-3. 三者的主要差異
-4. 語言特定的差異
-5. 選擇建議
-6. 各語言的最佳實踐
-
-需要我針對某個特定語言或概念提供更詳細的說明嗎？比如具體的性能數據比較，或更多的使用場景示例？

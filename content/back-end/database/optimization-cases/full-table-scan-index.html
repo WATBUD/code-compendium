@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>資料庫優化案例：沒有索引的 WHERE → 全表掃描</title>
+<style>
+  :root {
+    --bg: #ffffff; --panel: #f5f6fa; --text: #1f2430; --muted: #6b7280; --border: #dfe3ec;
+    --bad: #d62f35; --bad-bg: rgba(229, 72, 77, .14);
+    --good: #12875a; --good-bg: rgba(31, 157, 99, .15);
+    --key: #8a5a00; --key-bg: rgba(255, 196, 0, .30);
+    --code-bg: #14161d; --code-text: #e6e9f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171e; --panel: #1e212b; --text: #e6e9f2; --muted: #9aa3b5; --border: #313646;
+      --bad: #ff7b80; --bad-bg: rgba(255, 107, 112, .18);
+      --good: #4cc38a; --good-bg: rgba(76, 195, 138, .18);
+      --key: #ffd666; --key-bg: rgba(255, 196, 0, .20);
+      --code-bg: #0e1015;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 56px; background: var(--bg); color: var(--text);
+    font: 15px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+  }
+  main { max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 24px; line-height: 1.3; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 30px 0 8px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; }
+  .badge.bad { background: var(--bad-bg); color: var(--bad); }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+  p { margin: 6px 0; }
+  .sub { color: var(--muted); margin: 0 0 6px; }
+  .bad  { color: var(--bad);  background: var(--bad-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .good { color: var(--good); background: var(--good-bg); padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .key  { color: var(--key);  background: var(--key-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .box { border: 1px solid var(--border); border-left-width: 4px; border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .box.bad-box { border-left-color: var(--bad); }
+  .box.good-box { border-left-color: var(--good); }
+  ol, ul { margin: 4px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92em; }
+  :not(pre) > code { background: var(--panel); border: 1px solid var(--border); padding: 0 5px; border-radius: 4px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text); border-radius: 10px;
+    padding: 12px 16px; overflow-x: auto; margin: 8px 0; font-size: 13px; line-height: 1.6;
+  }
+  pre .c { color: #7f8aa3; }
+  pre .r { color: #ff8a8f; font-weight: 700; }
+  pre .g { color: #7ee2a8; font-weight: 700; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; font-size: 13px; }
+  .flow span { padding: 4px 10px; border-radius: 6px; background: var(--bad-bg); color: var(--bad); font-weight: 600; }
+  .flow i { color: var(--muted); font-style: normal; }
+  .term { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .term b.name { color: var(--key); }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 10px 0; }
+  .steps li { counter-increment: s; position: relative; padding: 6px 0 6px 38px; margin: 0; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 6px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--good-bg); color: var(--good); font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .viewport { display: grid; grid-template-columns: 150px 1fr; gap: 14px; margin: 12px 0; align-items: stretch; }
+  .viewport .screen { border: 2px solid var(--good); border-radius: 8px; background: var(--bg); overflow: hidden; position: relative; min-height: 170px; }
+  .viewport .rowx { height: 22px; border-bottom: 1px solid var(--border); font-size: 11px; padding: 2px 8px; color: var(--muted); }
+  .viewport .rowx.off { opacity: .35; border-bottom-style: dashed; }
+  .viewport .sentinel { position: absolute; left: 0; right: 0; bottom: 20px; height: 22px; background: var(--key-bg); color: var(--key); font-size: 11px; font-weight: 700; text-align: center; line-height: 22px; border-top: 1px dashed var(--key); border-bottom: 1px dashed var(--key); }
+  .viewport .legend { font-size: 13px; }
+  .viewport .legend div { margin: 4px 0; }
+  @media (max-width: 560px) { .viewport { grid-template-columns: 1fr; } }
+  td, th { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+  th { background: var(--panel); }
+  .demo { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin: 12px 0; }
+  .demo button { font: inherit; font-size: 13px; padding: 5px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; margin-right: 6px; }
+  .demo button.primary { background: var(--good); border-color: var(--good); color: #fff; }
+  .demo button:disabled { opacity: .5; cursor: default; }
+  .counters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+  .counter { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; }
+  .counter .n { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .counter .l { font-size: 12px; color: var(--muted); }
+  .counter.bad .n { color: var(--bad); }
+  .counter.good .n { color: var(--good); }
+  .counter.key .n { color: var(--key); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>資料庫優化案例：沒有索引的 WHERE → 全表掃描</h1>
+<p class="sub">WHERE 條件一查就慢，資料越多越慢 · 結論：<span class="key">為「常用、選擇性高」的查詢欄位建非叢集索引，讓查詢從逐行掃描變成 B+ 樹定位</span></p>
+
+<h2><span class="badge bad">原因</span></h2>
+<div class="flow"><span>WHERE OrderName = …</span><i>→</i><span>OrderName 沒有索引</span><i>→</i><span>只能從第一列讀到最後一列</span><i>→</i><span>時間跟資料量成正比</span></div>
+
+<p>原本的寫法（以 SQL Server 語法為例）：</p>
+<pre>CREATE TABLE Orders (
+    OrderID   INT PRIMARY KEY,   <span class="c">-- SQL Server 預設會在主鍵建「叢集索引」</span>
+    OrderName NVARCHAR(100),     <span class="c">-- <span class="r">沒有索引</span></span>
+    OrderDate DATE
+);
+
+SELECT *
+FROM Orders
+WHERE <span class="r">OrderName = N'Widget A'</span>;   <span class="c">-- 只能 Full Table Scan</span></pre>
+
+<div class="box bad-box"><ol>
+<li>資料在磁碟上是照 <b>OrderID</b>（叢集索引鍵）排序的，<span class="bad">OrderName 是亂序的</span>，資料庫不知道 'Widget A' 在哪裡。</li>
+<li>只好<span class="bad">每一列都讀出來比對</span>（全表掃描），即使只有 2 列符合，也要看完全部。</li>
+<li>資料量小時感覺不出來，<span class="bad">資料一多，讀取量跟著線性成長</span>；表越大越慢、也越佔 I/O 與記憶體。</li>
+</ol></div>
+<pre><span class="c">-- 全表掃描：一列一列看</span>
+[Row 1] → [Row 2] → [Row 3] → … → [Row N]   <span class="c">-- <span class="r">讀 N 列</span></span></pre>
+
+<h2><span class="badge good">名詞</span> 先看懂這幾個詞</h2>
+<div class="term"><b class="name">全表掃描（Full Table Scan / Clustered Index Scan）</b><br>沒有可用的索引時，資料庫把整張表讀過一遍。SQL Server 的執行計畫裡會顯示為 <code>Table Scan</code>（沒有叢集索引的表）或 <code>Clustered Index Scan</code>。</div>
+<div class="term"><b class="name">叢集索引（Clustered Index）</b><br><b>資料本身</b>就照這個鍵排序存放，一張表只能有一個。比喻：圖書館的書照 ISBN 排在書架上。</div>
+<div class="term"><b class="name">非叢集索引（Nonclustered Index）</b><br>另外存一份「排好序的欄位值 + 指向資料列的位置」，資料本身不動。比喻：照書名排序的卡片目錄，每張卡寫著書在哪個書架。</div>
+<div class="term"><b class="name">B+ 樹</b><br>索引用的資料結構。特點：
+<ul><li><b>所有資料都在最底層的葉節點</b>，上層節點只放「導航用的分隔鍵」。</li>
+<li>葉節點彼此<b>串成一條鏈</b>，找到第一個 'Widget A' 後往右讀就能拿到下一個，很適合範圍查詢。</li>
+<li>每個節點能放很多鍵，所以樹很矮：<span class="key">幾百萬列通常也只要 3–4 層</span>，查一次只讀幾個頁面。</li></ul>
+<pre>              [ Gadget | Widget ]              <span class="c">← 根：只放分隔鍵</span>
+             /         |         \
+ [Apple, Bolt] ⇄ [Gadget B, Lamp] ⇄ [Widget A, Widget A, Widget C]
+                                        <span class="c">↑ 葉節點：存全部鍵 + 指向資料列，彼此串接</span></pre></div>
+<div class="term"><b class="name">分裂（split）時的差別</b><br>節點放滿時要分成兩半。假設葉節點最多 3 個鍵，已有 [Alice, Bob, Charlie]，再插入 David：
+<pre><span class="c">-- B+ 樹（葉節點分裂）：中間鍵「複製」到上層，右邊葉節點保留它</span>
+        [Charlie]
+       /         \
+[Alice, Bob] ⇄ <span class="g">[Charlie, David]</span>
+
+<span class="c">-- B 樹：中間鍵「搬」到上層，葉節點不再有它</span>
+        [Charlie]
+       /         \
+[Alice, Bob]   [David]</pre>
+B+ 樹的資料一定都在葉節點，所以 Charlie 必須留在葉節點裡。</div>
+<div class="term"><b class="name">Index Seek</b><br>從 B+ 樹的根一路往下比較、直接走到目標葉節點。讀取量約等於「樹的層數 + 符合的列數」，而不是整張表。</div>
+<div class="term"><b class="name">行定位器（Row Locator）與 Key Lookup</b><br>非叢集索引的葉節點只有索引欄位 + 一個「去哪裡找完整資料」的指標：
+<ul><li>表<b>有叢集索引</b> → 指標是<b>叢集索引鍵</b>（這裡是 OrderID），回表叫 <code>Key Lookup</code>。</li>
+<li>表<b>沒有叢集索引</b>（heap）→ 指標是實體位置 RID，回表叫 <code>RID Lookup</code>。</li></ul>
+<code>SELECT *</code> 要的欄位不在索引裡，所以<b>每一筆符合的列都要回表一次</b>。</div>
+<div class="term"><b class="name">選擇性（Selectivity）</b><br>一個條件能篩掉多少資料。<code>OrderName = 'Widget A'</code> 只命中少數列 → 選擇性高，索引很有用；<code>Status = 'Done'</code> 命中 80% → 選擇性低，用索引反而比直接掃描還慢。</div>
+<div class="term"><b class="name">覆蓋索引（Covering Index）/ INCLUDE</b><br>把查詢需要的其他欄位也「附」在索引葉節點上（<code>INCLUDE</code>），查詢<b>只看索引就夠了，不用回表</b>。</div>
+
+<h2><span class="badge good">解法</span> 建非叢集索引，讓查詢走 Index Seek</h2>
+<p><span class="good">為 WHERE 常用、選擇性高的欄位建索引</span>：</p>
+<pre><span class="g">CREATE NONCLUSTERED INDEX IX_Orders_OrderName
+    ON Orders (OrderName);</span>          <span class="c">-- 依 OrderName 排序的 B+ 樹</span>
+
+SELECT *
+FROM Orders
+WHERE OrderName = N'Widget A';       <span class="c">-- Index Seek 找到葉節點 → 每筆再 Key Lookup 取其他欄位</span></pre>
+
+<p><span class="good">更好：只取需要的欄位，並用 INCLUDE 讓索引「覆蓋」查詢</span>：</p>
+<pre><span class="g">CREATE NONCLUSTERED INDEX IX_Orders_OrderName_Cover
+    ON Orders (OrderName)
+    INCLUDE (OrderDate);</span>           <span class="c">-- OrderDate 只存在葉節點，不參與排序</span>
+
+SELECT OrderID, OrderDate            <span class="c">-- OrderID 是叢集鍵，本來就在非叢集索引裡</span>
+FROM Orders
+WHERE OrderName = N'Widget A';       <span class="c">-- 只需 Index Seek，<span class="g">不用回表</span></span></pre>
+
+<ol class="steps">
+<li>從根節點開始，依排序規則（collation）比較 'Widget A' 和分隔鍵，決定往哪個子節點走。</li>
+<li>重複到葉節點，找到第一個 'Widget A'。</li>
+<li>沿著葉節點的鏈往右讀，直到值不再是 'Widget A'。</li>
+<li>需要索引裡沒有的欄位時，用行定位器回表取資料（Key Lookup）；用了覆蓋索引就省掉這步。</li>
+</ol>
+
+<h2><span class="badge good">示範</span> 讀取量的差別（類比）</h2>
+<div class="demo">
+<p><label>資料列數：<select id="rows">
+<option value="1000">1,000</option>
+<option value="100000">100,000</option>
+<option value="1000000" selected>1,000,000</option>
+<option value="100000000">100,000,000</option>
+</select></label>
+　<label>符合條件的列數：<select id="hits">
+<option value="2" selected>2</option>
+<option value="100">100</option>
+<option value="10000">10,000</option>
+</select></label></p>
+<div class="counters">
+<div class="counter bad"><div class="n" id="scan">-</div><div class="l">全表掃描：要讀的列數</div></div>
+<div class="counter good"><div class="n" id="depth">-</div><div class="l">B+ 樹層數（每節點 ≈ 300 鍵）</div></div>
+<div class="counter key"><div class="n" id="seek">-</div><div class="l">Seek：層數 + 每筆回表一次</div></div>
+</div>
+<p class="sub">只是用公式估算的「讀取次數」類比，不是實測時間；實際成本依頁面大小、快取、硬碟而異。符合的列很多時，回表次數會追上掃描，這就是優化器有時仍選擇掃描的原因。</p>
+</div>
+
+<h2><span class="badge good">判斷</span> 這個欄位該不該建索引？</h2>
+<table>
+<thead><tr><th>情況</th><th>建議</th></tr></thead>
+<tbody>
+<tr><td>常出現在 WHERE / JOIN / ORDER BY、命中少數列（名稱、Email、外鍵）</td><td><span class="good">建非叢集索引</span></td></tr>
+<tr><td>查詢只需要少數幾個欄位</td><td><span class="good">INCLUDE 做成覆蓋索引</span>，避免 Key Lookup</td></tr>
+<tr><td>多個條件一起查（<code>WHERE CustomerID = ? AND OrderDate &gt;= ?</code>）</td><td><span class="good">複合索引</span>，等值條件的欄位放前面</td></tr>
+<tr><td>低選擇性欄位（狀態、性別、布林）單獨建索引</td><td><span class="bad">不要</span>：命中太多列，優化器通常仍會掃描；可放進複合索引，或只對少數值建篩選索引（filtered index）</td></tr>
+<tr><td>長文字欄位（描述、備註），查詢用 <code>LIKE '%關鍵字%'</code></td><td><span class="bad">不要</span>：開頭是萬用字元無法 Seek，索引又大又沒用；需要時改用全文檢索（Full-Text Index）</td></tr>
+<tr><td>對欄位套函式：<code>WHERE YEAR(OrderDate) = 2024</code></td><td><span class="bad">不要</span>這樣寫，索引用不上；改成範圍 <code>OrderDate &gt;= '2024-01-01' AND OrderDate &lt; '2025-01-01'</code></td></tr>
+<tr><td>寫入很頻繁、幾乎不查詢的表（例如 log）</td><td><span class="key">少建索引</span>，每個索引都會拖慢寫入</td></tr>
+</tbody></table>
+
+<h2><span class="badge bad">取捨</span> 注意</h2>
+<div class="box bad-box"><ul>
+<li><span class="key">索引會拖慢寫入</span>：每次 INSERT / UPDATE / DELETE，所有相關索引都要一起更新，還可能造成頁面分裂。</li>
+<li><span class="key">索引佔空間</span>：每個非叢集索引都是另一份排序好的資料（加上 INCLUDE 的欄位）。</li>
+<li><span class="key">SELECT * + 非叢集索引 = 每筆都 Key Lookup</span>。符合的列一多，回表的隨機讀取比直接掃描還貴，<b>優化器會自動改回掃描</b>，看起來像「索引沒作用」。</li>
+<li>要確認索引真的被用到：看實際執行計畫（Index Seek vs. Scan），不要只憑感覺。</li>
+</ul></div>
+
+<div class="box bad-box"><span class="key">更正原筆記：</span><ul>
+<li>原筆記的分裂圖 <code>[Charlie] → [Alice, Bob] [David]</code> 是 <b>B 樹</b>的行為。B+ 樹的葉節點分裂時，中間鍵是<b>複製</b>到上層，右邊葉節點<b>仍保留它</b>：<code>[Alice, Bob] ⇄ [Charlie, David]</code>。</li>
+<li>原筆記的範例樹 <code>[M] → [G] [T] → [A-E][F-L][N-R][S-Z]</code> 結構不成立：只有一個鍵的節點只會有兩個子節點，畫成三個也對不上鍵的範圍。上方已改成正確的小例子。</li>
+<li>字串比較不是比「第一個字的 ASCII 碼」，而是依資料庫的<b>排序規則（collation）</b>整串比較，例如 SQL Server 預設不分大小寫。</li>
+<li>「行定位器（Row Identifier）」只適用於沒有叢集索引的表（RID）。這個例子的 Orders 有主鍵叢集索引，定位器其實是 <b>OrderID</b>，回表是 Key Lookup。</li>
+<li>原筆記另一篇建議為「描述、備註」等長文字欄位和「類別、狀態」等低選擇性欄位建非叢集索引，這通常<b>沒有效果</b>，理由見上方判斷表。</li>
+</ul></div>
+
+</main>
+<script>
+(function () {
+  var FANOUT = 300; // 類比：每個索引頁面約可放 300 個鍵
+  var rowsEl = document.getElementById('rows');
+  var hitsEl = document.getElementById('hits');
+  function fmt(n) { return n.toLocaleString('en-US'); }
+  function update() {
+    var rows = Number(rowsEl.value);
+    var hits = Math.min(Number(hitsEl.value), rows);
+    var depth = Math.max(1, Math.ceil(Math.log(rows) / Math.log(FANOUT)));
+    document.getElementById('scan').textContent = fmt(rows);
+    document.getElementById('depth').textContent = fmt(depth);
+    document.getElementById('seek').textContent = fmt(depth + hits);
+  }
+  rowsEl.addEventListener('change', update);
+  hitsEl.addEventListener('change', update);
+  update();
+})();
+</script>
+
+</body>
+</html>

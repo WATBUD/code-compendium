@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>優化案例：前端已經斷線，後端還在做昂貴的工作</title>
+<style>
+  :root {
+    --bg: #ffffff; --panel: #f5f6fa; --text: #1f2430; --muted: #6b7280; --border: #dfe3ec;
+    --bad: #d62f35; --bad-bg: rgba(229, 72, 77, .14);
+    --good: #12875a; --good-bg: rgba(31, 157, 99, .15);
+    --key: #8a5a00; --key-bg: rgba(255, 196, 0, .30);
+    --code-bg: #14161d; --code-text: #e6e9f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171e; --panel: #1e212b; --text: #e6e9f2; --muted: #9aa3b5; --border: #313646;
+      --bad: #ff7b80; --bad-bg: rgba(255, 107, 112, .18);
+      --good: #4cc38a; --good-bg: rgba(76, 195, 138, .18);
+      --key: #ffd666; --key-bg: rgba(255, 196, 0, .20);
+      --code-bg: #0e1015;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 56px; background: var(--bg); color: var(--text);
+    font: 15px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+  }
+  main { max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 24px; line-height: 1.3; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 30px 0 8px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; }
+  .badge.bad { background: var(--bad-bg); color: var(--bad); }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+  p { margin: 6px 0; }
+  .sub { color: var(--muted); margin: 0 0 6px; }
+  .bad  { color: var(--bad);  background: var(--bad-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .good { color: var(--good); background: var(--good-bg); padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .key  { color: var(--key);  background: var(--key-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .box { border: 1px solid var(--border); border-left-width: 4px; border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .box.bad-box { border-left-color: var(--bad); }
+  .box.good-box { border-left-color: var(--good); }
+  ol, ul { margin: 4px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92em; }
+  :not(pre) > code { background: var(--panel); border: 1px solid var(--border); padding: 0 5px; border-radius: 4px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text); border-radius: 10px;
+    padding: 12px 16px; overflow-x: auto; margin: 8px 0; font-size: 13px; line-height: 1.6;
+  }
+  pre .c { color: #7f8aa3; }
+  pre .r { color: #ff8a8f; font-weight: 700; }
+  pre .g { color: #7ee2a8; font-weight: 700; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; font-size: 13px; }
+  .flow span { padding: 4px 10px; border-radius: 6px; background: var(--bad-bg); color: var(--bad); font-weight: 600; }
+  .flow i { color: var(--muted); font-style: normal; }
+  .term { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .term b.name { color: var(--key); }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 10px 0; }
+  .steps li { counter-increment: s; position: relative; padding: 6px 0 6px 38px; margin: 0; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 6px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--good-bg); color: var(--good); font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .viewport { display: grid; grid-template-columns: 150px 1fr; gap: 14px; margin: 12px 0; align-items: stretch; }
+  .viewport .screen { border: 2px solid var(--good); border-radius: 8px; background: var(--bg); overflow: hidden; position: relative; min-height: 170px; }
+  .viewport .rowx { height: 22px; border-bottom: 1px solid var(--border); font-size: 11px; padding: 2px 8px; color: var(--muted); }
+  .viewport .rowx.off { opacity: .35; border-bottom-style: dashed; }
+  .viewport .sentinel { position: absolute; left: 0; right: 0; bottom: 20px; height: 22px; background: var(--key-bg); color: var(--key); font-size: 11px; font-weight: 700; text-align: center; line-height: 22px; border-top: 1px dashed var(--key); border-bottom: 1px dashed var(--key); }
+  .viewport .legend { font-size: 13px; }
+  .viewport .legend div { margin: 4px 0; }
+  @media (max-width: 560px) { .viewport { grid-template-columns: 1fr; } }
+  td, th { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+  th { background: var(--panel); }
+  .demo { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin: 12px 0; }
+  .demo button { font: inherit; font-size: 13px; padding: 5px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; margin-right: 6px; }
+  .demo button.primary { background: var(--good); border-color: var(--good); color: #fff; }
+  .demo button:disabled { opacity: .5; cursor: default; }
+  .counters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+  .counter { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; }
+  .counter .n { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .counter .l { font-size: 12px; color: var(--muted); }
+  .counter.bad .n { color: var(--bad); }
+  .counter.good .n { color: var(--good); }
+  .counter.key .n { color: var(--key); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>優化案例：前端已經斷線，後端還在做昂貴的工作</h1>
+<p class="sub">使用者關頁或請求逾時，後端照樣跑完查詢並回 200 · 結論：<span class="key">讓工作跟著連線取消、加上逾時；有副作用的請求用 idempotency key 讓重試安全</span></p>
+
+<h2><span class="badge bad">原因</span></h2>
+<div class="flow">
+  <span>前端送出請求</span><i>→</i>
+  <span>後端開始跑昂貴查詢</span><i>→</i>
+  <span>前端關頁 / 逾時 / 取消</span><i>→</i>
+  <span>後端不知道，繼續跑完</span><i>→</i>
+  <span>回 200 但沒人收</span><i>→</i>
+  <span>前端以為失敗，重試又做一次</span>
+</div>
+<pre><span class="c">// 原本：不管 client 還在不在，都把工作做完</span>
+app.post('/reports', async (req, res) =&gt; {
+  const report = <span class="r">await buildReport(req.body)</span>   <span class="c">// 沒有取消訊號、沒有逾時</span>
+  await db.saveReport(report)
+  <span class="r">res.status(200).json(report)</span>              <span class="c">// 寫出 200 ≠ 前端收到</span>
+})</pre>
+<div class="box bad-box">
+  <ol>
+    <li>前端斷線時，後端程式<span class="bad">只有在主動監聽或讀寫連線時才會發現</span>。沒監聽 → 斷線後仍佔著 CPU、DB 連線，白做工。</li>
+    <li>回 <code>200</code> 只代表「伺服器處理完，把回應交給作業系統送出」。TCP 的 ACK 也只代表封包到了對方的作業系統，<span class="bad">不保證前端程式真的讀到</span>。</li>
+    <li>前端沒收到回應通常會重試；如果是下單、扣款這類有副作用的請求，<span class="bad">重試就會做兩次</span>。</li>
+    <li>沒有逾時，一個很慢的請求可以<span class="bad">無上限地佔著資源</span>。</li>
+  </ol>
+</div>
+
+<h2><span class="badge good">名詞</span> 先看懂這幾個詞</h2>
+
+<div class="term">
+  <b class="name">TCP ACK 與「前端收到」的差別</b><br>
+  TCP 會確認封包送到對方電腦（ACK），但那是<b>作業系統層</b>的確認。瀏覽器分頁可能在資料到達前就被關了，或拿到了卻沒處理。
+  <span class="key">後端沒有任何方式從一個 200 得知前端程式已經處理了回應</span>。
+</div>
+
+<div class="term">
+  <b class="name">FIN / RST</b><br>
+  前端關閉連線時，作業系統會送出 FIN（正常結束）或 RST（強制中斷，例如還有沒讀完的資料）。
+  不論哪一種，<b>後端程式要有在聽</b>才會知道；不同框架用不同的方式把這件事通知你（下面的 context、close 事件）。
+  若中間有 proxy / load balancer，前端斷線後要等 proxy 也關掉它和後端的連線，後端才收得到。
+</div>
+
+<div class="term">
+  <b class="name">取消訊號：Go 的 context.Context</b><br>
+  Go 的 <code>r.Context()</code> 是這個請求的「取消開關」：<span class="good">client 斷線或 handler 結束時，它的 <code>Done()</code> 會被關閉</span>。
+  把它一路傳給 DB 查詢、對外 HTTP 呼叫（<code>QueryContext</code>、<code>NewRequestWithContext</code>），它們就會在斷線時一起停下。
+  <code>context.WithTimeout</code> 再加上一個時間上限，兩個條件誰先到都會取消。
+</div>
+
+<div class="term">
+  <b class="name">取消訊號：Node 的 AbortController / AbortSignal</b><br>
+  <code>AbortController</code> 產生一個 <code>signal</code>，呼叫 <code>controller.abort()</code> 後，所有拿到這個 signal 的工作（<code>fetch</code>、支援 signal 的 driver、你自己的迴圈）都能停下。
+  <code>AbortSignal.timeout(ms)</code> 是時間到自動 abort 的 signal；<code>AbortSignal.any([...])</code> 把多個 signal 合成一個（Node 20.3+）。
+</div>
+
+<div class="term">
+  <b class="name">Node 偵測斷線：res 的 close 事件</b><br>
+  <code>res.on('close')</code> 會在「回應送完」或「連線在送完前就斷了」時觸發，用 <code>res.writableFinished</code> 區分：<span class="good">還沒送完就 close = client 走了</span>。
+  <b>注意：</b>新版 Node（16 以後）的 <code>req.on('close')</code> 在<b>請求 body 讀完</b>時就會觸發，不代表斷線；body 已經被讀完後才掛上的話甚至永遠不會觸發，所以<span class="key">要聽 res，不要聽 req</span>。
+</div>
+
+<div class="term">
+  <b class="name">冪等（idempotent）與 Idempotency-Key</b><br>
+  冪等 = 同一個請求做 1 次和做 N 次，結果一樣。GET、PUT、DELETE 本來就該是冪等的；POST（下單、扣款）不是。
+  做法：前端為<b>每一筆操作</b>產生一個唯一 key，放在 <code>Idempotency-Key</code> 標頭，重試時<b>沿用同一把 key</b>。
+  後端第一次看到這把 key 才真的執行，之後看到同一把就<span class="good">直接回傳第一次的結果</span>。
+  比喻：掛號單號碼 —— 同一張單拿去櫃台兩次，只會掛一次號。
+</div>
+
+<h2><span class="badge good">解法 1</span> 斷線就停：Go</h2>
+<p><span class="good">把 <code>r.Context()</code> 加上逾時，一路傳到每個會花時間的呼叫</span></p>
+<pre>func reportHandler(w http.ResponseWriter, r *http.Request) {
+	<span class="c">// client 斷線或超過 5 秒，兩者先到的那個會取消 ctx</span>
+	<span class="g">ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)</span>
+	defer cancel() <span class="c">// 提早結束時也釋放計時器</span>
+
+	report, err := buildReport(ctx, db)
+	switch {
+	case <span class="g">errors.Is(err, context.Canceled)</span>:
+		return <span class="c">// client 已經走了，回什麼都沒人收，直接結束</span>
+	case errors.Is(err, context.DeadlineExceeded):
+		http.Error(w, "report timed out", http.StatusServiceUnavailable)
+		return
+	case err != nil:
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(report)
+}
+
+func buildReport(ctx context.Context, db *sql.DB) ([]Row, error) {
+	<span class="c">// 傳入 ctx：取消時 driver 會中止這個查詢（是否真的停掉 DB 端的執行視 driver 而定）</span>
+	since := time.Now().AddDate(0, 0, -30)
+	rows, err := <span class="g">db.QueryContext(ctx, "SELECT id, total FROM orders WHERE created_at &gt; $1", since)</span>
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var out []Row
+	for rows.Next() {
+		<span class="c">// 自己的 CPU 密集迴圈不會自動停，要主動檢查</span>
+		<span class="g">if err := ctx.Err(); err != nil {</span>
+			return nil, err
+		}
+		var row Row
+		if err := rows.Scan(&amp;row.ID, &amp;row.Total); err != nil {
+			return nil, err
+		}
+		out = append(out, enrich(row))
+	}
+	return out, rows.Err()
+}</pre>
+
+<h2><span class="badge good">解法 1</span> 斷線就停：Node</h2>
+<p><span class="good">用 <code>res</code> 的 close 事件觸發 abort，並和逾時合併成一個 signal</span></p>
+<pre>import http from 'node:http'
+
+http.createServer(async (req, res) =&gt; {
+  const clientGone = new AbortController()
+  <span class="c">// 回應還沒送完連線就關了 → client 斷線</span>
+  <span class="g">res.on('close', () =&gt; { if (!res.writableFinished) clientGone.abort() })</span>
+  <span class="c">// 斷線或 5 秒逾時，任一個發生就取消</span>
+  const signal = <span class="g">AbortSignal.any([clientGone.signal, AbortSignal.timeout(5000)])</span>
+
+  try {
+    const report = await buildReport(signal)
+    res.writeHead(200, { 'Content-Type': 'application/json' })
+    res.end(JSON.stringify(report))
+  } catch (err) {
+    if (clientGone.signal.aborted) return            <span class="c">// 沒人在等了，不用回應</span>
+    if (err.name === 'TimeoutError') {
+      res.writeHead(503).end('report timed out')
+      return
+    }
+    res.writeHead(500).end('internal error')
+  }
+}).listen(3000)
+
+async function buildReport(signal) {
+  const rows = []
+  for (let page = 0; page &lt; 100; page++) {
+    <span class="g">signal.throwIfAborted()</span>                          <span class="c">// 每一輪開始前檢查，已取消就丟錯跳出</span>
+    <span class="c">// 支援 signal 的 API（fetch 等）直接傳進去，取消時連進行中的呼叫也會中止</span>
+    const r = await fetch(`http://127.0.0.1:4000/orders?page=${page}`, <span class="g">{ signal }</span>)
+    rows.push(...(await r.json()))
+  }
+  return rows
+}</pre>
+<p class="sub">Express 也是同一個 <code>res</code> 物件，寫法相同。</p>
+
+<h2><span class="badge good">解法 2</span> 讓重試安全：Idempotency-Key</h2>
+<p><span class="good">前端沒收到回應時，用同一把 key 重試；後端看到同一把 key 就回傳上次的結果，不再執行一次</span></p>
+<pre><span class="c">// 前端：一筆操作產生一把 key，所有重試共用</span>
+const sleep = (ms) =&gt; new Promise((r) =&gt; setTimeout(r, ms))
+
+async function createOrder(body) {
+  <span class="g">const key = crypto.randomUUID()</span>                                  <span class="c">// 在迴圈外產生：重試沿用同一把</span>
+  for (let attempt = 1; attempt &lt;= 3; attempt++) {
+    if (attempt &gt; 1) await sleep(500 * 2 ** attempt)                  <span class="c">// 退避再試，避免一起打爆後端</span>
+    let res
+    try {
+      res = await fetch('/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', <span class="g">'Idempotency-Key': key</span> },
+        body: JSON.stringify(body),
+        signal: AbortSignal.timeout(10_000),
+      })
+    } catch (err) {
+      if (attempt === 3) throw err
+      continue                                                          <span class="c">// 斷線 / 逾時 = 不知道後端有沒有做，帶同一把 key 重試是安全的</span>
+    }
+    if (res.ok) return res.json()
+    const retryable = res.status &gt;= 500 || res.status === 409          <span class="c">// 4xx 是請求本身錯，重試也沒用</span>
+    if (!retryable || attempt === 3) throw new Error(`HTTP ${res.status}`)
+  }
+}</pre>
+<pre><span class="c">// 後端（Express 範例；store 可用 Redis 或 DB 的唯一索引）</span>
+app.post('/orders', async (req, res) =&gt; {
+  const key = req.get('Idempotency-Key')
+  if (!key) return res.status(400).json({ error: 'Idempotency-Key required' })
+
+  <span class="c">// 原子地「搶」這把 key：Redis 用 SET key value NX EX 86400，DB 用唯一索引</span>
+  const claimed = <span class="g">await store.claim(key, { ttlSeconds: 86400 })</span>
+  if (!claimed) {
+    const saved = await store.get(key)
+    if (saved?.status === 'done') return <span class="g">res.status(saved.code).json(saved.body)</span>  <span class="c">// 回傳第一次的結果</span>
+    return res.status(409).json({ error: 'request in progress' })                   <span class="c">// 第一次還在處理中</span>
+  }
+
+  try {
+    const order = await createOrderInTransaction(req.body)                          <span class="c">// 有副作用的部分包在交易裡</span>
+    await store.set(key, { status: 'done', code: 201, body: order })
+    res.status(201).json(order)
+  } catch (err) {
+    await store.delete(key)                                                         <span class="c">// 失敗就釋放 key，讓之後的重試能再做</span>
+    res.status(500).json({ error: 'internal error' })
+  }
+})</pre>
+<div class="box good-box">
+  <span class="key">兩個解法各管一半：</span>
+  取消訊號讓<b>沒人等的工作停下來</b>（省資源）；idempotency key 讓<b>沒收到回應的重試不會重複執行</b>（正確性）。
+  idempotency key 也同時回答了「後端怎麼確定前端收到」——<span class="good">不用確定，前端沒收到就重試，拿到的是同一個結果</span>。
+</div>
+
+<h2><span class="badge good">判斷</span></h2>
+<table>
+  <thead><tr><th>情況</th><th>做法</th></tr></thead>
+  <tbody>
+    <tr><td>唯讀但昂貴（報表、搜尋、匯出）</td><td><span class="good">斷線就取消 + 逾時</span></td></tr>
+    <tr><td>有副作用（下單、扣款、寄信）</td><td><span class="good">交易 + Idempotency-Key</span>；不要在寫入途中被斷線隨意中止，至少確保交易完整提交或完整回滾</td></tr>
+    <tr><td>工作要跑很久（幾十秒以上）</td><td>改成回 <code>202 Accepted</code> + job id，前端輪詢或用 SSE 拿進度，不要讓 HTTP 請求一直掛著</td></tr>
+    <tr><td>想確定前端「真的收到」</td><td><span class="bad">不要</span>加「前端收到後再送一個 ACK 請求」，改用 idempotency key 讓重試安全</td></tr>
+    <tr><td>需要即時知道使用者在不在線（聊天、推播）</td><td>WebSocket / SSE —— 那是另一個問題，不是用來確認回應有沒有收到</td></tr>
+  </tbody>
+</table>
+
+<h2><span class="badge bad">取捨 / 注意</span></h2>
+<div class="box bad-box">
+  <ul>
+    <li><b>取消只對「有在檢查訊號」的程式碼有效</b>：沒傳 ctx / signal 的函式、同步的 CPU 迴圈都不會自己停。</li>
+    <li><b>「逾時就回錯誤」不等於「停止工作」</b>：用 <code>Promise.race</code> 搶先回 503，背後的工作仍在跑；要把 signal 傳下去才真的停。</li>
+    <li><b>DB 端不一定停</b>：client 取消查詢後，資料庫是否中止執行要看 driver 有沒有送出取消指令。</li>
+    <li><b>Idempotency key 有成本</b>：要存結果、設過期時間、處理「第一次還在跑」的並發狀態（上面的 409）。key 過期後同一把 key 再來就會被當成新請求。</li>
+    <li><b>中間有 proxy</b>：前端斷線後，proxy 不一定立刻關掉到後端的連線，偵測會延遲。</li>
+  </ul>
+</div>
+
+<h2><span class="badge bad">更正</span> 原筆記的問題</h2>
+<div class="box bad-box">
+  <ol>
+    <li>原筆記建議<span class="bad">「前端收到回應後再送一個確認請求（ACK）」</span>：多一次往返，而且這個 ACK 自己也可能遺失（那要不要再確認 ACK？），問題只是往後推。<span class="key">通常的做法是 idempotency key</span>：不去確認前端收到，而是讓前端沒收到時可以安全重試。</li>
+    <li>原筆記建議<span class="bad">用 WebSocket / SSE 偵測前端離線</span>：這和本題無關。一般 HTTP 請求本身就能偵測斷線（Go 的 <code>r.Context()</code>、Node 的 <code>res.on('close')</code>）；長連線是拿來推播的，不能證明某個回應被處理了。</li>
+    <li>原筆記說「回應前前端關閉 → 後端仍會完成處理」，這是<b>沒有監聽取消時</b>才會發生的情況，正是要修的地方，不是必然結果。</li>
+    <li>原筆記的「超時機制」只寫了「5 秒未完成則取消」，沒說怎麼取消；<span class="key">必須把取消訊號傳進實際做事的程式碼</span>，否則只是提早回錯誤，工作照跑。</li>
+  </ol>
+</div>
+
+</main>
+</body>
+</html>

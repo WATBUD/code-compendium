@@ -1,6 +1,6 @@
-* [靜強] 型別：[Java、Go、C#、Swift、TypeScript]。
+* [靜強] 型別：[Java、Go、C#、Swift、Kotlin、TypeScript]。
 * [靜弱] 型別：[C、C++]。
-* [動強] 型別：[Python、Ruby、Kotlin]。
+* [動強] 型別：[Python、Ruby]。
 * [動弱] 型別：[JavaScript、PHP、Perl]。
 * 靜態型別 (Static Typing) [在編譯時就明確指定變數的type，type錯誤會在編譯時被檢查出來]
 * 動態型別 (Dynamic Typing) [允許變數type運行時確定，可以改變type]
@@ -29,13 +29,16 @@ let z = x + y;    // 弱型別: 不會報錯，JavaScript 會將整數 y 隱式�
 console.log(z);   // 輸出: "105" (這是弱型別的特徵，進行了隱式型別轉換)
 ```
 
-[TypeScript(靜弱(只檢查部分類型))=>strict=>靜強] 更多範例請看[](../typeScript/ts-static-strong-typing-check.md) 
+[TypeScript：靜態型別，但保留 JavaScript 的部分隱式轉換] 更多範例請看[TypeScript 靜態強型別檢查](/?file=front-end%2Ftypescript%2Fts-static-strong-typing-check.md)
 ```TypeScript  
-// - TypeScript 在沒有開啟 strict 模式時 不同於其他語言會像是[靜態弱型別]語言，因為TS編譯期間檢查類型不會對某些隱式轉換進行限制 
+// - TypeScript 是靜態型別：型別在編譯期檢查。
+// - 但它刻意保留 JavaScript 的部分隱式轉換，例如 number + string 會被允許（結果是 string），
+//   這點「開不開 strict 都一樣」——strict 主要加上 null 檢查、noImplicitAny 等，並不會禁止 number + string。
+// - 其他不合理的運算（例如 number - string、比較 number == string）TS 會直接報錯。
 let x = 10;        // x 是 number 類型
 let y = "5";       // y 是 string 類型
 
-let z = x + y;     // 隱式將 number 轉換為 string
+let z = x + y;     // TS 允許（strict 也一樣）：number 被隱式轉成 string
 console.log(z);    // 輸出: "105" (這是 JavaScript 風格的隱式類型轉換)
 ```
 
@@ -58,7 +61,7 @@ x = "hello";  // 強型別: 無法將字串賦給整數型別變數，會拋出�
 //------------------------------
 String s = "10"; // 靜態型別: 變數型別在編譯時已確定，s 是字串型別
 int y = 20;      // 靜態型別: 變數型別在編譯時已確定，y 是整數型別
-int z = s + y;   // 強型別:型別必須一致錯誤，無法將字串與整數直接相加，這會拋出編譯錯誤
+int z = s + y;   // 強型別: s + y 在 Java 是字串串接（結果為 String "1020"），但不能把 String 隱式轉成 int 賦值，這會拋出編譯錯誤
 ```
 # ex：PHP[動弱]
 ```php

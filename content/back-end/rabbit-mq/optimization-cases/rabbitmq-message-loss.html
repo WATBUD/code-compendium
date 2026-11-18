@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RabbitMQ 優化案例：訊息遺失（重啟 / 消費者當掉）</title>
+<style>
+  :root {
+    --bg: #ffffff; --panel: #f5f6fa; --text: #1f2430; --muted: #6b7280; --border: #dfe3ec;
+    --bad: #d62f35; --bad-bg: rgba(229, 72, 77, .14);
+    --good: #12875a; --good-bg: rgba(31, 157, 99, .15);
+    --key: #8a5a00; --key-bg: rgba(255, 196, 0, .30);
+    --code-bg: #14161d; --code-text: #e6e9f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171e; --panel: #1e212b; --text: #e6e9f2; --muted: #9aa3b5; --border: #313646;
+      --bad: #ff7b80; --bad-bg: rgba(255, 107, 112, .18);
+      --good: #4cc38a; --good-bg: rgba(76, 195, 138, .18);
+      --key: #ffd666; --key-bg: rgba(255, 196, 0, .20);
+      --code-bg: #0e1015;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 56px; background: var(--bg); color: var(--text);
+    font: 15px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+  }
+  main { max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 24px; line-height: 1.3; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 30px 0 8px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; }
+  .badge.bad { background: var(--bad-bg); color: var(--bad); }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+  p { margin: 6px 0; }
+  .sub { color: var(--muted); margin: 0 0 6px; }
+  .bad  { color: var(--bad);  background: var(--bad-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .good { color: var(--good); background: var(--good-bg); padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .key  { color: var(--key);  background: var(--key-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .box { border: 1px solid var(--border); border-left-width: 4px; border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .box.bad-box { border-left-color: var(--bad); }
+  .box.good-box { border-left-color: var(--good); }
+  ol, ul { margin: 4px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92em; }
+  :not(pre) > code { background: var(--panel); border: 1px solid var(--border); padding: 0 5px; border-radius: 4px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text); border-radius: 10px;
+    padding: 12px 16px; overflow-x: auto; margin: 8px 0; font-size: 13px; line-height: 1.6;
+  }
+  pre .c { color: #7f8aa3; }
+  pre .r { color: #ff8a8f; font-weight: 700; }
+  pre .g { color: #7ee2a8; font-weight: 700; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; font-size: 13px; }
+  .flow span { padding: 4px 10px; border-radius: 6px; background: var(--bad-bg); color: var(--bad); font-weight: 600; }
+  .flow i { color: var(--muted); font-style: normal; }
+  .term { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .term b.name { color: var(--key); }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 10px 0; }
+  .steps li { counter-increment: s; position: relative; padding: 6px 0 6px 38px; margin: 0; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 6px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--good-bg); color: var(--good); font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .viewport { display: grid; grid-template-columns: 150px 1fr; gap: 14px; margin: 12px 0; align-items: stretch; }
+  .viewport .screen { border: 2px solid var(--good); border-radius: 8px; background: var(--bg); overflow: hidden; position: relative; min-height: 170px; }
+  .viewport .rowx { height: 22px; border-bottom: 1px solid var(--border); font-size: 11px; padding: 2px 8px; color: var(--muted); }
+  .viewport .rowx.off { opacity: .35; border-bottom-style: dashed; }
+  .viewport .sentinel { position: absolute; left: 0; right: 0; bottom: 20px; height: 22px; background: var(--key-bg); color: var(--key); font-size: 11px; font-weight: 700; text-align: center; line-height: 22px; border-top: 1px dashed var(--key); border-bottom: 1px dashed var(--key); }
+  .viewport .legend { font-size: 13px; }
+  .viewport .legend div { margin: 4px 0; }
+  @media (max-width: 560px) { .viewport { grid-template-columns: 1fr; } }
+  td, th { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+  th { background: var(--panel); }
+  .demo { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin: 12px 0; }
+  .demo button { font: inherit; font-size: 13px; padding: 5px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; margin-right: 6px; }
+  .demo button.primary { background: var(--good); border-color: var(--good); color: #fff; }
+  .demo button:disabled { opacity: .5; cursor: default; }
+  .counters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+  .counter { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; }
+  .counter .n { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .counter .l { font-size: 12px; color: var(--muted); }
+  .counter.bad .n { color: var(--bad); }
+  .counter.good .n { color: var(--good); }
+  .counter.key .n { color: var(--key); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>RabbitMQ 優化案例：訊息遺失（重啟 / 消費者當掉）</h1>
+<p class="sub">RabbitMQ 重啟或消費者當掉，訊息就不見了 · 結論：<span class="key">佇列 durable + 訊息 Persistent + 手動 Ack + Publisher Confirms，四個缺一不可</span></p>
+
+<h2><span class="badge bad">原因</span></h2>
+<div class="flow"><span>佇列非 durable、訊息非持久</span><i>→</i><span>只存在記憶體</span><i>→</i><span>Broker 重啟 → 佇列和訊息一起消失</span></div>
+<div class="flow"><span>autoAck = true</span><i>→</i><span>送出就算「已處理」並刪除</span><i>→</i><span>消費者處理到一半當掉 → 訊息遺失</span></div>
+
+<p>原本的寫法（生產者 + 消費者）：</p>
+<pre>q, err := ch.QueueDeclare(
+    "hello",
+    <span class="r">false</span>, <span class="c">// durable：佇列定義只在記憶體，重啟就沒了</span>
+    false, false, false, nil,
+)
+
+err = ch.Publish("", q.Name, false, false, amqp.Publishing{
+    ContentType: "text/plain",
+    Body:        []byte(body),
+    <span class="c">// <span class="r">沒有 DeliveryMode</span> → 預設是 Transient（非持久）訊息</span>
+})
+
+msgs, err := ch.Consume(
+    q.Name, "",
+    <span class="r">true</span>, <span class="c">// autoAck：訊息一送到消費者就從佇列刪除</span>
+    false, false, false, nil,
+)
+for msg := range msgs {
+    handle(msg.Body) <span class="c">// <span class="r">這裡當掉 → 訊息已被刪除，找不回來</span></span>
+}</pre>
+
+<div class="box bad-box"><ol>
+<li><span class="bad">durable = false</span>：佇列本身在重啟後消失，裡面的訊息當然也跟著消失。</li>
+<li><span class="bad">沒設 DeliveryMode: Persistent</span>：就算佇列是 durable，非持久訊息重啟後仍會被丟掉。</li>
+<li><span class="bad">autoAck = true</span>：Broker 一把訊息送出就刪除，不管消費者有沒有處理完。</li>
+<li><span class="bad">沒有 Publisher Confirms</span>：<code>Publish</code> 回傳沒有 error 只代表「送出去了」，不代表 Broker 已收到、已寫入磁碟。</li>
+</ol></div>
+
+<h2><span class="badge good">名詞</span> 先看懂這幾個詞</h2>
+<div class="term"><b class="name">Broker</b><br>RabbitMQ 伺服器本身。生產者把訊息交給它，它放進佇列（Queue），再送給消費者。就像郵局：寄件人、郵局、收件人。</div>
+<div class="term"><b class="name">durable（持久化佇列）</b><br>宣告佇列時的第二個參數。<b>durable 的佇列定義會存到磁碟</b>，Broker 重啟後佇列還在。<span class="key">注意：它只保證「佇列」還在，不保證「裡面的訊息」還在</span>。</div>
+<div class="term"><b class="name">DeliveryMode: Persistent（持久化訊息）</b><br>每一則訊息自己的屬性。<code>amqp.Persistent</code>（值為 2）表示這則訊息要寫入磁碟；預設 <code>Transient</code>（1）只放記憶體。<b>必須「durable 佇列 + Persistent 訊息」兩個都設</b>，重啟後訊息才會留下。</div>
+<div class="term"><b class="name">Ack（確認，acknowledgement）</b><br>消費者告訴 Broker「這則我處理完了，可以刪了」。
+<ul><li><b>autoAck = true</b>：送出即刪，最快但最危險。</li>
+<li><b>手動 Ack</b>：處理完才呼叫 <code>d.Ack(false)</code>。若消費者在 Ack 前斷線，Broker 會把訊息<b>重新排回佇列</b>交給別人。</li>
+<li><code>Nack(false, requeue)</code>：告訴 Broker 處理失敗，<code>requeue=true</code> 排回佇列、<code>false</code> 丟棄或送到死信佇列（若有設定）。</li></ul></div>
+<div class="term"><b class="name">Publisher Confirms（發布確認）</b><br>Ack 的反方向：<b>Broker 告訴生產者「這則我收到了」</b>。對「持久訊息 + durable 佇列」，Broker 會在<b>寫入磁碟後</b>才回確認。開啟方式是 <code>ch.Confirm(false)</code>，之後每次發布都能等確認。</div>
+<div class="term"><b class="name">Qos / prefetch</b><br><code>ch.Qos(10, 0, false)</code> 表示「同一個消費者手上最多 10 則還沒 Ack 的訊息」。不設的話 Broker 會把整個佇列一口氣推給消費者，<b>撐爆記憶體、也讓其他消費者分不到工作</b>。它不是防遺失的設定，但手動 Ack 時一定要搭配。</div>
+<div class="term"><b class="name">at-least-once（至少一次）</b><br>手動 Ack 的代價：消費者處理完但<b>還沒來得及 Ack 就當掉</b>，這則訊息會被重送，<b>同一則可能被處理兩次</b>。所以處理邏輯要能「重複執行也沒關係」（冪等，idempotent），例如用訊息 ID 去重。</div>
+
+<h2><span class="badge good">解法</span> 四件事一起做</h2>
+<p><span class="good">安裝目前維護中的官方 Go 客戶端</span>：</p>
+<pre>go get github.com/rabbitmq/amqp091-go</pre>
+
+<h3>生產者：durable 佇列 + Persistent 訊息 + Publisher Confirms</h3>
+<pre>package main
+
+import (
+    "context"
+    "log"
+    "time"
+
+    amqp "github.com/rabbitmq/amqp091-go"
+)
+
+func main() {
+    conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/") <span class="c">// 本機預設帳號，正式環境請換掉</span>
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer conn.Close()
+
+    ch, err := conn.Channel()
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer ch.Close()
+
+    q, err := ch.QueueDeclare(
+        "task_queue",
+        <span class="g">true</span>,  <span class="c">// durable：重啟後佇列還在</span>
+        false, <span class="c">// autoDelete</span>
+        false, <span class="c">// exclusive</span>
+        false, <span class="c">// noWait</span>
+        nil,   <span class="c">// args</span>
+    )
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    <span class="g">if err := ch.Confirm(false); err != nil {</span> <span class="c">// 開啟 Publisher Confirms</span>
+        log.Fatal(err)
+    }
+
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    defer cancel()
+
+    dc, err := ch.PublishWithDeferredConfirmWithContext(ctx,
+        "",     <span class="c">// exchange：空字串 = 預設 exchange</span>
+        q.Name, <span class="c">// routing key：預設 exchange 直接用佇列名</span>
+        false,  <span class="c">// mandatory</span>
+        false,  <span class="c">// immediate</span>
+        amqp.Publishing{
+            <span class="g">DeliveryMode: amqp.Persistent</span>, <span class="c">// 訊息寫入磁碟</span>
+            ContentType:  "text/plain",
+            Body:         []byte("Hello RabbitMQ!"),
+        },
+    )
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    <span class="c">// 等 Broker 回確認：true = 已收下（持久訊息 = 已寫入磁碟）</span>
+    <span class="g">ok, err := dc.WaitContext(ctx)</span>
+    if err != nil || !ok {
+        log.Fatalf("沒有被 Broker 確認，需要重送: ok=%v err=%v", ok, err)
+    }
+    log.Println("已確認送達")
+}</pre>
+
+<h3>消費者：手動 Ack + Qos</h3>
+<pre>package main
+
+import (
+    "log"
+
+    amqp "github.com/rabbitmq/amqp091-go"
+)
+
+func handle(body []byte) error {
+    log.Printf("處理: %s", body) <span class="c">// 實際業務邏輯；要能承受重複執行</span>
+    return nil
+}
+
+func main() {
+    conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer conn.Close()
+
+    ch, err := conn.Channel()
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer ch.Close()
+
+    <span class="c">// 宣告參數要和生產者完全一致，否則會被 Broker 拒絕</span>
+    q, err := ch.QueueDeclare("task_queue", <span class="g">true</span>, false, false, false, nil)
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    <span class="g">if err := ch.Qos(10, 0, false); err != nil {</span> <span class="c">// 手上最多 10 則未 Ack</span>
+        log.Fatal(err)
+    }
+
+    msgs, err := ch.Consume(
+        q.Name,
+        "",    <span class="c">// consumer tag：空字串由 Broker 產生</span>
+        <span class="g">false</span>, <span class="c">// autoAck = false：處理完才 Ack</span>
+        false, <span class="c">// exclusive</span>
+        false, <span class="c">// noLocal</span>
+        false, <span class="c">// noWait</span>
+        nil,   <span class="c">// args</span>
+    )
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    for d := range msgs {
+        if err := handle(d.Body); err != nil {
+            d.Nack(false, true) <span class="c">// 失敗：排回佇列（小心無限重試，正式環境常改送死信佇列）</span>
+            continue
+        }
+        <span class="g">d.Ack(false)</span> <span class="c">// 成功才確認；Ack 前當掉 → Broker 會重送</span>
+    }
+}</pre>
+
+<h2><span class="badge good">判斷</span> 哪個設定防哪種遺失</h2>
+<table>
+<thead><tr><th>情境</th><th>沒設定時</th><th>要做的</th></tr></thead>
+<tbody>
+<tr><td>Broker 重啟</td><td>佇列消失</td><td><span class="good">QueueDeclare durable = true</span></td></tr>
+<tr><td>Broker 重啟</td><td>佇列在，但訊息消失</td><td><span class="good">DeliveryMode: amqp.Persistent</span></td></tr>
+<tr><td>消費者處理到一半當掉</td><td>訊息已被刪除</td><td><span class="good">autoAck = false + 處理完 d.Ack(false)</span></td></tr>
+<tr><td>訊息送出後、寫入磁碟前 Broker 當掉 / 網路斷線</td><td>生產者以為送成功</td><td><span class="good">ch.Confirm + 等待確認</span>，沒確認就重送</td></tr>
+<tr><td>消費者一次被塞太多訊息</td><td>記憶體爆、分配不均</td><td><span class="good">ch.Qos(prefetch, 0, false)</span></td></tr>
+<tr><td>只是暫時性、可丟的訊息（例如即時通知）</td><td>—</td><td>可以<span class="key">刻意不持久化</span>換效能，但要是有意識的選擇</td></tr>
+</tbody></table>
+
+<h2><span class="badge bad">取捨</span> 注意</h2>
+<div class="box bad-box"><ul>
+<li><span class="key">持久化要寫磁碟</span>：吞吐量會比純記憶體低，等待 Confirm 也會增加延遲。大量發送時不要每則都同步等，可以批次發送後再一起等確認。</li>
+<li><span class="key">手動 Ack = 至少一次</span>：會有重複訊息，消費端要能冪等。</li>
+<li>已經存在的非 durable 佇列<b>不能直接改成 durable</b>：用同名但不同參數再宣告一次，Broker 會回錯誤（PRECONDITION_FAILED）並關閉 channel。要先刪掉舊佇列或換新名字。</li>
+<li>單機 durable 只防「重啟」，不防「整台機器 / 硬碟壞掉」。需要高可用時改用多節點複製的 <b>quorum queue</b>（宣告時帶 <code>x-queue-type: quorum</code>）。</li>
+</ul></div>
+
+<div class="box bad-box"><span class="key">更正原筆記：</span><ul>
+<li>原筆記寫「<code>pika</code> Go 客戶端」：<code>pika</code> 是 <b>Python</b> 的 RabbitMQ 客戶端，和 Go 無關。</li>
+<li><code>github.com/streadway/amqp</code> 已停止維護，請改用 RabbitMQ 官方接手維護的 <span class="good">github.com/rabbitmq/amqp091-go</span>（API 幾乎相同，import 時取別名 <code>amqp</code> 即可）。</li>
+<li>只設「持久化佇列 + 持久化訊息」<b>還是可能遺失</b>：訊息在寫入磁碟前 Broker 就當掉，生產者也不會知道。要搭配 <span class="good">Publisher Confirms</span> 才能確定訊息真的落地。</li>
+<li>原範例 <code>Publish</code> 的第 3、4 個參數是 <code>mandatory</code>、<code>immediate</code>，不是「不等待確認」「不需要回應」；<code>Consume</code> 的參數依序是 autoAck、exclusive、noLocal、noWait，原註解標錯了。</li>
+<li>原範例 <code>fmt.Printf("接收到消息: %s</code> 的字串中間斷行，Go 不允許，<b>編譯不會過</b>，應寫成 <code>"…%s\n"</code>。</li>
+</ul></div>
+
+</main>
+
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSS 優化案例：CSS-in-JS 的執行期成本（styled-components）</title>
+<style>
+  :root {
+    --bg: #ffffff; --panel: #f5f6fa; --text: #1f2430; --muted: #6b7280; --border: #dfe3ec;
+    --bad: #d62f35; --bad-bg: rgba(229, 72, 77, .14);
+    --good: #12875a; --good-bg: rgba(31, 157, 99, .15);
+    --key: #8a5a00; --key-bg: rgba(255, 196, 0, .30);
+    --code-bg: #14161d; --code-text: #e6e9f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171e; --panel: #1e212b; --text: #e6e9f2; --muted: #9aa3b5; --border: #313646;
+      --bad: #ff7b80; --bad-bg: rgba(255, 107, 112, .18);
+      --good: #4cc38a; --good-bg: rgba(76, 195, 138, .18);
+      --key: #ffd666; --key-bg: rgba(255, 196, 0, .20);
+      --code-bg: #0e1015;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 56px; background: var(--bg); color: var(--text);
+    font: 15px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+  }
+  main { max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 24px; line-height: 1.3; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 30px 0 8px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; }
+  .badge.bad { background: var(--bad-bg); color: var(--bad); }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+  p { margin: 6px 0; }
+  .sub { color: var(--muted); margin: 0 0 6px; }
+  .bad  { color: var(--bad);  background: var(--bad-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .good { color: var(--good); background: var(--good-bg); padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .key  { color: var(--key);  background: var(--key-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .box { border: 1px solid var(--border); border-left-width: 4px; border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .box.bad-box { border-left-color: var(--bad); }
+  .box.good-box { border-left-color: var(--good); }
+  ol, ul { margin: 4px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92em; }
+  :not(pre) > code { background: var(--panel); border: 1px solid var(--border); padding: 0 5px; border-radius: 4px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text); border-radius: 10px;
+    padding: 12px 16px; overflow-x: auto; margin: 8px 0; font-size: 13px; line-height: 1.6;
+  }
+  pre .c { color: #7f8aa3; }
+  pre .r { color: #ff8a8f; font-weight: 700; }
+  pre .g { color: #7ee2a8; font-weight: 700; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; font-size: 13px; }
+  .flow span { padding: 4px 10px; border-radius: 6px; background: var(--bad-bg); color: var(--bad); font-weight: 600; }
+  .flow i { color: var(--muted); font-style: normal; }
+  .term { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .term b.name { color: var(--key); }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 10px 0; }
+  .steps li { counter-increment: s; position: relative; padding: 6px 0 6px 38px; margin: 0; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 6px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--good-bg); color: var(--good); font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .viewport { display: grid; grid-template-columns: 150px 1fr; gap: 14px; margin: 12px 0; align-items: stretch; }
+  .viewport .screen { border: 2px solid var(--good); border-radius: 8px; background: var(--bg); overflow: hidden; position: relative; min-height: 170px; }
+  .viewport .rowx { height: 22px; border-bottom: 1px solid var(--border); font-size: 11px; padding: 2px 8px; color: var(--muted); }
+  .viewport .rowx.off { opacity: .35; border-bottom-style: dashed; }
+  .viewport .sentinel { position: absolute; left: 0; right: 0; bottom: 20px; height: 22px; background: var(--key-bg); color: var(--key); font-size: 11px; font-weight: 700; text-align: center; line-height: 22px; border-top: 1px dashed var(--key); border-bottom: 1px dashed var(--key); }
+  .viewport .legend { font-size: 13px; }
+  .viewport .legend div { margin: 4px 0; }
+  @media (max-width: 560px) { .viewport { grid-template-columns: 1fr; } }
+  td, th { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+  th { background: var(--panel); }
+  .demo { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin: 12px 0; }
+  .demo button { font: inherit; font-size: 13px; padding: 5px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; margin-right: 6px; }
+  .demo button.primary { background: var(--good); border-color: var(--good); color: #fff; }
+  .demo button:disabled { opacity: .5; cursor: default; }
+  .counters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+  .counter { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; }
+  .counter .n { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .counter .l { font-size: 12px; color: var(--muted); }
+  .counter.bad .n { color: var(--bad); }
+  .counter.good .n { color: var(--good); }
+  .counter.key .n { color: var(--key); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>CSS 優化案例：CSS-in-JS 的執行期成本（styled-components）</h1>
+<p class="sub">動態樣式多的元件更新變慢、SSR 首屏先出現沒樣式的畫面 · 結論：<span class="key">常變的值不要寫進樣式規則；SSR 一定要把樣式跟 HTML 一起送出；能在建置時決定的樣式就別留到執行期</span></p>
+
+<h2><span class="badge bad">原因</span></h2>
+<div class="flow"><span>元件渲染</span><i>→</i><span>執行樣式裡的插值函式</span><i>→</i><span>組出 CSS 字串、算 hash</span><i>→</i><span>新組合 → 插入新 CSS 規則</span><i>→</i><span>瀏覽器重算樣式</span></div>
+<pre>const Box = styled.div`
+  padding: 16px;                                         <span class="c">// 靜態：只處理一次</span>
+  transform: translate(<span class="r">${p =&gt; p.x}</span>px, <span class="r">${p =&gt; p.y}</span>px);    <span class="c">// 每組不同的 x / y = 一個新 class + 一條新規則</span>
+`
+
+<span class="c">// 拖曳時每一幀 x / y 都不同</span>
+&lt;Box x={pos.x} y={pos.y} /&gt;</pre>
+<div class="box bad-box"><ol>
+<li>styled-components 在<b>執行期</b>產生 CSS：每次渲染要執行插值函式、組字串、算 hash；遇到<span class="bad">沒看過的樣式組合</span>就要把新規則插入 <code>&lt;style&gt;</code>，瀏覽器跟著重算樣式。</li>
+<li>把<span class="bad">高頻變動的值</span>（座標、捲動位置、進度）寫進樣式，每個值都產生一個新 class，規則只會越來越多（開發模式會出現「Over 200 classes were generated」警告）。</li>
+<li>SSR 沒有收集樣式時，伺服器送出的 HTML <span class="bad">不含 CSS</span>，要等 JS 下載、執行後才注入 → 先看到無樣式畫面（FOUC）。</li>
+<li>函式庫本身與產生樣式的程式都要在客戶端下載、執行，增加 JS 成本。</li>
+</ol></div>
+<div class="box bad-box"><span class="key">更正原筆記：</span><ol>
+<li>原筆記說「每次渲染都會解析模板字串、生成 class、注入 CSS」—— 不精確。模板的<b>靜態部分在定義時就處理好</b>；每次渲染只<b>重新執行有插值函式的部分</b>，結果和之前一樣就沿用已有的 class，<b>只有出現新組合時才注入新規則</b>。完全靜態的元件成本很低。</li>
+<li>原筆記的 FOUC 說明（「首次繪製較快但注入較慢」）含糊。正確說法：<b>沒有設定 SSR 樣式收集</b>（<code>ServerStyleSheet</code> / registry）時，HTML 先到、樣式等 JS 執行後才注入，所以會先畫出沒樣式的內容再跳成有樣式。設定正確就不會發生。</li>
+<li>原筆記說 <code>babel-plugin-styled-components</code>「在建置時預處理樣式」：它主要提供<b>SSR 兩邊一致的 class 名稱</b>、方便除錯的 displayName、壓縮與轉譯模板；<b>不會把 CSS 抽成靜態檔</b>，執行期產生樣式的成本仍在。</li>
+<li>原筆記的「約 12–13kb gzipped」未註明版本與來源，大小依版本而異，請以實際打包分析為準。</li>
+</ol></div>
+
+<h2><span class="badge good">名詞</span> 先看懂這幾個詞</h2>
+<div class="term"><b class="name">CSS-in-JS</b><br>把 CSS 寫在 JS 檔裡，跟元件放在一起。styled-components、Emotion 屬於<b>執行期（runtime）</b>型：瀏覽器跑 JS 時才產生 CSS。vanilla-extract、Linaria 等屬於<b>零執行期（zero-runtime）</b>型：建置時就輸出成一般 .css 檔。</div>
+<div class="term"><b class="name">模板字串插值 <code>${p =&gt; ...}</code></b><br><code>styled.div`...`</code> 是 tagged template literal。<code>${p =&gt; p.color}</code> 是一個函式，元件每次渲染時被呼叫、收到 props，回傳的值會被組進 CSS。<span class="key">插值越多、變化越頻繁，執行期工作越多。</span></div>
+<div class="term"><b class="name">FOUC（Flash of Unstyled Content）</b><br>瀏覽器先把 HTML 畫出來，但樣式還沒到，使用者看到一瞬間「沒排版的原始內容」，接著樣式套上去又跳一次。</div>
+<div class="term"><b class="name">ServerStyleSheet / Style registry</b><br>SSR 時用來<b>收集這次渲染用到的所有樣式</b>，輸出成 <code>&lt;style&gt;</code> 放進 HTML 的工具。Next.js App Router 則是用 <code>useServerInsertedHTML</code> 寫一個 registry 元件，在串流輸出 HTML 時把樣式插進去。</div>
+<div class="term"><b class="name">.attrs 與 transient props（<code>$x</code>）</b><br><code>.attrs()</code> 可以替元件加上固定的 HTML 屬性（例如 <code>style</code>）。props 名稱前加 <code>$</code> 表示「只給樣式用，不要傳到 DOM 上」，避免 React 警告未知屬性。</div>
+<div class="term"><b class="name">CSS 變數（custom properties）</b><br><code>--w: 40%</code> 這種變數可以在 inline style 設定、在 CSS 規則裡用 <code>var(--w)</code> 讀取。<b>規則固定不變，只換變數的值</b>，不會產生新 class。</div>
+
+<h2><span class="badge good">解法 A</span> 高頻變動的值改用 inline style 或 CSS 變數</h2>
+<p>樣式規則保持固定，<span class="good">只讓「值」變</span>，就不會一直產生新 class。</p>
+<pre><span class="c">// 做法 1：.attrs 把常變的值放進 inline style</span>
+const Box = styled.div<span class="g">.attrs(p =&gt; ({
+  style: { transform: `translate(${p.$x}px, ${p.$y}px)` },</span>   <span class="c">// inline style：不產生新 class</span>
+<span class="g">}))</span>`
+  padding: 16px;                                         <span class="c">// 其餘樣式仍是固定的一個 class</span>
+`
+&lt;Box <span class="g">$x</span>={pos.x} <span class="g">$y</span>={pos.y} /&gt;                         <span class="c">// $ 開頭：不會被傳到 DOM</span>
+
+<span class="c">// 做法 2：規則固定讀 CSS 變數，值從 style 傳入</span>
+const Bar = styled.div`
+  width: <span class="g">var(--w)</span>;                                       <span class="c">// 規則永遠只有這一條</span>
+  transition: width .2s;
+`
+&lt;Bar style={{ <span class="g">'--w'</span>: `${percent}%` }} /&gt;</pre>
+<p class="sub">只有少數幾種固定變體（primary / secondary、size s / m / l）用插值沒問題：組合數量有限，class 產生一次就重複使用。</p>
+
+<h2><span class="badge good">解法 B</span> SSR 把樣式一起送出</h2>
+<p>伺服器渲染時<span class="good">收集用到的樣式、放進 HTML 的 &lt;head&gt;</span>，瀏覽器第一次繪製就有樣式。</p>
+<pre><span class="c">// 自訂 SSR 伺服器（或 Next.js Pages Router 的 _document）</span>
+import { renderToString } from 'react-dom/server'
+import { <span class="g">ServerStyleSheet</span> } from 'styled-components'
+
+const sheet = new ServerStyleSheet()
+try {
+  const html = renderToString(<span class="g">sheet.collectStyles(&lt;App /&gt;)</span>)   <span class="c">// 渲染時順便記錄用到的樣式</span>
+  const styleTags = <span class="g">sheet.getStyleTags()</span>                     <span class="c">// 轉成 &lt;style&gt; 字串</span>
+  res.send(`&lt;!doctype html&gt;&lt;html&gt;&lt;head&gt;<span class="g">${styleTags}</span>&lt;/head&gt;
+    &lt;body&gt;&lt;div id="root"&gt;${html}&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;`)  <span class="c">// 樣式一定要放進回應裡才有用</span>
+} finally {
+  sheet.seal()                                                <span class="c">// 釋放資源，避免記憶體洩漏</span>
+}</pre>
+<pre><span class="c">// Next.js App Router：lib/registry.jsx，再用它包住 app/layout 的 children</span>
+'use client'
+import { useState } from 'react'
+import { <span class="g">useServerInsertedHTML</span> } from 'next/navigation'
+import { ServerStyleSheet, StyleSheetManager } from 'styled-components'
+
+export default function StyledComponentsRegistry({ children }) {
+  const [sheet] = useState(() =&gt; new ServerStyleSheet())   <span class="c">// 每個請求只建立一次</span>
+  <span class="g">useServerInsertedHTML(() =&gt; {</span>                            <span class="c">// 串流輸出 HTML 時插入目前收集到的樣式</span>
+    const styles = sheet.getStyleElement()
+    sheet.instance.clearTag()                                <span class="c">// 已輸出的清掉，下次只送新的</span>
+    return &lt;&gt;{styles}&lt;/&gt;
+  })
+  if (typeof window !== 'undefined') return &lt;&gt;{children}&lt;/&gt;   <span class="c">// 瀏覽器端不需要收集</span>
+  return &lt;StyleSheetManager sheet={sheet.instance}&gt;{children}&lt;/StyleSheetManager&gt;
+}
+
+<span class="c">// next.config.js：啟用 SWC 編譯器支援（相當於 babel 外掛）</span>
+module.exports = { compiler: { <span class="g">styledComponents: true</span> } }</pre>
+
+<h2><span class="badge good">解法 C</span> 開編譯器外掛</h2>
+<p>Babel 用 <code>babel-plugin-styled-components</code>，Next.js 用上面的 <code>compiler.styledComponents</code>（SWC）。好處是<span class="good">SSR 兩邊 class 名稱一致</span>（避免 hydration 不一致）、可讀的 class 名稱、壓縮模板。<span class="key">它不會消除執行期成本</span>，只是減少額外負擔。</p>
+<pre><span class="c">// .babelrc</span>
+{ "plugins": [<span class="g">["babel-plugin-styled-components", { "ssr": true, "displayName": true }]</span>] }</pre>
+
+<h2><span class="badge good">解法 D</span> 靜態樣式交給建置時產生的 CSS</h2>
+<p>大部分樣式其實不依賴 props。<span class="good">CSS Modules、Tailwind、vanilla-extract、Linaria</span> 在建置時輸出 .css 檔：可被瀏覽器快取、平行下載，沒有執行期產生樣式的成本。動態的部分用 CSS 變數或切換 class。</p>
+<pre><span class="c">/* Button.module.css */</span>
+.button { padding: .25em 1em; border-radius: 3px; }
+.primary { background: palevioletred; color: white; }
+
+<span class="c">// Button.jsx</span>
+import s from './Button.module.css'
+export const Button = ({ primary, ...rest }) =&gt;
+  &lt;button className={<span class="g">primary ? `${s.button} ${s.primary}` : s.button</span>} {...rest} /&gt;   <span class="c">// 只切換 class，不產生 CSS</span></pre>
+
+<h2><span class="badge good">判斷</span> 該用哪個</h2>
+<table>
+<thead><tr><th>情境</th><th>做法</th></tr></thead>
+<tbody>
+<tr><td>拖曳座標、捲動、進度條等每幀都變的值</td><td><span class="good">A：inline style / CSS 變數</span></td></tr>
+<tr><td>少數固定變體（顏色主題、尺寸）</td><td>插值沒問題，或 <span class="good">切換 class</span></td></tr>
+<tr><td>用 styled-components 做 SSR</td><td><span class="good">B + C 都要</span>，否則 FOUC 或 class 不一致</td></tr>
+<tr><td>新專案、效能敏感、大量 SSR / 靜態頁</td><td><span class="good">D：建置時產生 CSS</span></td></tr>
+<tr><td>已大量使用 styled-components 的舊專案</td><td>先做 A、B、C，<span class="key">再評估是否逐步遷移</span></td></tr>
+<tr><td>把每幀變化的值寫進 <code>${p =&gt; ...}</code></td><td><span class="bad">不要</span></td></tr>
+</tbody></table>
+
+<h2><span class="badge bad">取捨</span></h2>
+<div class="box bad-box"><ul>
+<li>inline style 不能寫 <code>:hover</code>、media query 等，這些仍要放在樣式規則裡；CSS 變數可以補足一部分。</li>
+<li>零執行期方案<span class="bad">失去「任意 props 直接算樣式」的彈性</span>，動態樣式要改成 CSS 變數或 class 組合；遷移大型專案成本高。</li>
+<li>React 官方文件也不建議在渲染期間注入樣式，並為 CSS-in-JS 函式庫提供了 <code>useInsertionEffect</code>；執行期方案和 Server Components 的搭配也較麻煩（styled 元件要在 Client Component 裡）。</li>
+<li>styled-components 的維護者在 2025 年宣布專案進入<span class="key">維護模式</span>（以修正問題為主、不再積極開發新功能）。舊專案不必急著換，但新專案選型時值得列入考量；以官方公告為準。</li>
+<li>以上效能差異是從運作方式推論，實際影響請用 React Profiler / DevTools Performance 量測。</li>
+</ul></div>
+
+</main>
+
+</body>
+</html>

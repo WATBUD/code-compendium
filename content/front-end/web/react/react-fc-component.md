@@ -1,4 +1,3 @@
-````md
 # 為什麼 React 不推薦使用 React.FC？  
 # Why is React.FC discouraged?
 
@@ -7,7 +6,9 @@
 ## 📌 1. 自動添加 `children` 屬性  
 ## 📌 1. Implicit `children` prop added
 
-### 🧨 壞處 (Disadvantages)
+> ⚠️ 更新：這是 **React 17 以前**（`@types/react` 17 及更早）的行為。從 **`@types/react` 18** 起，`React.FC` 已 **不再** 隱含 `children`，這個缺點已經不存在；需要 `children` 時必須自己宣告（例如 `React.PropsWithChildren<P>` 或在 props 中寫 `children?: React.ReactNode`）。
+
+### 🧨 壞處 (Disadvantages)（React 17 以前）
 
 - 使用 `React.FC` 時，會自動將 `children` 屬性加入 component 的 props，即使你不需要。
 - 這可能導致開發者在不該使用 `children` 的元件中誤傳內容。
@@ -17,16 +18,19 @@ const Button: React.FC<{ onClick: () => void }> = ({ onClick }) => (
   <button onClick={onClick}>Click</button>
 );
 
-<Button onClick={handleClick}>Wrong usage</Button> // ✅ 合法，但其實不應該有 children
-````
+<Button onClick={handleClick}>Wrong usage</Button> // React 17 型別：✅ 合法，但其實不應該有 children
+                                                   // React 18 型別：❌ 型別錯誤（已不再隱含 children）
+```
 
-### ✅ 好處 (Advantages)
+### ✅ 好處 (Advantages)（React 17 以前）
 
 * 如果你本來就打算支援 `children`，這樣可以省略額外定義。
-* 例如：
+* 在 React 18 型別中，需要明確宣告 `children`：
 
 ```tsx
-const Card: React.FC = ({ children }) => <div>{children}</div>;
+// React 17 以前：const Card: React.FC = ({ children }) => <div>{children}</div>;
+// React 18 以後：
+const Card: React.FC<React.PropsWithChildren> = ({ children }) => <div>{children}</div>;
 
 <Card>
   <p>Text inside card</p>
@@ -77,12 +81,14 @@ MyComponent.displayName = "MyComponent";
 
 ## ❌ 4. Over-definition and unnecessary constraint
 
-使用 `React.FC` 強迫你使用 `children` 和返回 `ReactElement`，反而失去彈性。
+早期的 `React.FC` 強迫你接受 `children`，並限制回傳型別為 `ReactElement | null`，反而失去彈性。
 
 ```tsx
-const Component: React.FC = () => "hi"; // ❌ 錯誤，非 ReactElement
+const Component: React.FC = () => "hi"; // ❌ 舊版型別錯誤，非 ReactElement
 const Component = () => "hi"; // ✅ 合法，React 支援直接渲染 string
 ```
+
+> ⚠️ 更新：`children` 的問題在 `@types/react` 18 已移除；回傳型別的限制也在 TypeScript 5.1 + `@types/react` 18.2.8 之後放寬為 `ReactNode`，上面第一行在新版中已可通過。現在不用 `React.FC` 的主要理由是泛型元件不方便、寫法較冗長，而非型別錯誤。
 
 ---
 

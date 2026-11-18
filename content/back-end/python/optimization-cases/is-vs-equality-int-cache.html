@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python 優化案例：用 is 比較數值（小整數快取陷阱）</title>
+<style>
+  :root {
+    --bg: #ffffff; --panel: #f5f6fa; --text: #1f2430; --muted: #6b7280; --border: #dfe3ec;
+    --bad: #d62f35; --bad-bg: rgba(229, 72, 77, .14);
+    --good: #12875a; --good-bg: rgba(31, 157, 99, .15);
+    --key: #8a5a00; --key-bg: rgba(255, 196, 0, .30);
+    --code-bg: #14161d; --code-text: #e6e9f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171e; --panel: #1e212b; --text: #e6e9f2; --muted: #9aa3b5; --border: #313646;
+      --bad: #ff7b80; --bad-bg: rgba(255, 107, 112, .18);
+      --good: #4cc38a; --good-bg: rgba(76, 195, 138, .18);
+      --key: #ffd666; --key-bg: rgba(255, 196, 0, .20);
+      --code-bg: #0e1015;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 56px; background: var(--bg); color: var(--text);
+    font: 15px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+  }
+  main { max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 24px; line-height: 1.3; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 30px 0 8px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; }
+  .badge.bad { background: var(--bad-bg); color: var(--bad); }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+  p { margin: 6px 0; }
+  .sub { color: var(--muted); margin: 0 0 6px; }
+  .bad  { color: var(--bad);  background: var(--bad-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .good { color: var(--good); background: var(--good-bg); padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .key  { color: var(--key);  background: var(--key-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .box { border: 1px solid var(--border); border-left-width: 4px; border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .box.bad-box { border-left-color: var(--bad); }
+  .box.good-box { border-left-color: var(--good); }
+  ol, ul { margin: 4px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92em; }
+  :not(pre) > code { background: var(--panel); border: 1px solid var(--border); padding: 0 5px; border-radius: 4px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text); border-radius: 10px;
+    padding: 12px 16px; overflow-x: auto; margin: 8px 0; font-size: 13px; line-height: 1.6;
+  }
+  pre .c { color: #7f8aa3; }
+  pre .r { color: #ff8a8f; font-weight: 700; }
+  pre .g { color: #7ee2a8; font-weight: 700; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; font-size: 13px; }
+  .flow span { padding: 4px 10px; border-radius: 6px; background: var(--bad-bg); color: var(--bad); font-weight: 600; }
+  .flow i { color: var(--muted); font-style: normal; }
+  .term { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .term b.name { color: var(--key); }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 10px 0; }
+  .steps li { counter-increment: s; position: relative; padding: 6px 0 6px 38px; margin: 0; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 6px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--good-bg); color: var(--good); font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .viewport { display: grid; grid-template-columns: 150px 1fr; gap: 14px; margin: 12px 0; align-items: stretch; }
+  .viewport .screen { border: 2px solid var(--good); border-radius: 8px; background: var(--bg); overflow: hidden; position: relative; min-height: 170px; }
+  .viewport .rowx { height: 22px; border-bottom: 1px solid var(--border); font-size: 11px; padding: 2px 8px; color: var(--muted); }
+  .viewport .rowx.off { opacity: .35; border-bottom-style: dashed; }
+  .viewport .sentinel { position: absolute; left: 0; right: 0; bottom: 20px; height: 22px; background: var(--key-bg); color: var(--key); font-size: 11px; font-weight: 700; text-align: center; line-height: 22px; border-top: 1px dashed var(--key); border-bottom: 1px dashed var(--key); }
+  .viewport .legend { font-size: 13px; }
+  .viewport .legend div { margin: 4px 0; }
+  @media (max-width: 560px) { .viewport { grid-template-columns: 1fr; } }
+  td, th { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+  th { background: var(--panel); }
+  .demo { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin: 12px 0; }
+  .demo button { font: inherit; font-size: 13px; padding: 5px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; margin-right: 6px; }
+  .demo button.primary { background: var(--good); border-color: var(--good); color: #fff; }
+  .demo button:disabled { opacity: .5; cursor: default; }
+  .counters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+  .counter { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; }
+  .counter .n { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .counter .l { font-size: 12px; color: var(--muted); }
+  .counter.bad .n { color: var(--bad); }
+  .counter.good .n { color: var(--good); }
+  .counter.key .n { color: var(--key); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>Python 優化案例：用 is 比較數值（小整數快取陷阱）</h1>
+<p class="sub"><code>is</code> 有時對、有時錯 · 結論：<span class="key">比較「值」一律用 ==；is 只用在 None 這類單例</span></p>
+
+<h2><span class="badge bad">原因</span></h2>
+<div class="flow"><span>用 is 比較數字 / 字串</span><i>→</i><span>is 比的是「是不是同一個物件」</span><i>→</i><span>小整數、部分字串剛好被重複使用</span><i>→</i><span>測試時看起來對，換個值就錯</span></div>
+
+<p>原本的寫法：</p>
+<pre>LIMIT = 1000
+
+def over_limit(total):
+    return total <span class="r">is</span> LIMIT       <span class="c"># 想比「值」，卻用了 is</span>
+
+print(over_limit(1000))         <span class="c"># True：同一個檔案裡的常數 1000 剛好是同一個物件</span>
+print(over_limit(int("1000")))  <span class="c"># <span class="r">False</span>：值一樣，但是在執行時新建的物件</span>
+
+a = 256
+b = int("256")
+print(a is b)                   <span class="c"># True：-5～256 有快取，<span class="r">讓人誤以為 is 可以比數字</span></span></pre>
+
+<div class="box bad-box"><ol>
+<li><code>is</code> 比的是<span class="bad">身分（identity）</span>：兩個名字是不是指向<b>同一個物件</b>，不是值相不相等。</li>
+<li>CPython 會<span class="bad">重複使用</span>某些物件：-5～256 的小整數、看起來像識別字的短字串、同一段程式碼裡相同的常數。這些情況 <code>is</code> 剛好回傳 True。</li>
+<li>這些都是<span class="bad">實作細節</span>，不是語言保證；值一來自輸入、計算、網路，就會是新物件，<code>is</code> 就變成 False。</li>
+</ol></div>
+
+<h2><span class="badge good">名詞</span> 先看懂這幾個詞</h2>
+<div class="term"><b class="name">身分（identity）與 id()</b><br>每個物件都有唯一的身分，可以用 <code>id(x)</code> 看到。<code>a is b</code> 等於 <code>id(a) == id(b)</code>。比喻：兩張鈔票面額一樣（<code>==</code>），但序號不同（<code>is</code> 為 False）。</div>
+<div class="term"><b class="name">值相等（==）與 __eq__</b><br><code>a == b</code> 會呼叫 <code>a.__eq__(b)</code>，由型別決定「怎樣算相等」：數字比數值、字串比內容、list 逐項比較。</div>
+<div class="term"><b class="name">小整數快取（small int cache）</b><br>CPython 啟動時就先建好 -5～256 的整數物件，之後用到這些值都<b>拿同一個物件</b>，所以它們的 <code>is</code> 會是 True。257 以上每次運算都可能產生新物件。</div>
+<div class="term"><b class="name">字串駐留（string interning）</b><br>CPython 會讓某些字串（例如程式碼中像變數名稱的字串常數）共用同一個物件，以節省記憶體、加速字典查找。執行時組出來的字串通常不會被駐留：
+<pre>s1 = "hello"
+s2 = "".join(["hel", "lo"])
+print(s1 == s2)  <span class="c"># True：內容一樣</span>
+print(s1 is s2)  <span class="c"># False：是另一個物件</span></pre></div>
+<div class="term"><b class="name">常數合併（constant folding / 共用常數）</b><br>同一個程式碼區塊（一個 .py 檔、一個函式）被<b>一次編譯</b>時，相同的常數只會建立一份。所以同一個檔案裡 <code>x = 257</code>、<code>y = 257</code> 通常會指向同一個物件。</div>
+<div class="term"><b class="name">單例（singleton）</b><br>整個程式只會有一個的物件：<code>None</code>、<code>True</code>、<code>False</code>、<code>NotImplemented</code>、<code>...</code>（Ellipsis）。因為只有一個，用 <code>is</code> 比才有意義，也最快。</div>
+
+<h2><span class="badge good">解法</span> 比值用 ==，比 None 用 is</h2>
+<pre>LIMIT = 1000
+
+def over_limit(total):
+    return total <span class="g">==</span> LIMIT       <span class="c"># 比值：不管物件從哪裡來都正確</span>
+
+print(over_limit(int("1000")))  <span class="c"># <span class="g">True</span></span>
+
+def find(items, target=None):
+    if target <span class="g">is None</span>:           <span class="c"># None 是單例：用 is，也不會被自訂 __eq__ 影響</span>
+        return []
+    return [x for x in items if x <span class="g">==</span> target]</pre>
+
+<p><span class="good">需要「確實是同一個物件」時才用 is</span>，例如自訂的哨兵值：</p>
+<pre>_MISSING = object()                 <span class="c"># 獨一無二的物件，當作「沒傳參數」的記號</span>
+
+def get(d, key, default=_MISSING):
+    if key in d:
+        return d[key]
+    if default <span class="g">is _MISSING</span>:          <span class="c"># 這裡要的就是「是不是那個物件」</span>
+        raise KeyError(key)
+    return default</pre>
+
+<h2><span class="badge good">判斷</span></h2>
+<table>
+<thead><tr><th>要比較的東西</th><th>用</th></tr></thead>
+<tbody>
+<tr><td>數字、字串、list、dict、自訂物件的「內容」</td><td><span class="good">==</span></td></tr>
+<tr><td><code>None</code></td><td><span class="good">is None / is not None</span>（PEP 8 建議）</td></tr>
+<tr><td>自訂哨兵物件、確認兩個名字指向同一個物件</td><td><span class="good">is</span></td></tr>
+<tr><td><code>True</code> / <code>False</code></td><td>直接寫 <code>if flag:</code>；<span class="bad">不要</span>寫 <code>== True</code>，也不必 <code>is True</code>（除非要排除 1 這類「真值」）</td></tr>
+<tr><td><code>x is 257</code>、<code>name is "admin"</code> 這種和字面值比</td><td><span class="bad">不要</span>：Python 3.8+ 會發出 SyntaxWarning</td></tr>
+</tbody></table>
+
+<h2><span class="badge bad">取捨</span> 注意</h2>
+<div class="box bad-box"><ul>
+<li><code>==</code> 會呼叫 <code>__eq__</code>，可能被自訂型別改寫（例如 NumPy 陣列的 <code>==</code> 回傳陣列而不是 bool），這也是 None 檢查要用 <code>is</code> 的原因。</li>
+<li><code>is</code> 比 <code>==</code> 快一點點，但<span class="key">不能為了速度用 is 比值</span>，結果不正確再快也沒用。</li>
+<li>快取範圍與駐留規則是 CPython 的實作細節，不同版本、不同直譯器（PyPy）都可能不同，<b>不要寫依賴它的程式</b>。</li>
+</ul></div>
+
+<div class="box bad-box"><span class="key">更正原筆記：</span><ul>
+<li>原筆記說 <code>x = 257; y = 257; x is y</code> 會輸出 False。這<b>只在互動式 REPL 分兩行輸入時</b>成立（每行各自編譯，產生兩個物件）。寫在同一個 .py 檔裡執行，常數通常會被合併成同一個物件，<b>結果是 True</b>。兩種結果都可能出現，正好說明不該用 <code>is</code> 比數字。</li>
+<li>原筆記沒提到：Python 3.8 起，<code>is</code> / <code>is not</code> 直接和字面值（數字、字串）比較時，會發出 <code>SyntaxWarning: "is" with a literal. Did you mean "=="?</code>。</li>
+<li>「短字串會被快取」不精確：駐留的是<b>像識別字的字串常數</b>等特定情況，不是單看長度；執行時產生的字串通常不會駐留。</li>
+</ul></div>
+
+</main>
+
+</body>
+</html>

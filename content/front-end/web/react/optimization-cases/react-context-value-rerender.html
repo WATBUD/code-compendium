@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>React 優化案例：合併的 Context 值讓所有使用者一起重繪</title>
+<style>
+  :root {
+    --bg: #ffffff; --panel: #f5f6fa; --text: #1f2430; --muted: #6b7280; --border: #dfe3ec;
+    --bad: #d62f35; --bad-bg: rgba(229, 72, 77, .14);
+    --good: #12875a; --good-bg: rgba(31, 157, 99, .15);
+    --key: #8a5a00; --key-bg: rgba(255, 196, 0, .30);
+    --code-bg: #14161d; --code-text: #e6e9f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171e; --panel: #1e212b; --text: #e6e9f2; --muted: #9aa3b5; --border: #313646;
+      --bad: #ff7b80; --bad-bg: rgba(255, 107, 112, .18);
+      --good: #4cc38a; --good-bg: rgba(76, 195, 138, .18);
+      --key: #ffd666; --key-bg: rgba(255, 196, 0, .20);
+      --code-bg: #0e1015;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 56px; background: var(--bg); color: var(--text);
+    font: 15px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+  }
+  main { max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 24px; line-height: 1.3; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 30px 0 8px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; }
+  .badge.bad { background: var(--bad-bg); color: var(--bad); }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+  p { margin: 6px 0; }
+  .sub { color: var(--muted); margin: 0 0 6px; }
+  .bad  { color: var(--bad);  background: var(--bad-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .good { color: var(--good); background: var(--good-bg); padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .key  { color: var(--key);  background: var(--key-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .box { border: 1px solid var(--border); border-left-width: 4px; border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .box.bad-box { border-left-color: var(--bad); }
+  .box.good-box { border-left-color: var(--good); }
+  ol, ul { margin: 4px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92em; }
+  :not(pre) > code { background: var(--panel); border: 1px solid var(--border); padding: 0 5px; border-radius: 4px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text); border-radius: 10px;
+    padding: 12px 16px; overflow-x: auto; margin: 8px 0; font-size: 13px; line-height: 1.6;
+  }
+  pre .c { color: #7f8aa3; }
+  pre .r { color: #ff8a8f; font-weight: 700; }
+  pre .g { color: #7ee2a8; font-weight: 700; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; font-size: 13px; }
+  .flow span { padding: 4px 10px; border-radius: 6px; background: var(--bad-bg); color: var(--bad); font-weight: 600; }
+  .flow i { color: var(--muted); font-style: normal; }
+  .term { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .term b.name { color: var(--key); }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 10px 0; }
+  .steps li { counter-increment: s; position: relative; padding: 6px 0 6px 38px; margin: 0; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 6px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--good-bg); color: var(--good); font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .viewport { display: grid; grid-template-columns: 150px 1fr; gap: 14px; margin: 12px 0; align-items: stretch; }
+  .viewport .screen { border: 2px solid var(--good); border-radius: 8px; background: var(--bg); overflow: hidden; position: relative; min-height: 170px; }
+  .viewport .rowx { height: 22px; border-bottom: 1px solid var(--border); font-size: 11px; padding: 2px 8px; color: var(--muted); }
+  .viewport .rowx.off { opacity: .35; border-bottom-style: dashed; }
+  .viewport .sentinel { position: absolute; left: 0; right: 0; bottom: 20px; height: 22px; background: var(--key-bg); color: var(--key); font-size: 11px; font-weight: 700; text-align: center; line-height: 22px; border-top: 1px dashed var(--key); border-bottom: 1px dashed var(--key); }
+  .viewport .legend { font-size: 13px; }
+  .viewport .legend div { margin: 4px 0; }
+  @media (max-width: 560px) { .viewport { grid-template-columns: 1fr; } }
+  td, th { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+  th { background: var(--panel); }
+  .demo { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin: 12px 0; }
+  .demo button { font: inherit; font-size: 13px; padding: 5px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; margin-right: 6px; }
+  .demo button.primary { background: var(--good); border-color: var(--good); color: #fff; }
+  .demo button:disabled { opacity: .5; cursor: default; }
+  .counters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+  .counter { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; }
+  .counter .n { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .counter .l { font-size: 12px; color: var(--muted); }
+  .counter.bad .n { color: var(--bad); }
+  .counter.good .n { color: var(--good); }
+  .counter.key .n { color: var(--key); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>React 優化案例：合併的 Context 值讓所有使用者一起重繪</h1>
+<p class="sub">只用到 theme 的按鈕，在 user 改變時也重繪 · 結論：<span class="key">Context 沒有 selector，值一變全部 consumer 重繪 → 拆 Context、useMemo 穩定 value，或改用有 selector 訂閱的 store</span></p>
+
+<h2><span class="badge bad">原因</span> </h2>
+<div class="flow"><span>把 theme、user 塞進同一個 Context</span><i>→</i><span>user 改變 → value 換成新物件</span><i>→</i><span>React 只比較 value 參照</span><i>→</i><span>所有 useContext(AppContext) 的元件都重繪</span></div>
+<pre>const AppContext = createContext(null)
+
+function AppProvider({ children }) {
+  const [theme, setTheme] = useState('light')
+  const [user, setUser] = useState(null)
+  return (
+    &lt;AppContext.Provider value={<span class="r">{ theme, setTheme, user, setUser }</span>}&gt;  <span class="c">// 每次 render 都是新物件</span>
+      {children}
+    &lt;/AppContext.Provider&gt;
+  )
+}
+
+function ThemedButton() {
+  const { theme } = <span class="r">useContext(AppContext)</span>   <span class="c">// 只用 theme，但訂閱的是「整個 value」</span>
+  return &lt;button className={theme}&gt;Toggle&lt;/button&gt;
+}
+<span class="c">// setUser(...) → value 變新物件 → ThemedButton 也重繪</span></pre>
+<div class="box bad-box"><ol>
+<li><span class="bad">沒有 selector</span>：<code>useContext</code> 只能拿整個 value，React 用 <code>Object.is</code> 比較新舊 value，<b>不知道你只用了其中的 theme</b>。</li>
+<li><span class="bad">合併的 value 一部分變，整個就變</span>：user 改變 → 新物件 → 所有 consumer 都重繪。</li>
+<li><span class="bad">value 是內聯物件</span>：Provider 所在元件只要重繪，即使 theme、user 都沒變，value 也是新參照，consumer 一樣全部重繪。</li>
+<li><span class="bad">React.memo 擋不住</span>：consumer 是因為 Context 變了而重繪，不是因為 props，包 memo 沒有用。</li>
+</ol></div>
+<p class="sub">以上是由 React 的比較規則推論的行為；實際影響大小要用 React DevTools Profiler 量，consumer 很少或很輕時不一定值得處理。</p>
+
+<h2><span class="badge good">名詞</span> 先看懂這幾個詞</h2>
+<div class="term"><b class="name">Context / Provider / consumer</b><br><code>createContext()</code> 建立一個「頻道」；<code>&lt;Ctx.Provider value={…}&gt;</code> 在樹的上方放值；底下任何呼叫 <code>useContext(Ctx)</code> 的元件就是 consumer，直接拿到值，不必一層層傳 props。</div>
+<div class="term"><b class="name">參照比較（Object.is）</b><br>比的是「是不是同一個物件」，不是內容。<code>{ a: 1 }</code> 和另一個 <code>{ a: 1 }</code> 是兩個不同物件，比較結果是「變了」。</div>
+<div class="term"><b class="name">selector 訂閱</b><br>像 Redux 的 <code>useSelector(state =&gt; state.theme)</code>：元件只訂閱自己選出來的那一小塊。store 更新時，store 會重跑 selector，<span class="key">選出的值沒變就不重繪</span>。這是 Context 沒有的能力。</div>
+<div class="term"><b class="name">useMemo</b><br>記住計算結果，依賴沒變就回傳<b>同一個</b>物件。用在 Context value 上，可以避免「Provider 重繪就產生新 value」。</div>
+
+<h2><span class="badge good">解法 1</span> 依「一起變的資料」拆成多個 Context</h2>
+<p><span class="good">各自的 Context 只在自己的資料變時通知自己的 consumer</span>。</p>
+<pre>const ThemeContext = createContext(null)
+const UserContext = createContext(null)
+
+function AppProvider({ children }) {
+  const [theme, setTheme] = useState('light')
+  const [user, setUser] = useState(null)
+  const themeValue = <span class="g">useMemo(() =&gt; ({ theme, setTheme }), [theme])</span>   <span class="c">// 只有 theme 變才換新物件</span>
+  const userValue = <span class="g">useMemo(() =&gt; ({ user, setUser }), [user])</span>
+
+  return (
+    &lt;<span class="g">ThemeContext</span>.Provider value={themeValue}&gt;
+      &lt;<span class="g">UserContext</span>.Provider value={userValue}&gt;{children}&lt;/UserContext.Provider&gt;
+    &lt;/ThemeContext.Provider&gt;
+  )
+}
+
+function ThemedButton() {
+  const { theme } = useContext(<span class="g">ThemeContext</span>)   <span class="c">// user 改變時不再重繪</span>
+  return &lt;button className={theme}&gt;Toggle&lt;/button&gt;
+}</pre>
+
+<h2><span class="badge good">解法 2</span> 只有一個 Context 時，至少用 useMemo 穩定 value</h2>
+<p><span class="good">value 只在內容真的變時才換參照</span>，避免 Provider 的父元件重繪時連帶所有 consumer 重繪。</p>
+<pre>const value = <span class="g">useMemo</span>(() =&gt; ({ theme, setTheme, user, setUser }), <span class="g">[theme, user]</span>)  <span class="c">// setter 本身是穩定的，不必放依賴</span>
+return &lt;AppContext.Provider value={value}&gt;{children}&lt;/AppContext.Provider&gt;
+<span class="c">// 注意：user 變了，只用 theme 的元件還是會重繪 → 要徹底解決用解法 1 或 3</span></pre>
+
+<h2><span class="badge good">解法 3</span> 頻繁更新、大量共享 → 用有 selector 的 store</h2>
+<p><span class="good">每個元件只訂閱自己選的片段</span>，其他片段怎麼變都不重繪。</p>
+<pre>import { configureStore, createSlice } from '@reduxjs/toolkit'
+import { Provider, useSelector } from 'react-redux'
+
+const themeSlice = createSlice({
+  name: 'theme',
+  initialState: 'light',
+  reducers: { toggle: (state) =&gt; (state === 'light' ? 'dark' : 'light') },
+})
+
+const store = <span class="g">configureStore</span>({ reducer: { theme: themeSlice.reducer /* , user: userSlice.reducer */ } })
+
+function ThemedButton() {
+  const theme = <span class="g">useSelector((state) =&gt; state.theme)</span>   <span class="c">// 只有 state.theme 變才重繪</span>
+  return &lt;button className={theme}&gt;Toggle&lt;/button&gt;
+}
+<span class="c">// 根元件：&lt;Provider store={store}&gt;&lt;App /&gt;&lt;/Provider&gt;</span>
+<span class="c">// Zustand 的 useStore(selector) 也是同一個原理</span></pre>
+
+<h2><span class="badge good">判斷</span> </h2>
+<table><thead><tr><th>情況</th><th>做法</th></tr></thead><tbody>
+<tr><td>很少變的全域設定（主題、語系、登入者）</td><td>Context 就夠：<span class="good">一種資料一個 Context + useMemo value</span></td></tr>
+<tr><td>同一份資料，有的元件只讀、有的只寫</td><td>拆成「值」和「setter / dispatch」兩個 Context，只寫的元件不會因值改變而重繪</td></tr>
+<tr><td>頻繁更新、很多元件各取一小塊</td><td><span class="good">Redux / Zustand 等有 selector 的 store</span></td></tr>
+<tr><td>把所有全域狀態塞進一個 Context</td><td><span class="bad">不要</span></td></tr>
+</tbody></table>
+<div class="box bad-box"><span class="key">更正原筆記：</span>
+<ul>
+<li>原筆記寫「useContext [React 16.3] 引入」。<code>createContext</code>（新版 Context API）是 <b>16.3</b>；<code>useContext</code> 這個 Hook 是 <b>16.8</b> 才有（和其他 Hook 一起）。</li>
+<li>原筆記說「combineReducers 讓部分狀態改變時只有相關元件重新渲染」。<span class="bad">不對</span>：<code>combineReducers</code> 只是把 reducer 拆開組合；只重繪相關元件靠的是 <span class="key"><code>useSelector</code>（或 <code>connect</code>）的選擇性訂閱</span>。</li>
+<li>原筆記用 <code>createStore</code>。它已被標為 deprecated，官方建議改用 Redux Toolkit 的 <code>configureStore</code>（自動組合 reducer、內建 DevTools 與常用 middleware）。</li>
+</ul></div>
+<div class="box bad-box"><span class="key">取捨：</span>
+<ul>
+<li>拆 Context 會讓 Provider 一層包一層（Provider Hell），可以寫一個 <code>AppProviders</code> 元件把它們集中。</li>
+<li>引入 store 多一個依賴和一套概念（slice、action、selector），小專案不一定划算。</li>
+<li><code>useSelector</code> 預設用 <code>===</code> 比較選出的值；selector 每次回傳新物件 / 陣列（例如 <code>state =&gt; ({ a: state.a })</code>）會每次都重繪，要拆成多個 selector 或傳 <code>shallowEqual</code>。</li>
+</ul></div>
+
+</main>
+
+</body>
+</html>

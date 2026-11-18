@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>React 優化案例：useEffect 不能直接傳 async 函式</title>
+<style>
+  :root {
+    --bg: #ffffff; --panel: #f5f6fa; --text: #1f2430; --muted: #6b7280; --border: #dfe3ec;
+    --bad: #d62f35; --bad-bg: rgba(229, 72, 77, .14);
+    --good: #12875a; --good-bg: rgba(31, 157, 99, .15);
+    --key: #8a5a00; --key-bg: rgba(255, 196, 0, .30);
+    --code-bg: #14161d; --code-text: #e6e9f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171e; --panel: #1e212b; --text: #e6e9f2; --muted: #9aa3b5; --border: #313646;
+      --bad: #ff7b80; --bad-bg: rgba(255, 107, 112, .18);
+      --good: #4cc38a; --good-bg: rgba(76, 195, 138, .18);
+      --key: #ffd666; --key-bg: rgba(255, 196, 0, .20);
+      --code-bg: #0e1015;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 56px; background: var(--bg); color: var(--text);
+    font: 15px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+  }
+  main { max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 24px; line-height: 1.3; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 30px 0 8px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; }
+  .badge.bad { background: var(--bad-bg); color: var(--bad); }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+  p { margin: 6px 0; }
+  .sub { color: var(--muted); margin: 0 0 6px; }
+  .bad  { color: var(--bad);  background: var(--bad-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .good { color: var(--good); background: var(--good-bg); padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .key  { color: var(--key);  background: var(--key-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .box { border: 1px solid var(--border); border-left-width: 4px; border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .box.bad-box { border-left-color: var(--bad); }
+  .box.good-box { border-left-color: var(--good); }
+  ol, ul { margin: 4px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92em; }
+  :not(pre) > code { background: var(--panel); border: 1px solid var(--border); padding: 0 5px; border-radius: 4px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text); border-radius: 10px;
+    padding: 12px 16px; overflow-x: auto; margin: 8px 0; font-size: 13px; line-height: 1.6;
+  }
+  pre .c { color: #7f8aa3; }
+  pre .r { color: #ff8a8f; font-weight: 700; }
+  pre .g { color: #7ee2a8; font-weight: 700; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; font-size: 13px; }
+  .flow span { padding: 4px 10px; border-radius: 6px; background: var(--bad-bg); color: var(--bad); font-weight: 600; }
+  .flow i { color: var(--muted); font-style: normal; }
+  .term { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .term b.name { color: var(--key); }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 10px 0; }
+  .steps li { counter-increment: s; position: relative; padding: 6px 0 6px 38px; margin: 0; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 6px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--good-bg); color: var(--good); font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .viewport { display: grid; grid-template-columns: 150px 1fr; gap: 14px; margin: 12px 0; align-items: stretch; }
+  .viewport .screen { border: 2px solid var(--good); border-radius: 8px; background: var(--bg); overflow: hidden; position: relative; min-height: 170px; }
+  .viewport .rowx { height: 22px; border-bottom: 1px solid var(--border); font-size: 11px; padding: 2px 8px; color: var(--muted); }
+  .viewport .rowx.off { opacity: .35; border-bottom-style: dashed; }
+  .viewport .sentinel { position: absolute; left: 0; right: 0; bottom: 20px; height: 22px; background: var(--key-bg); color: var(--key); font-size: 11px; font-weight: 700; text-align: center; line-height: 22px; border-top: 1px dashed var(--key); border-bottom: 1px dashed var(--key); }
+  .viewport .legend { font-size: 13px; }
+  .viewport .legend div { margin: 4px 0; }
+  @media (max-width: 560px) { .viewport { grid-template-columns: 1fr; } }
+  td, th { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+  th { background: var(--panel); }
+  .demo { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin: 12px 0; }
+  .demo button { font: inherit; font-size: 13px; padding: 5px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; margin-right: 6px; }
+  .demo button.primary { background: var(--good); border-color: var(--good); color: #fff; }
+  .demo button:disabled { opacity: .5; cursor: default; }
+  .counters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+  .counter { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; }
+  .counter .n { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .counter .l { font-size: 12px; color: var(--muted); }
+  .counter.bad .n { color: var(--bad); }
+  .counter.good .n { color: var(--good); }
+  .counter.key .n { color: var(--key); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>React 優化案例：useEffect 不能直接傳 async 函式</h1>
+<p class="sub">寫 useEffect(async () =&gt; …) 被 lint / React 警告 · 結論：<span class="key">effect 本身保持同步，在裡面定義 async 函式再呼叫，並用旗標擋掉過期結果</span></p>
+
+<h2><span class="badge bad">原因</span> </h2>
+<div class="flow"><span>effect 寫成 async</span><i>→</i><span>async 函式一定回傳 Promise</span><i>→</i><span>React 期待「undefined 或清理函式」</span><i>→</i><span>拿不到清理函式，清理邏輯失效</span></div>
+<pre>useEffect(<span class="r">async</span> () =&gt; {
+  const data = await fetchUser(userId)
+  setUser(data)
+
+  return () =&gt; { /* 想在這裡清理 */ }   <span class="c">// 實際上 React 收到的是 Promise，不是這個函式</span>
+}, [userId])</pre>
+<div class="box bad-box"><ol>
+<li><span class="bad">回傳值不對</span>：<code>useEffect</code> 的函式只能回傳 <code>undefined</code> 或一個清理函式；<code>async</code> 函式永遠回傳 <code>Promise</code>。開發模式下 React 會在 console 警告。</li>
+<li><span class="bad">清理函式被包進 Promise</span>：<code>return () =&gt; …</code> 變成 Promise 的結果，React 不會去 await 它，所以<b>卸載或依賴改變時清理永遠不會執行</b>。</li>
+</ol></div>
+<div class="box bad-box"><span class="key">更正原筆記：</span>
+<ul>
+<li>原筆記說「在 effect 內定義 async 函式並呼叫」就能避免競態。<span class="bad">不對</span>：這個寫法只修好「回傳值」的問題。userId 快速改變時，<b>舊請求晚回來一樣會蓋掉新資料</b>，元件卸載後也還會 setState。要再加 <code>ignore</code> 旗標或 <code>AbortController</code>（見下方解法，以及「useEffect 請求競態與 AbortController」案例）。</li>
+<li>原筆記說 <code>.then()</code>「兼容舊瀏覽器」。<span class="bad">這不是理由</span>：<code>async/await</code> 會由 Babel / TypeScript 依目標瀏覽器轉譯，現代專案不必為此改用 <code>.then()</code>。兩種寫法都只是處理 Promise 的語法，<b>競態問題一樣存在</b>，選哪個看可讀性即可。</li>
+</ul></div>
+
+<h2><span class="badge good">名詞</span> 先看懂這幾個詞</h2>
+<div class="term"><b class="name">async 函式</b><br>前面加 <code>async</code> 的函式，<b>呼叫後立刻回傳一個 Promise</b>，裡面的 <code>await</code> 只是「暫停這個函式」，不會讓呼叫它的人等。所以 React 呼叫 effect 後馬上拿到的是 Promise。</div>
+<div class="term"><b class="name">清理函式（cleanup）</b><br>effect 回傳的函式。<b>下一次 effect 執行前、或元件卸載時</b>，React 會先呼叫它。用來取消訂閱、清 timer、忽略過期的請求。</div>
+<div class="term"><b class="name">競態（race condition）</b><br>結果取決於「誰先完成」，而順序不可控。例如 userId 1 → 2，請求 1 比請求 2 慢回來，畫面最後顯示 1 的資料。</div>
+<div class="term"><b class="name">IIFE（立即執行函式）</b><br>定義完馬上呼叫的函式：<code>(async () =&gt; { … })()</code>。效果和「先命名再呼叫」一樣，只是少一個名字。</div>
+
+<h2><span class="badge good">解法</span> effect 保持同步，async 放裡面，清理時標記過期</h2>
+<p><span class="good">effect 本身不加 async，回傳清理函式；清理時把 <code>ignore</code> 設成 true，過期的結果就不寫入</span>。</p>
+<pre>useEffect(() =&gt; {                          <span class="c">// effect 本身是同步函式</span>
+  <span class="g">let ignore = false</span>                       <span class="c">// 這一輪 effect 專屬的旗標</span>
+
+  <span class="g">async function load()</span> {                  <span class="c">// async 放在裡面，await 照常用</span>
+    const data = await fetchUser(userId)
+    <span class="g">if (!ignore)</span> setUser(data)            <span class="c">// 已過期（userId 變了 / 卸載）就不寫入</span>
+  }
+  load()                                   <span class="c">// 呼叫它；回傳的 Promise 不交給 React</span>
+
+  return () =&gt; { <span class="g">ignore = true</span> }          <span class="c">// 下一輪開始前 / 卸載時，標記這輪過期</span>
+}, [userId])</pre>
+<p>能取消的請求（<code>fetch</code>）更好的做法是用 <code>AbortController</code>，直接把舊請求中止，連網路都省掉；細節見「useEffect 請求競態與 AbortController」案例。</p>
+
+<h2><span class="badge good">判斷</span> </h2>
+<table><thead><tr><th>寫法</th><th>結果</th></tr></thead><tbody>
+<tr><td><code>useEffect(async () =&gt; …)</code></td><td><span class="bad">不要</span>：回傳 Promise，清理失效</td></tr>
+<tr><td>effect 內定義 async 函式 / IIFE / <code>.then()</code>，<b>沒有</b>清理</td><td>回傳值正確，但<span class="bad">仍有競態</span></td></tr>
+<tr><td>同上 + <code>ignore</code> 旗標</td><td><span class="good">正確</span>，適合任何 Promise</td></tr>
+<tr><td>同上 + <code>AbortController</code></td><td><span class="good">正確且會中止請求</span>，適合 <code>fetch</code> / axios</td></tr>
+<tr><td>需要快取、重試、去重</td><td>改用資料請求庫（React Query / SWR / RTK Query）</td></tr>
+</tbody></table>
+<div class="box bad-box"><span class="key">注意：</span>
+<ul>
+<li><code>ignore</code> 旗標只是「不寫入結果」，<b>請求本身還是會跑完</b>；要省網路就用 AbortController。</li>
+<li>開發模式的 StrictMode 會刻意執行 effect → 清理 → 再執行，第一輪的結果被忽略是正常的。</li>
+</ul></div>
+
+</main>
+
+</body>
+</html>

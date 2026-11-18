@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>React 優化案例：連續 setCount(count + 1) 只加 1</title>
+<style>
+  :root {
+    --bg: #ffffff; --panel: #f5f6fa; --text: #1f2430; --muted: #6b7280; --border: #dfe3ec;
+    --bad: #d62f35; --bad-bg: rgba(229, 72, 77, .14);
+    --good: #12875a; --good-bg: rgba(31, 157, 99, .15);
+    --key: #8a5a00; --key-bg: rgba(255, 196, 0, .30);
+    --code-bg: #14161d; --code-text: #e6e9f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171e; --panel: #1e212b; --text: #e6e9f2; --muted: #9aa3b5; --border: #313646;
+      --bad: #ff7b80; --bad-bg: rgba(255, 107, 112, .18);
+      --good: #4cc38a; --good-bg: rgba(76, 195, 138, .18);
+      --key: #ffd666; --key-bg: rgba(255, 196, 0, .20);
+      --code-bg: #0e1015;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 56px; background: var(--bg); color: var(--text);
+    font: 15px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+  }
+  main { max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 24px; line-height: 1.3; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 30px 0 8px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; }
+  .badge.bad { background: var(--bad-bg); color: var(--bad); }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+  p { margin: 6px 0; }
+  .sub { color: var(--muted); margin: 0 0 6px; }
+  .bad  { color: var(--bad);  background: var(--bad-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .good { color: var(--good); background: var(--good-bg); padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .key  { color: var(--key);  background: var(--key-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .box { border: 1px solid var(--border); border-left-width: 4px; border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .box.bad-box { border-left-color: var(--bad); }
+  .box.good-box { border-left-color: var(--good); }
+  ol, ul { margin: 4px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92em; }
+  :not(pre) > code { background: var(--panel); border: 1px solid var(--border); padding: 0 5px; border-radius: 4px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text); border-radius: 10px;
+    padding: 12px 16px; overflow-x: auto; margin: 8px 0; font-size: 13px; line-height: 1.6;
+  }
+  pre .c { color: #7f8aa3; }
+  pre .r { color: #ff8a8f; font-weight: 700; }
+  pre .g { color: #7ee2a8; font-weight: 700; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; font-size: 13px; }
+  .flow span { padding: 4px 10px; border-radius: 6px; background: var(--bad-bg); color: var(--bad); font-weight: 600; }
+  .flow i { color: var(--muted); font-style: normal; }
+  .term { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .term b.name { color: var(--key); }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 10px 0; }
+  .steps li { counter-increment: s; position: relative; padding: 6px 0 6px 38px; margin: 0; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 6px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--good-bg); color: var(--good); font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .viewport { display: grid; grid-template-columns: 150px 1fr; gap: 14px; margin: 12px 0; align-items: stretch; }
+  .viewport .screen { border: 2px solid var(--good); border-radius: 8px; background: var(--bg); overflow: hidden; position: relative; min-height: 170px; }
+  .viewport .rowx { height: 22px; border-bottom: 1px solid var(--border); font-size: 11px; padding: 2px 8px; color: var(--muted); }
+  .viewport .rowx.off { opacity: .35; border-bottom-style: dashed; }
+  .viewport .sentinel { position: absolute; left: 0; right: 0; bottom: 20px; height: 22px; background: var(--key-bg); color: var(--key); font-size: 11px; font-weight: 700; text-align: center; line-height: 22px; border-top: 1px dashed var(--key); border-bottom: 1px dashed var(--key); }
+  .viewport .legend { font-size: 13px; }
+  .viewport .legend div { margin: 4px 0; }
+  @media (max-width: 560px) { .viewport { grid-template-columns: 1fr; } }
+  td, th { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+  th { background: var(--panel); }
+  .demo { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin: 12px 0; }
+  .demo button { font: inherit; font-size: 13px; padding: 5px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; margin-right: 6px; }
+  .demo button.primary { background: var(--good); border-color: var(--good); color: #fff; }
+  .demo button:disabled { opacity: .5; cursor: default; }
+  .counters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+  .counter { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; }
+  .counter .n { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .counter .l { font-size: 12px; color: var(--muted); }
+  .counter.bad .n { color: var(--bad); }
+  .counter.good .n { color: var(--good); }
+  .counter.key .n { color: var(--key); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>React 優化案例：連續 setCount(count + 1) 只加 1</h1>
+<p class="sub">連按一次呼叫三次 setCount(count + 1)，結果只 +1 · 結論：<span class="key">要依「上一個值」更新，就傳函式 setCount(c =&gt; c + 1)</span></p>
+
+<h2><span class="badge bad">原因</span> </h2>
+<div class="flow"><span>這次 render 的 count 固定是 0（快照）</span><i>→</i><span>三次都算 0 + 1</span><i>→</i><span>三次都是「設成 1」</span><i>→</i><span>React 批次處理後 count = 1</span></div>
+<pre>const [count, setCount] = useState(0)
+
+function handleClick() {
+  setCount(<span class="r">count + 1</span>)    <span class="c">// count 是這次 render 的快照：0 → 設成 1</span>
+  setCount(<span class="r">count + 1</span>)    <span class="c">// count 還是 0 → 再設成 1</span>
+  setCount(<span class="r">count + 1</span>)    <span class="c">// count 還是 0 → 又設成 1</span>
+  console.log(<span class="r">count</span>)     <span class="c">// 印出 0：這個函式裡的 count 永遠不會變</span>
+}
+<span class="c">// 下一次 render：count = 1，不是 3</span></pre>
+<div class="box bad-box"><ol>
+<li><span class="bad">state 是快照</span>：每次 render 拿到的 <code>count</code> 是一個固定的值，呼叫 <code>setCount</code> 不會改掉這個變數，只是「排一個更新、要求重新 render」。</li>
+<li><span class="bad">三次都用同一個舊值算</span>：<code>count + 1</code> 三次都是 <code>0 + 1</code>，等於連說三次「設成 1」。</li>
+<li><span class="bad">批次處理（batching）</span>：React 把同一個事件裡的更新收集起來，事件結束後只 render 一次。就算沒有批次，快照仍然是 0，結果一樣是 1。</li>
+</ol></div>
+<div class="box bad-box"><span class="key">更正原筆記：</span>
+<ul>
+<li>原筆記只說「setState 是異步的」。更準確的說法是：<span class="key">更新會排隊到之後才 render，而這次 render 的 state 是快照、不會變</span>。它不是 Promise，<code>await setCount(...)</code> 也拿不到新值。</li>
+<li>原筆記建議「要在 state 更新後執行某些操作，用 <code>useEffect</code> 監聽」。這通常是<span class="bad">多繞一圈</span>：多一次 render、邏輯被拆散。<span class="good">直接先算出新值，再拿新值去用</span>（見下方解法 2）。<code>useEffect</code> 只留給「和外部系統同步」的情況。</li>
+<li>原筆記範例 <code>useState(0);s</code> 多了一個 <code>s</code>，是語法錯誤。</li>
+</ul></div>
+
+<h2><span class="badge good">名詞</span> 先看懂這幾個詞</h2>
+<div class="term"><b class="name">快照（snapshot）</b><br>每次 render，元件函式重新執行一次，拿到「這一輪」的 state。這輪裡的 <code>count</code> 就是一個普通的 <code>const</code>，從頭到尾不會變。<br>比喻：像拍照，照片拍下的是當下的樣子，之後現場怎麼變，照片都不會跟著變。</div>
+<div class="term"><b class="name">更新佇列（queue）</b><br>呼叫 <code>setCount(x)</code> 時，React 先把「要改成 x」記在佇列裡，等事件處理完，再依序套用佇列裡的每一筆，算出下一輪的 state。</div>
+<div class="term"><b class="name">批次處理（batching）</b><br>同一個事件裡的多次 setState 合併成<b>一次</b> render，避免中間狀態被畫出來、也省掉多餘的 render。React 18 起，<code>setTimeout</code>、Promise 裡的更新也會自動批次。</div>
+<div class="term"><b class="name">更新函式（updater function）</b><br>傳給 setter 的函式，例如 <code>c =&gt; c + 1</code>。React 套用佇列時，會把<span class="key">「前一筆更新後的值」</span>當參數傳進去，所以可以一筆接著一筆累加。</div>
+
+<h2><span class="badge good">解法 1</span> 依前一個值更新 → 用更新函式</h2>
+<p><span class="good">每一次都拿「佇列中最新的值」來算</span>，三次就是 0 → 1 → 2 → 3。</p>
+<pre>function handleClick() {
+  setCount(<span class="g">c =&gt; c + 1</span>)   <span class="c">// 佇列：0 → 1</span>
+  setCount(<span class="g">c =&gt; c + 1</span>)   <span class="c">// 拿上一筆的結果：1 → 2</span>
+  setCount(<span class="g">c =&gt; c + 1</span>)   <span class="c">// 2 → 3</span>
+}
+<span class="c">// 下一次 render：count = 3</span></pre>
+
+<h2><span class="badge good">解法 2</span> 更新後還要用到新值 → 先算好再用</h2>
+<p>不要等 state 變了再用 <code>useEffect</code> 去接，<span class="good">在事件裡先算出新值，存成變數</span>，設定和後續邏輯都用它。</p>
+<pre>function handleClick() {
+  const next = <span class="g">count + 1</span>        <span class="c">// 自己算出下一個值</span>
+  setCount(next)                  <span class="c">// 排入更新</span>
+  console.log(<span class="g">next</span>)               <span class="c">// 立刻拿得到新值，不必等 render</span>
+  if (next &gt;= 10) alert('到上限了') <span class="c">// 後續邏輯也用 next，不必另寫 useEffect</span>
+}</pre>
+
+<h2><span class="badge good">互動示範</span> 用原生 JS 模擬佇列（類比，不是真的 React）</h2>
+<div class="demo">
+  <button id="btnValue">setCount(count + 1) ×3</button>
+  <button id="btnFn" class="primary">setCount(c =&gt; c + 1) ×3</button>
+  <button id="btnReset">重設</button>
+  <div class="counters">
+    <div class="counter key"><div class="n" id="nCount">0</div><div class="l">count（render 後）</div></div>
+  </div>
+  <p class="sub" id="log">點按鈕看佇列怎麼被套用。</p>
+</div>
+
+<h2><span class="badge good">判斷</span> </h2>
+<table><thead><tr><th>情況</th><th>寫法</th></tr></thead><tbody>
+<tr><td>新值跟舊值無關（例如 <code>setName(input)</code>）</td><td>直接傳值</td></tr>
+<tr><td>新值由舊值算出，且同一事件可能更新多次、或在 callback / timer 裡更新</td><td><span class="good">更新函式 <code>c =&gt; c + 1</code></span></td></tr>
+<tr><td>更新後馬上要用到新值</td><td><span class="good">先算出 <code>next</code> 再用</span>；<span class="bad">不要</span>為此加 <code>useEffect</code></td></tr>
+<tr><td>想在 setState 後立刻讀 <code>count</code></td><td><span class="bad">讀不到</span>，這輪的 <code>count</code> 是舊快照</td></tr>
+</tbody></table>
+<div class="box bad-box"><span class="key">注意：</span>
+<ul>
+<li>更新函式必須是<b>純函式</b>（只根據參數回傳新值、不做副作用）。開發模式的 StrictMode 會刻意呼叫兩次來檢查。</li>
+<li>物件 / 陣列 state 一樣要回傳<b>新的</b>物件：<code>setUser(u =&gt; ({ ...u, age: u.age + 1 }))</code>，不要直接改 <code>u</code>。</li>
+</ul></div>
+
+</main>
+<script>
+(function () {
+  var count = 0;
+  var nCount = document.getElementById('nCount');
+  var log = document.getElementById('log');
+  // 模擬一次 render：依序套用佇列，回傳新 state
+  function render(queue) {
+    var next = count;
+    var steps = [];
+    queue.forEach(function (u) {
+      next = typeof u === 'function' ? u(next) : u;
+      steps.push(next);
+    });
+    count = next;
+    nCount.textContent = String(count);
+    return steps;
+  }
+  document.getElementById('btnValue').addEventListener('click', function () {
+    var snapshot = count; // 這輪 render 的快照
+    var queue = [snapshot + 1, snapshot + 1, snapshot + 1]; // 三次都用同一個快照算
+    var steps = render(queue);
+    log.textContent = '快照 count = ' + snapshot + '，佇列：設成 ' + queue.join('、設成 ') + ' → 結果 ' + steps[steps.length - 1];
+  });
+  document.getElementById('btnFn').addEventListener('click', function () {
+    var before = count;
+    var inc = function (c) { return c + 1; };
+    var steps = render([inc, inc, inc]); // 每個函式拿到前一筆的結果
+    log.textContent = '從 ' + before + ' 開始，佇列：' + steps.join(' → ') + ' → 結果 ' + steps[steps.length - 1];
+  });
+  document.getElementById('btnReset').addEventListener('click', function () {
+    count = 0;
+    nCount.textContent = '0';
+    log.textContent = '已重設。';
+  });
+})();
+</script>
+</body>
+</html>

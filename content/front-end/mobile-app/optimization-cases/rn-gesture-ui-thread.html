@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>React Native 優化案例：JS 執行緒忙碌時，手勢與動畫卡頓</title>
+<style>
+  :root {
+    --bg: #ffffff; --panel: #f5f6fa; --text: #1f2430; --muted: #6b7280; --border: #dfe3ec;
+    --bad: #d62f35; --bad-bg: rgba(229, 72, 77, .14);
+    --good: #12875a; --good-bg: rgba(31, 157, 99, .15);
+    --key: #8a5a00; --key-bg: rgba(255, 196, 0, .30);
+    --code-bg: #14161d; --code-text: #e6e9f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171e; --panel: #1e212b; --text: #e6e9f2; --muted: #9aa3b5; --border: #313646;
+      --bad: #ff7b80; --bad-bg: rgba(255, 107, 112, .18);
+      --good: #4cc38a; --good-bg: rgba(76, 195, 138, .18);
+      --key: #ffd666; --key-bg: rgba(255, 196, 0, .20);
+      --code-bg: #0e1015;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 56px; background: var(--bg); color: var(--text);
+    font: 15px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+  }
+  main { max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 24px; line-height: 1.3; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 30px 0 8px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; }
+  .badge.bad { background: var(--bad-bg); color: var(--bad); }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+  p { margin: 6px 0; }
+  .sub { color: var(--muted); margin: 0 0 6px; }
+  .bad  { color: var(--bad);  background: var(--bad-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .good { color: var(--good); background: var(--good-bg); padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .key  { color: var(--key);  background: var(--key-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .box { border: 1px solid var(--border); border-left-width: 4px; border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .box.bad-box { border-left-color: var(--bad); }
+  .box.good-box { border-left-color: var(--good); }
+  ol, ul { margin: 4px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92em; }
+  :not(pre) > code { background: var(--panel); border: 1px solid var(--border); padding: 0 5px; border-radius: 4px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text); border-radius: 10px;
+    padding: 12px 16px; overflow-x: auto; margin: 8px 0; font-size: 13px; line-height: 1.6;
+  }
+  pre .c { color: #7f8aa3; }
+  pre .r { color: #ff8a8f; font-weight: 700; }
+  pre .g { color: #7ee2a8; font-weight: 700; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; font-size: 13px; }
+  .flow span { padding: 4px 10px; border-radius: 6px; background: var(--bad-bg); color: var(--bad); font-weight: 600; }
+  .flow i { color: var(--muted); font-style: normal; }
+  .term { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .term b.name { color: var(--key); }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 10px 0; }
+  .steps li { counter-increment: s; position: relative; padding: 6px 0 6px 38px; margin: 0; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 6px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--good-bg); color: var(--good); font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .viewport { display: grid; grid-template-columns: 150px 1fr; gap: 14px; margin: 12px 0; align-items: stretch; }
+  .viewport .screen { border: 2px solid var(--good); border-radius: 8px; background: var(--bg); overflow: hidden; position: relative; min-height: 170px; }
+  .viewport .rowx { height: 22px; border-bottom: 1px solid var(--border); font-size: 11px; padding: 2px 8px; color: var(--muted); }
+  .viewport .rowx.off { opacity: .35; border-bottom-style: dashed; }
+  .viewport .sentinel { position: absolute; left: 0; right: 0; bottom: 20px; height: 22px; background: var(--key-bg); color: var(--key); font-size: 11px; font-weight: 700; text-align: center; line-height: 22px; border-top: 1px dashed var(--key); border-bottom: 1px dashed var(--key); }
+  .viewport .legend { font-size: 13px; }
+  .viewport .legend div { margin: 4px 0; }
+  @media (max-width: 560px) { .viewport { grid-template-columns: 1fr; } }
+  td, th { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+  th { background: var(--panel); }
+  .demo { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin: 12px 0; }
+  .demo button { font: inherit; font-size: 13px; padding: 5px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; margin-right: 6px; }
+  .demo button.primary { background: var(--good); border-color: var(--good); color: #fff; }
+  .demo button:disabled { opacity: .5; cursor: default; }
+  .counters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+  .counter { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; }
+  .counter .n { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .counter .l { font-size: 12px; color: var(--muted); }
+  .counter.bad .n { color: var(--bad); }
+  .counter.good .n { color: var(--good); }
+  .counter.key .n { color: var(--key); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>React Native 優化案例：JS 執行緒忙碌時，手勢與動畫卡頓</h1>
+<p class="sub">資料載入或大量運算時，拖曳跟不上手指、動畫掉幀 · 結論：<span class="key">把手勢與動畫放到 UI 執行緒跑（Gesture Handler + Reanimated worklet），不要每一幀都經過 JS 執行緒</span></p>
+
+<h2><span class="badge bad">原因</span></h2>
+<div class="flow"><span>手指移動（UI 執行緒收到觸控）</span><i>→</i><span>事件交給 JS 執行緒處理</span><i>→</i><span>JS 正忙，事件排隊</span><i>→</i><span>算出新位置再交回 UI</span><i>→</i><span>晚了好幾幀 / 掉幀</span></div>
+<pre><span class="c">// 原本：用 PanResponder + setState 拖曳</span>
+const [x, setX] = useState(0)
+const pan = PanResponder.create({
+  onMoveShouldSetPanResponder: () =&gt; true,
+  onPanResponderMove: (_, g) =&gt; <span class="r">setX(g.dx)</span>,     <span class="c">// 每次移動：JS 處理事件 + 重新渲染元件</span>
+})
+return &lt;View {...pan.panHandlers} style={{ transform: [{ translateX: <span class="r">x</span> }] }} /&gt;</pre>
+<div class="box bad-box"><ol>
+<li>PanResponder 與 <code>onTouch*</code> 的處理函式都<span class="bad">在 JS 執行緒執行</span>：觸控從 UI 執行緒進來，要等 JS 有空才處理。</li>
+<li>JS 是<b>單執行緒</b>：列表渲染、JSON 解析、業務邏輯、網路回應處理都和手勢<span class="bad">搶同一條線</span>，任何長任務都會讓手勢停住。</li>
+<li>每次移動都 <code>setState</code> → React 重新渲染 → 把變更送到原生端，<span class="bad">一幀要做的事太多</span>，在 60 / 120Hz 螢幕上很難每幀都趕上。</li>
+</ol></div>
+<div class="box bad-box"><span class="key">更正原筆記：</span><ol>
+<li>原筆記用「JSON 序列化 → 透過 Bridge 非同步傳送 → 原生端反序列化」說明 JS 與 UI 的溝通成本，這是<b>舊架構（Bridge）</b>的描述。React Native <b>0.76 起預設啟用新架構</b>：JS 透過 <b>JSI</b> 直接呼叫 C++，不再經過 JSON 序列化；渲染改由 <b>Fabric</b> 處理，Shadow Tree 與 Yoga 版面計算由 C++ 端負責，也可以同步呼叫。</li>
+<li>但<b>新架構沒有解決這個問題</b>：少了序列化成本，<span class="key">由 JS 驅動的手勢與動畫仍然要 JS 執行緒每一幀都有空去跑程式</span>。JS 被長任務卡住時，下一幀的位置就算不出來，照樣卡頓。這正是要把程式移到 UI 執行緒（worklet）的原因。</li>
+</ol></div>
+
+<h2><span class="badge good">名詞</span> 先看懂這幾個詞</h2>
+<div class="term"><b class="name">JS 執行緒 / UI 執行緒</b><br><b>JS 執行緒</b>跑你寫的 React 元件、狀態、業務邏輯，一次只能做一件事。<b>UI 執行緒</b>（主執行緒）負責接收觸控、繪製原生畫面。比喻：UI 執行緒是櫃台，JS 執行緒是後面唯一的廚師；客人每個動作都要問廚師，廚師在忙，櫃台就只能讓客人等。</div>
+<div class="term"><b class="name">Bridge / JSI / Fabric</b><br><b>Bridge</b>：舊架構，JS 與原生之間用序列化訊息非同步溝通。<b>JSI</b>：新架構，JS 可直接持有並呼叫 C++ 物件。<b>Fabric</b>：新架構的渲染器。這些改善了「溝通」，但<b>沒有讓 JS 執行緒變成多執行緒</b>。</div>
+<div class="term"><b class="name">react-native-gesture-handler（RNGH）</b><br>用原生的手勢辨識系統處理觸控，支援拖曳、縮放、旋轉、手勢優先順序與同時辨識。<b>手勢辨識本身在 UI 執行緒</b>，配合 Reanimated 時，回呼也能在 UI 執行緒執行。</div>
+<div class="term"><b class="name">worklet</b><br>可以被搬到 <b>UI 執行緒</b>執行的小段 JS 函式（Reanimated 用 Babel 外掛處理）。在 worklet 裡更新動畫值，<b>完全不經過 JS 執行緒</b>，所以 JS 再忙，拖曳仍然跟手。</div>
+<div class="term"><b class="name">useSharedValue / useAnimatedStyle</b><br><b>shared value</b>：兩個執行緒都能讀寫的值，改它的 <code>.value</code> 不會觸發 React 重新渲染。<b>useAnimatedStyle</b>：在 UI 執行緒根據 shared value 算出樣式，值一變就直接更新畫面。</div>
+<div class="term"><b class="name">runOnJS</b><br>worklet 裡要呼叫一般 JS 函式（例如 <code>setState</code>、送 API）時，必須用 <code>runOnJS(fn)(args)</code> 把它排回 JS 執行緒。較新版本的 worklets 套件提供新名稱（<code>scheduleOnRN</code>），請依你使用的版本查文件。</div>
+
+<h2><span class="badge good">解法</span> Gesture Handler + Reanimated：整段在 UI 執行緒</h2>
+<p>手勢回呼與動畫樣式都是 worklet，<span class="good">每一幀都在 UI 執行緒完成</span>，只在結束時通知 JS 一次。</p>
+<pre>import { Gesture, GestureDetector } from 'react-native-gesture-handler'
+import Animated, { useSharedValue, useAnimatedStyle, withSpring, runOnJS } from 'react-native-reanimated'
+
+function Draggable({ onDrop }) {
+  const x = <span class="g">useSharedValue(0)</span>                       <span class="c">// 不是 state：改它不會 re-render</span>
+  const startX = useSharedValue(0)
+
+  const pan = Gesture.Pan()
+    .onStart(() =&gt; { startX.value = x.value })        <span class="c">// 記下起點，下次拖曳從目前位置接著拖</span>
+    .onUpdate((e) =&gt; {
+      <span class="g">x.value = startX.value + e.translationX</span>        <span class="c">// worklet：在 UI 執行緒更新，不經過 JS</span>
+    })
+    .onEnd(() =&gt; {
+      x.value = withSpring(0)                         <span class="c">// 回彈動畫也在 UI 執行緒跑</span>
+      <span class="g">runOnJS(onDrop)()</span>                               <span class="c">// 只有「放開」這一次需要回到 JS</span>
+    })
+
+  const style = <span class="g">useAnimatedStyle(() =&gt; ({
+    transform: [{ translateX: x.value }],</span>            <span class="c">// UI 執行緒讀 shared value 直接套樣式</span>
+  <span class="g">}))</span>
+
+  return (
+    &lt;GestureDetector gesture={pan}&gt;
+      &lt;Animated.View style={[{ width: 80, height: 80, backgroundColor: 'tomato' }, style]} /&gt;
+    &lt;/GestureDetector&gt;
+  )
+}
+
+<span class="c">// App 最外層要包 GestureHandlerRootView，手勢才會生效</span>
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
+export default function App() {
+  return &lt;<span class="g">GestureHandlerRootView</span> style={{ flex: 1 }}&gt;&lt;Draggable onDrop={() =&gt; {}} /&gt;&lt;/GestureHandlerRootView&gt;
+}</pre>
+<p class="sub">安裝 Reanimated 後，RNGH 的手勢回呼會自動當成 worklet 在 UI 執行緒執行；若某個手勢要在 JS 執行，可加 <code>.runOnJS(true)</code>。Babel 外掛的設定依 Reanimated 版本而不同，請照官方安裝說明。</p>
+
+<h2><span class="badge good">怎麼確認</span></h2>
+<ol class="steps">
+<li>開啟開發選單的 <b>Perf Monitor</b>，會分別顯示 <b>UI</b> 與 <b>JS</b> 的 FPS。</li>
+<li>拖曳時故意讓 JS 忙（例如觸發大量資料處理），觀察：原本寫法拖曳會停住；worklet 寫法 JS FPS 掉了，<span class="good">UI FPS 和拖曳仍然順</span>。</li>
+<li>效果依裝置與負載而異，要在實機（最好是低階 Android）上量，模擬器與開發模式的數字不準。</li>
+</ol>
+
+<h2><span class="badge good">判斷</span> 該用哪個</h2>
+<table>
+<thead><tr><th>情境</th><th>做法</th></tr></thead>
+<tbody>
+<tr><td>拖曳、滑動卡片、縮放、底部抽屜等「跟手」互動</td><td><span class="good">RNGH + Reanimated worklet</span></td></tr>
+<tr><td>只是播放固定的淡入、位移動畫</td><td>Reanimated，或 <code>Animated</code> 加 <code>useNativeDriver: true</code>（只支援 transform / opacity 等非版面屬性）</td></tr>
+<tr><td>捲動連動效果（header 收合、視差）</td><td><span class="good">useAnimatedScrollHandler</span></td></tr>
+<tr><td>手勢結束後要更新資料、導頁</td><td>在 <code>onEnd</code> 用 <span class="good">runOnJS</span> 呼叫一次</td></tr>
+<tr><td>在 move 回呼裡每次 setState</td><td><span class="bad">不要</span></td></tr>
+</tbody></table>
+
+<h2><span class="badge bad">取捨</span></h2>
+<div class="box bad-box"><ul>
+<li>worklet <span class="bad">不能直接呼叫一般 JS 函式</span>或使用大部分第三方函式庫，要透過 <code>runOnJS</code>；捕捉到的外部變數是複製過去的，之後在 JS 改它 worklet 看不到。</li>
+<li>worklet 跑在 UI 執行緒：在裡面做重運算，<span class="bad">卡住的就換成 UI 執行緒</span>（整個畫面都卡），worklet 裡只放算位置這類輕量邏輯。</li>
+<li>不要在 render 裡讀 <code>sharedValue.value</code> 來決定 JSX，它不會觸發重新渲染，畫面不會跟著變。</li>
+<li>多兩個原生相依套件、需要設定 Babel 外掛，除錯也比一般 JS 麻煩。</li>
+<li>這不會讓 JS 執行緒變快：JS 長任務本身（例如大量資料處理）仍要另外優化或分批。</li>
+</ul></div>
+
+</main>
+
+</body>
+</html>

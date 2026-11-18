@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Go 優化案例：Goroutine 洩漏 → 用 context 取消</title>
+<style>
+  :root {
+    --bg: #ffffff; --panel: #f5f6fa; --text: #1f2430; --muted: #6b7280; --border: #dfe3ec;
+    --bad: #d62f35; --bad-bg: rgba(229, 72, 77, .14);
+    --good: #12875a; --good-bg: rgba(31, 157, 99, .15);
+    --key: #8a5a00; --key-bg: rgba(255, 196, 0, .30);
+    --code-bg: #14161d; --code-text: #e6e9f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171e; --panel: #1e212b; --text: #e6e9f2; --muted: #9aa3b5; --border: #313646;
+      --bad: #ff7b80; --bad-bg: rgba(255, 107, 112, .18);
+      --good: #4cc38a; --good-bg: rgba(76, 195, 138, .18);
+      --key: #ffd666; --key-bg: rgba(255, 196, 0, .20);
+      --code-bg: #0e1015;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 56px; background: var(--bg); color: var(--text);
+    font: 15px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+  }
+  main { max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 24px; line-height: 1.3; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 30px 0 8px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; }
+  .badge.bad { background: var(--bad-bg); color: var(--bad); }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+  p { margin: 6px 0; }
+  .sub { color: var(--muted); margin: 0 0 6px; }
+  .bad  { color: var(--bad);  background: var(--bad-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .good { color: var(--good); background: var(--good-bg); padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .key  { color: var(--key);  background: var(--key-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .box { border: 1px solid var(--border); border-left-width: 4px; border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .box.bad-box { border-left-color: var(--bad); }
+  .box.good-box { border-left-color: var(--good); }
+  ol, ul { margin: 4px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92em; }
+  :not(pre) > code { background: var(--panel); border: 1px solid var(--border); padding: 0 5px; border-radius: 4px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text); border-radius: 10px;
+    padding: 12px 16px; overflow-x: auto; margin: 8px 0; font-size: 13px; line-height: 1.6;
+  }
+  pre .c { color: #7f8aa3; }
+  pre .r { color: #ff8a8f; font-weight: 700; }
+  pre .g { color: #7ee2a8; font-weight: 700; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; font-size: 13px; }
+  .flow span { padding: 4px 10px; border-radius: 6px; background: var(--bad-bg); color: var(--bad); font-weight: 600; }
+  .flow i { color: var(--muted); font-style: normal; }
+  .term { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .term b.name { color: var(--key); }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 10px 0; }
+  .steps li { counter-increment: s; position: relative; padding: 6px 0 6px 38px; margin: 0; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 6px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--good-bg); color: var(--good); font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .viewport { display: grid; grid-template-columns: 150px 1fr; gap: 14px; margin: 12px 0; align-items: stretch; }
+  .viewport .screen { border: 2px solid var(--good); border-radius: 8px; background: var(--bg); overflow: hidden; position: relative; min-height: 170px; }
+  .viewport .rowx { height: 22px; border-bottom: 1px solid var(--border); font-size: 11px; padding: 2px 8px; color: var(--muted); }
+  .viewport .rowx.off { opacity: .35; border-bottom-style: dashed; }
+  .viewport .sentinel { position: absolute; left: 0; right: 0; bottom: 20px; height: 22px; background: var(--key-bg); color: var(--key); font-size: 11px; font-weight: 700; text-align: center; line-height: 22px; border-top: 1px dashed var(--key); border-bottom: 1px dashed var(--key); }
+  .viewport .legend { font-size: 13px; }
+  .viewport .legend div { margin: 4px 0; }
+  @media (max-width: 560px) { .viewport { grid-template-columns: 1fr; } }
+  td, th { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+  th { background: var(--panel); }
+  .demo { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin: 12px 0; }
+  .demo button { font: inherit; font-size: 13px; padding: 5px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; margin-right: 6px; }
+  .demo button.primary { background: var(--good); border-color: var(--good); color: #fff; }
+  .demo button:disabled { opacity: .5; cursor: default; }
+  .counters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+  .counter { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; }
+  .counter .n { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .counter .l { font-size: 12px; color: var(--muted); }
+  .counter.bad .n { color: var(--bad); }
+  .counter.good .n { color: var(--good); }
+  .counter.key .n { color: var(--key); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>Go 優化案例：Goroutine 洩漏 → 用 context 取消</h1>
+<p class="sub">啟動的 goroutine 永遠不會結束，數量越積越多 · 結論：<span class="key">每個 goroutine 都要有「什麼時候停」的訊號，並在 select 裡監聽它</span></p>
+
+<h2><span class="badge bad">原因</span></h2>
+<div class="flow"><span>go func() { for { … } }()</span><i>→</i><span>迴圈裡沒有任何結束條件</span><i>→</i><span>呼叫端不需要它了也停不下來</span><i>→</i><span>goroutine 越積越多（洩漏）</span></div>
+
+<p>原本的寫法：每次請求都啟動一個輪詢 goroutine，但從來沒有關掉它。</p>
+<pre>func startPolling() {
+    go func() {
+        <span class="r">for {</span>                              <span class="c">// 沒有退出條件</span>
+            fmt.Println("polling...")
+            time.Sleep(500 * time.Millisecond)
+        }
+    }()
+}
+
+func handleRequest() {
+    startPolling() <span class="c">// <span class="r">請求結束了，goroutine 還在跑；呼叫 1000 次就留下 1000 個</span></span>
+}</pre>
+
+<div class="box bad-box"><ol>
+<li>Go <span class="bad">沒有辦法從外部「殺掉」一個 goroutine</span>，它只能自己 return。</li>
+<li>迴圈裡<span class="bad">沒有檢查任何停止訊號</span>，所以它會一直跑到整個程式結束。</li>
+<li>每個 goroutine 都佔記憶體（堆疊至少數 KB），還抓著它引用到的變數，<span class="bad">GC 也收不回來</span>。</li>
+<li>另一種常見洩漏：goroutine <span class="bad">卡在送 / 收 channel</span>，對方已經不在了，它就永遠等下去。</li>
+</ol></div>
+
+<h2><span class="badge good">名詞</span> 先看懂這幾個詞</h2>
+<div class="term"><b class="name">goroutine 洩漏</b><br>不再需要、卻永遠不會結束的 goroutine。和記憶體洩漏一樣，單一個看不出問題，<b>累積起來就會吃光記憶體</b>。可以用 <code>runtime.NumGoroutine()</code> 或 pprof 的 goroutine profile 觀察數量是否一直上升。</div>
+<div class="term"><b class="name">context.Context</b><br>Go 標準的「取消訊號 + 期限」傳遞工具。呼叫端持有 <code>cancel</code>，被呼叫的 goroutine 監聽 <code>ctx.Done()</code>。父 context 取消時，所有從它衍生的子 context 也會一起取消。</div>
+<div class="term"><b class="name">ctx.Done()</b><br>回傳一個 channel，<b>context 被取消或逾時時，這個 channel 會被關閉</b>。關閉的 channel 可以被任何人立刻讀到，所以多個 goroutine 都能同時收到訊號。<code>ctx.Err()</code> 會告訴你原因：<code>context.Canceled</code> 或 <code>context.DeadlineExceeded</code>。</div>
+<div class="term"><b class="name">WithCancel / WithTimeout / WithDeadline</b>
+<ul><li><code>WithCancel(parent)</code>：手動呼叫 <code>cancel()</code> 才取消。</li>
+<li><code>WithTimeout(parent, 2*time.Second)</code>：過了一段時間自動取消。</li>
+<li><code>WithDeadline(parent, t)</code>：到了某個時間點自動取消（<code>WithTimeout</code> 就是 <code>WithDeadline(parent, time.Now().Add(d))</code>）。</li></ul>
+三者都回傳 <code>cancel</code>，<span class="key">就算會自動逾時，也要 <code>defer cancel()</code></span> 釋放計時器等資源。</div>
+<div class="term"><b class="name">select</b><br>同時等待多個 channel，<b>哪個先準備好就執行哪個</b>。沒有 <code>default</code> 時會阻塞等待（不吃 CPU）；有 <code>default</code> 時，所有 case 都沒準備好就立刻執行 default。</div>
+<div class="term"><b class="name">time.Ticker</b><br>每隔固定時間往 <code>ticker.C</code> 送一次訊號。用它取代迴圈裡的 <code>time.Sleep</code>，就能把「等下一輪」和「等取消」放進同一個 <code>select</code>。用完要 <code>ticker.Stop()</code>。</div>
+<div class="term"><b class="name">sync.WaitGroup</b><br>等一組 goroutine 全部結束：啟動前 <code>wg.Add(1)</code>，goroutine 結束時 <code>wg.Done()</code>，主程式 <code>wg.Wait()</code> 會阻塞到計數歸零。比「<code>time.Sleep</code> 一下希望它結束了」可靠。</div>
+
+<h2><span class="badge good">解法 1</span> context.WithCancel + select 監聽 ctx.Done()</h2>
+<p><span class="good">goroutine 在 select 裡同時等「下一輪」和「取消」，取消時立刻 return</span>：</p>
+<pre>package main
+
+import (
+    "context"
+    "fmt"
+    "sync"
+    "time"
+)
+
+func poll(<span class="g">ctx context.Context</span>, wg *sync.WaitGroup) {
+    defer wg.Done()                              <span class="c">// 不管怎麼離開，都通知 WaitGroup</span>
+    ticker := time.NewTicker(500 * time.Millisecond)
+    defer ticker.Stop()                          <span class="c">// 釋放 ticker</span>
+
+    for {
+        select {
+        <span class="g">case &lt;-ctx.Done():</span>                       <span class="c">// 取消訊號一到，馬上結束</span>
+            fmt.Println("poll stopped:", ctx.Err())
+            <span class="g">return</span>
+        case &lt;-ticker.C:                         <span class="c">// 沒取消時，每 500ms 做一次</span>
+            fmt.Println("polling...")
+        }
+    }
+}
+
+func main() {
+    <span class="g">ctx, cancel := context.WithCancel(context.Background())</span>
+    var wg sync.WaitGroup
+
+    wg.Add(1)                                    <span class="c">// 要在 go 之前 Add，避免 Wait 先跑完</span>
+    go poll(ctx, &amp;wg)
+
+    time.Sleep(2 * time.Second)                  <span class="c">// 模擬「呼叫端做了一陣子事」</span>
+    <span class="g">cancel()</span>                                     <span class="c">// 發出取消訊號</span>
+    <span class="g">wg.Wait()</span>                                    <span class="c">// 確實等到 goroutine 結束</span>
+    fmt.Println("main exits")
+}</pre>
+
+<h2><span class="badge good">解法 2</span> context.WithTimeout：時間到自動停</h2>
+<pre>func main() {
+    <span class="g">ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)</span>
+    <span class="g">defer cancel()</span>                               <span class="c">// 提早結束時也釋放資源</span>
+
+    var wg sync.WaitGroup
+    wg.Add(1)
+    go poll(ctx, &amp;wg)                            <span class="c">// 同一個 poll，2 秒後 ctx.Err() = DeadlineExceeded</span>
+    wg.Wait()
+    fmt.Println("main exits")
+}</pre>
+
+<h2><span class="badge good">解法 3</span> 不用 context：close(stop) 廣播停止</h2>
+<pre>func poll(<span class="g">stop &lt;-chan struct{}</span>, wg *sync.WaitGroup) {
+    defer wg.Done()
+    ticker := time.NewTicker(500 * time.Millisecond)
+    defer ticker.Stop()
+    for {
+        select {
+        <span class="g">case &lt;-stop:</span>                             <span class="c">// channel 被 close 後，這裡立刻可讀</span>
+            return
+        case &lt;-ticker.C:
+            fmt.Println("polling...")
+        }
+    }
+}
+
+<span class="c">// 呼叫端</span>
+stop := make(chan struct{})
+var wg sync.WaitGroup
+wg.Add(1)
+go poll(stop, &amp;wg)
+<span class="g">close(stop)</span>                                      <span class="c">// 用 close 而不是送值：所有監聽者都會收到</span>
+wg.Wait()</pre>
+
+<h2><span class="badge good">補充</span> 卡在 channel 的洩漏也要監聽取消</h2>
+<pre>func produce(ctx context.Context, out chan&lt;- int) {
+    for i := 0; ; i++ {
+        select {
+        case out &lt;- i:                           <span class="c">// 對方還在收：正常送出</span>
+        <span class="g">case &lt;-ctx.Done():</span>                       <span class="c">// 對方不收了：不要永遠卡在送出</span>
+            return
+        }
+    }
+}</pre>
+
+<h2><span class="badge good">判斷</span> 用哪一種</h2>
+<table>
+<thead><tr><th>情況</th><th>做法</th></tr></thead>
+<tbody>
+<tr><td>由呼叫端決定何時停（使用者離開、服務關閉）</td><td><span class="good">context.WithCancel</span></td></tr>
+<tr><td>限制最長執行時間（HTTP 請求、DB 查詢）</td><td><span class="good">context.WithTimeout</span></td></tr>
+<tr><td>要在某個固定時間點前結束</td><td><span class="good">context.WithDeadline</span></td></tr>
+<tr><td>程式內部的小工具、不需要往下傳期限</td><td><span class="good">close(stop)</span> + select</td></tr>
+<tr><td>HTTP handler 裡啟動的工作</td><td>直接用 <span class="good">r.Context()</span>，用戶端斷線時會自動取消</td></tr>
+<tr><td>等 goroutine 結束</td><td><span class="good">sync.WaitGroup</span>；<span class="bad">不要</span>用 <code>time.Sleep</code> 猜時間</td></tr>
+<tr><td><code>select</code> 裡放 <code>default:</code> + <code>time.Sleep</code> 輪詢</td><td><span class="bad">不要</span>，改成監聽 <code>ctx.Done()</code> + ticker / timer</td></tr>
+</tbody></table>
+
+<h2><span class="badge bad">取捨</span> 注意</h2>
+<div class="box bad-box"><ul>
+<li><span class="key">取消是「請求」不是「強制」</span>：goroutine 只有在檢查 <code>ctx.Done()</code> 時才會停。如果它正在做一個不看 ctx 的長時間運算 / 阻塞呼叫，要等那一步做完。所以底層函式也要接收並傳遞 <code>ctx</code>（例如 <code>http.NewRequestWithContext</code>、<code>db.QueryContext</code>）。</li>
+<li><code>ctx</code> 慣例放在函式第一個參數，<b>不要存進 struct 長期保存</b>。</li>
+<li>忘了呼叫 <code>cancel</code> 本身也是洩漏：子 context 會一直掛在父 context 上，直到父 context 結束；<code>go vet</code> 會對沒用到的 cancel 發出警告。</li>
+<li>只把 <code>poll</code> 包成「接收 ctx」不夠，<b>啟動它的人也要負責取消</b>，否則還是會洩漏。</li>
+</ul></div>
+
+<div class="box bad-box"><span class="key">更正原筆記：</span><ul>
+<li>原範例在 <code>select</code> 用 <code>default:</code> + <code>time.Sleep(500ms)</code>：goroutine 大部分時間在 Sleep，<b>不會看到取消訊號</b>，最多要延遲一整個 Sleep 才停。如果把 Sleep 拿掉（或工作很快），<code>default</code> 會變成<b>空轉迴圈，吃滿一顆 CPU</b>。正確做法是把等待也放進 <code>select</code>：<code>case &lt;-ctx.Done()</code> + <code>case &lt;-ticker.C</code>（或 <code>time.After</code>）。</li>
+<li>原範例在 <code>cancel()</code> 後用 <code>time.Sleep(1 * time.Second)</code>「確保 worker 有時間結束」，這只是猜時間，<b>不保證</b>它真的結束了；應改用 <span class="good">sync.WaitGroup</span>。</li>
+<li>原筆記列出的輸出（固定 4 行 running）不一定成立：2 秒、每 500ms 一次，邊界時間點會有競爭，可能印 4 或 5 行。</li>
+</ul></div>
+
+</main>
+
+</body>
+</html>
