@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>瀏覽器優化案例：Reflow 與 Repaint</title>
+<style>
+  :root {
+    --bg: #ffffff; --panel: #f5f6fa; --text: #1f2430; --muted: #6b7280; --border: #dfe3ec;
+    --bad: #d62f35; --bad-bg: rgba(229, 72, 77, .14);
+    --good: #12875a; --good-bg: rgba(31, 157, 99, .15);
+    --key: #8a5a00; --key-bg: rgba(255, 196, 0, .30);
+    --code-bg: #14161d; --code-text: #e6e9f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171e; --panel: #1e212b; --text: #e6e9f2; --muted: #9aa3b5; --border: #313646;
+      --bad: #ff7b80; --bad-bg: rgba(255, 107, 112, .18);
+      --good: #4cc38a; --good-bg: rgba(76, 195, 138, .18);
+      --key: #ffd666; --key-bg: rgba(255, 196, 0, .20);
+      --code-bg: #0e1015;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 56px; background: var(--bg); color: var(--text);
+    font: 15px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+  }
+  main { max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 24px; line-height: 1.3; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 30px 0 8px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; }
+  .badge.bad { background: var(--bad-bg); color: var(--bad); }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+  p { margin: 6px 0; }
+  .sub { color: var(--muted); margin: 0 0 6px; }
+  .bad  { color: var(--bad);  background: var(--bad-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .good { color: var(--good); background: var(--good-bg); padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .key  { color: var(--key);  background: var(--key-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .box { border: 1px solid var(--border); border-left-width: 4px; border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .box.bad-box { border-left-color: var(--bad); }
+  .box.good-box { border-left-color: var(--good); }
+  ol, ul { margin: 4px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92em; }
+  :not(pre) > code { background: var(--panel); border: 1px solid var(--border); padding: 0 5px; border-radius: 4px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text); border-radius: 10px;
+    padding: 12px 16px; overflow-x: auto; margin: 8px 0; font-size: 13px; line-height: 1.6;
+  }
+  pre .c { color: #7f8aa3; }
+  pre .r { color: #ff8a8f; font-weight: 700; }
+  pre .g { color: #7ee2a8; font-weight: 700; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; font-size: 13px; }
+  .flow span { padding: 4px 10px; border-radius: 6px; background: var(--bad-bg); color: var(--bad); font-weight: 600; }
+  .flow i { color: var(--muted); font-style: normal; }
+  .term { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .term b.name { color: var(--key); }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 10px 0; }
+  .steps li { counter-increment: s; position: relative; padding: 6px 0 6px 38px; margin: 0; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 6px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--good-bg); color: var(--good); font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .viewport { display: grid; grid-template-columns: 150px 1fr; gap: 14px; margin: 12px 0; align-items: stretch; }
+  .viewport .screen { border: 2px solid var(--good); border-radius: 8px; background: var(--bg); overflow: hidden; position: relative; min-height: 170px; }
+  .viewport .rowx { height: 22px; border-bottom: 1px solid var(--border); font-size: 11px; padding: 2px 8px; color: var(--muted); }
+  .viewport .rowx.off { opacity: .35; border-bottom-style: dashed; }
+  .viewport .sentinel { position: absolute; left: 0; right: 0; bottom: 20px; height: 22px; background: var(--key-bg); color: var(--key); font-size: 11px; font-weight: 700; text-align: center; line-height: 22px; border-top: 1px dashed var(--key); border-bottom: 1px dashed var(--key); }
+  .viewport .legend { font-size: 13px; }
+  .viewport .legend div { margin: 4px 0; }
+  @media (max-width: 560px) { .viewport { grid-template-columns: 1fr; } }
+  td, th { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+  th { background: var(--panel); }
+  .demo { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin: 12px 0; }
+  .demo button { font: inherit; font-size: 13px; padding: 5px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; margin-right: 6px; }
+  .demo button.primary { background: var(--good); border-color: var(--good); color: #fff; }
+  .demo button:disabled { opacity: .5; cursor: default; }
+  .counters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+  .counter { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; }
+  .counter .n { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .counter .l { font-size: 12px; color: var(--muted); }
+  .counter.bad .n { color: var(--bad); }
+  .counter.good .n { color: var(--good); }
+  .counter.key .n { color: var(--key); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>瀏覽器優化案例：Reflow 與 Repaint</h1>
+<p class="sub">改樣式、讀版面造成頻繁重算 · 結論：<span class="key">讀寫分批、動畫用 transform + rAF</span></p>
+
+<h2><span class="badge bad">原因</span> </h2>
+<div class="flow"><span>JS 改樣式 / 讀版面屬性</span><i>→</i><span>瀏覽器重新計算版面（Reflow）</span><i>→</i><span>再重新繪製（Repaint）</span><i>→</i><span>頻繁發生 → 掉幀、卡頓</span></div>
+<pre><span class="c">// 常見的壞寫法：讀、寫交錯（layout thrashing）</span>
+for (const el of items) {
+  const w = <span class="r">el.offsetWidth</span>          <span class="c">// 讀：為了給正確答案，瀏覽器必須「立刻」重算版面</span>
+  el.style.width = w + 10 + 'px'    <span class="c">// 寫：讓版面失效</span>
+}                                    <span class="c">// 下一圈的讀又要重算一次 → 每圈都 Reflow</span></pre>
+<div class="box bad-box"><ol><li><b>Reflow（回流）</b>：改變大小 / 位置 / 新增刪除 DOM，瀏覽器要重新計算元素的幾何，且可能<span class="bad">連鎖影響整個頁面</span>。</li><li><b>Repaint（重繪）</b>：只改外觀（顏色、陰影），不重算版面但要重畫，較輕。</li><li>真正拖慢的常是<span class="bad">「寫了樣式之後馬上讀版面屬性」</span>：強迫瀏覽器同步重算版面，而且在迴圈裡重複發生。</li></ol></div>
+<div class="box bad-box"><span class="key">更正原筆記：</span>「連續設定三個 style 屬性會觸發三次 Reflow」不精確。瀏覽器會把連續的樣式寫入<b>合併</b>，等到需要時才算一次；真正的問題是<b>寫完又馬上讀</b>（讀 <code>offsetWidth</code>、<code>offsetHeight</code>、<code>getComputedStyle</code> 等）造成「強制同步 Reflow」。改用 <code>cssText</code> 只是寫法整齊，並不是主要的效能差異。</div>
+<h2><span class="badge good">名詞</span> 先看懂這幾個詞</h2>
+<div class="term"><b class="name">渲染流程</b><br>樣式計算 → <b>版面（Layout / Reflow）</b> → <b>繪製（Paint / Repaint）</b> → <b>合成（Composite，GPU 把圖層組起來）</b>。越前面的步驟被觸發，後面也都要重做，成本越高。</div>
+<div class="term"><b class="name">強制同步 Reflow（layout thrashing）</b><br>寫入樣式後立刻讀取版面屬性，瀏覽器為了給出正確的值，必須<b>提前</b>把版面算完。在迴圈裡「讀、寫、讀、寫」就會反覆發生。</div>
+<div class="term"><b class="name">transform / opacity</b><br>這兩個屬性通常只在「合成」階段處理（交給 GPU），<span class="good">不觸發 Reflow、多半也不觸發 Repaint</span>，所以最適合做動畫。</div>
+<div class="term"><b class="name">requestAnimationFrame（rAF）</b><br>請瀏覽器「在下一次繪製前」執行你的函式，頻率與螢幕更新同步（通常 60 次 / 秒），比 <code>setTimeout(16)</code> 準確、不會多做看不到的更新。</div>
+<h2><span class="badge good">解法</span> </h2>
+<h3>① 先全部讀、再全部寫</h3>
+<pre>const widths = items.map((el) =&gt; <span class="g">el.offsetWidth</span>)           <span class="c">// 讀：一次做完（只重算一次版面）</span>
+items.forEach((el, i) =&gt; <span class="g">el.style.width = widths[i] + 10 + 'px'</span>)   <span class="c">// 寫：一次做完</span></pre>
+<h3>② 改 class 而不是逐個改 style；批量建立用 DocumentFragment</h3>
+<pre>el.classList.add('active')                      <span class="c">// 樣式寫在 CSS，一次切換</span>
+
+const frag = document.createDocumentFragment()  <span class="c">// 先在記憶體裡組好</span>
+for (let i = 0; i &lt; 100; i++) {
+  const div = document.createElement('div')
+  div.textContent = `Item ${i}`
+  frag.appendChild(div)
+}
+<span class="g">document.body.appendChild(frag)</span>                 <span class="c">// 一次放進 DOM，只重算一次</span></pre>
+<h3>③ 動畫用 transform + requestAnimationFrame</h3>
+<pre><span class="c">// 壞：改 left 會觸發 Reflow，setTimeout 也不跟螢幕同步</span>
+function move() { el.style.<span class="r">left</span> = ++i + 'px'; setTimeout(move, 16) }
+
+<span class="c">// 好：transform 不觸發 Reflow，rAF 與螢幕更新同步</span>
+function move() { el.style.<span class="g">transform</span> = `translateX(${++i}px)`; <span class="g">requestAnimationFrame(move)</span> }
+requestAnimationFrame(move)</pre>
+<h2><span class="badge good">互動示範</span> 2000 個元素：讀寫交錯 vs 先讀後寫</h2>
+<div class="demo">
+  <button id="run" class="primary">執行比較</button>
+  <div class="counters">
+    <div class="counter bad"><div class="n" id="t_bad">—</div><div class="l">讀寫交錯（ms）</div></div>
+    <div class="counter good"><div class="n" id="t_good">—</div><div class="l">先讀後寫（ms）</div></div>
+  </div>
+  <p class="sub" id="demoNote">數字依機器而異，重點看兩者的比例。</p>
+  <div id="sandbox" style="height:0;overflow:hidden"></div>
+</div>
+<h2><span class="badge good">判斷</span> 哪些屬性觸發什麼</h2>
+<table><thead><tr><th>改這些</th><th>觸發</th><th>成本</th></tr></thead><tbody>
+<tr><td><code>width / height / margin / padding / top / left / position</code>、增刪 DOM</td><td>Reflow + Repaint</td><td><span class="bad">高</span></td></tr>
+<tr><td><code>color / background-color / box-shadow / visibility</code></td><td>Repaint</td><td>中</td></tr>
+<tr><td><code>transform / opacity</code>（通常）</td><td>只合成</td><td><span class="good">低（最佳）</span></td></tr>
+</tbody></table>
+<ul>
+<li>隱藏元素：<code>visibility: hidden</code> 只 Repaint（但仍佔空間）；<code>display: none</code> 會 Reflow（元素離開版面）。看是否需要保留位置選擇。</li>
+<li><code>will-change: transform</code> 可提示瀏覽器預先建立圖層，但<span class="key">不要濫用</span>（每個圖層都吃記憶體）。</li>
+</ul>
+
+
+</main>
+<script>
+document.getElementById('run').addEventListener('click', function () {
+  var box = document.getElementById('sandbox');
+  function make() {
+    box.innerHTML = '';
+    var els = [];
+    for (var i = 0; i < 2000; i++) { var d = document.createElement('div'); d.style.width = '100px'; d.textContent = 'x'; box.appendChild(d); els.push(d); }
+    return els;
+  }
+  var els = make(), t0 = performance.now();
+  for (var i = 0; i < els.length; i++) { var w = els[i].offsetWidth; els[i].style.width = (w + 1) + 'px'; }   // 讀寫交錯
+  var bad = performance.now() - t0;
+  els = make(); t0 = performance.now();
+  var ws = els.map(function (e) { return e.offsetWidth; });                                                    // 先讀
+  els.forEach(function (e, i) { e.style.width = (ws[i] + 1) + 'px'; });                                         // 後寫
+  var good = performance.now() - t0;
+  document.getElementById('t_bad').textContent = bad.toFixed(1);
+  document.getElementById('t_good').textContent = good.toFixed(1);
+  document.getElementById('demoNote').textContent = '約 ' + (good > 0 ? (bad / good).toFixed(0) : '—') + ' 倍差距。數字依機器而異，重點看比例。';
+  box.innerHTML = '';
+});
+</script>
+</body>
+</html>

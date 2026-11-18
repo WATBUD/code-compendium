@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>React 優化案例：列元件 React.memo + 穩定參照</title>
+<style>
+  :root {
+    --bg: #ffffff; --panel: #f5f6fa; --text: #1f2430; --muted: #6b7280; --border: #dfe3ec;
+    --bad: #d62f35; --bad-bg: rgba(229, 72, 77, .14);
+    --good: #12875a; --good-bg: rgba(31, 157, 99, .15);
+    --key: #8a5a00; --key-bg: rgba(255, 196, 0, .30);
+    --code-bg: #14161d; --code-text: #e6e9f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171e; --panel: #1e212b; --text: #e6e9f2; --muted: #9aa3b5; --border: #313646;
+      --bad: #ff7b80; --bad-bg: rgba(255, 107, 112, .18);
+      --good: #4cc38a; --good-bg: rgba(76, 195, 138, .18);
+      --key: #ffd666; --key-bg: rgba(255, 196, 0, .20);
+      --code-bg: #0e1015;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 56px; background: var(--bg); color: var(--text);
+    font: 15px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+  }
+  main { max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 24px; line-height: 1.3; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 30px 0 8px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; }
+  .badge.bad { background: var(--bad-bg); color: var(--bad); }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+  p { margin: 6px 0; }
+  .sub { color: var(--muted); margin: 0 0 6px; }
+  .bad  { color: var(--bad);  background: var(--bad-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .good { color: var(--good); background: var(--good-bg); padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .key  { color: var(--key);  background: var(--key-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .box { border: 1px solid var(--border); border-left-width: 4px; border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .box.bad-box { border-left-color: var(--bad); }
+  .box.good-box { border-left-color: var(--good); }
+  ol, ul { margin: 4px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92em; }
+  :not(pre) > code { background: var(--panel); border: 1px solid var(--border); padding: 0 5px; border-radius: 4px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text); border-radius: 10px;
+    padding: 12px 16px; overflow-x: auto; margin: 8px 0; font-size: 13px; line-height: 1.6;
+  }
+  pre .c { color: #7f8aa3; }
+  pre .r { color: #ff8a8f; font-weight: 700; }
+  pre .g { color: #7ee2a8; font-weight: 700; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; font-size: 13px; }
+  .flow span { padding: 4px 10px; border-radius: 6px; background: var(--bad-bg); color: var(--bad); font-weight: 600; }
+  .flow i { color: var(--muted); font-style: normal; }
+  .term { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .term b.name { color: var(--key); }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 10px 0; }
+  .steps li { counter-increment: s; position: relative; padding: 6px 0 6px 38px; margin: 0; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 6px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--good-bg); color: var(--good); font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .viewport { display: grid; grid-template-columns: 150px 1fr; gap: 14px; margin: 12px 0; align-items: stretch; }
+  .viewport .screen { border: 2px solid var(--good); border-radius: 8px; background: var(--bg); overflow: hidden; position: relative; min-height: 170px; }
+  .viewport .rowx { height: 22px; border-bottom: 1px solid var(--border); font-size: 11px; padding: 2px 8px; color: var(--muted); }
+  .viewport .rowx.off { opacity: .35; border-bottom-style: dashed; }
+  .viewport .sentinel { position: absolute; left: 0; right: 0; bottom: 20px; height: 22px; background: var(--key-bg); color: var(--key); font-size: 11px; font-weight: 700; text-align: center; line-height: 22px; border-top: 1px dashed var(--key); border-bottom: 1px dashed var(--key); }
+  .viewport .legend { font-size: 13px; }
+  .viewport .legend div { margin: 4px 0; }
+  @media (max-width: 560px) { .viewport { grid-template-columns: 1fr; } }
+  td, th { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+  th { background: var(--panel); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>React 優化案例：列元件 React.memo + 穩定參照</h1>
+<p class="sub">父元件一重繪，上千個子列跟著重繪 · 結論：<span class="key">memo 只有在 props 穩定時才有用</span></p>
+
+<h2><span class="badge bad">原因</span></h2>
+<div class="flow">
+  <span>父元件重繪（任何 state / props 變化）</span><i>→</i>
+  <span>每個子列都被重新執行</span><i>→</i>
+  <span>每列新建 onClick / style 物件</span><i>→</i>
+  <span>子元件再往下全部比對</span><i>→</i>
+  <span>列越多越慢</span>
+</div>
+<pre><span class="c">// 原本：列直接寫在父元件的 map 裡，每次重繪都要重做</span>
+commits.map((commit) =&gt; (
+  &lt;div
+    onClick={<span class="r">() =&gt; { hideTip(); handleView(commit) }</span>}      <span class="c">// 每次都是新函式</span>
+    onContextMenu={<span class="r">(e) =&gt; handleContextMenu(e, 'commit', commit)</span>}
+    style={<span class="r">{ cursor: 'pointer', ...indentStyle(depth) }</span>}      <span class="c">// 每次都是新物件</span>
+  &gt;…&lt;/div&gt;
+))</pre>
+<div class="box bad-box">
+  <ol>
+    <li>列不是獨立元件 → <span class="bad">沒有「props 沒變就跳過」的機會</span>。</li>
+    <li>每列都建立<span class="bad">新的函式與物件</span>，就算內容一樣，「參照」也不同。</li>
+    <li>預設參數 <code>= []</code> 每次是<span class="bad">新陣列</span>，會讓整排 memo 失效。</li>
+  </ol>
+</div>
+
+<h2><span class="badge good">名詞</span> 先看懂這幾個詞</h2>
+
+<div class="term">
+  <b class="name">重繪（re-render）</b><br>
+  React 重新執行元件函式，產生新的畫面描述，再跟上一次比對、更新有差異的 DOM。<b>執行函式本身就有成本</b>，即使最後 DOM 沒變也一樣。父元件重繪時，預設<span class="bad">所有子元件都會跟著重繪</span>。
+</div>
+
+<div class="term">
+  <b class="name">參照（reference）vs 值</b><br>
+  數字、字串比的是「值」：<code>3 === 3</code> 為 true。<br>
+  函式、物件、陣列比的是「<b>是不是同一個東西</b>」（記憶體位置）：
+  <pre style="margin:6px 0">() =&gt; {} === () =&gt; {}     <span class="c">// false，兩個內容一樣，但是兩個不同的函式</span>
+[] === []                 <span class="c">// false</span>
+const f = () =&gt; {}; f === f   <span class="c">// true，同一個</span></pre>
+  元件每次重繪都會重新執行函式內容，裡面寫的 <code>() =&gt; …</code>、<code>{…}</code>、<code>[]</code> 每次都是<span class="bad">全新的</span>，所以參照每次都變。
+</div>
+
+<div class="term">
+  <b class="name">React.memo</b><br>
+  把元件包起來，告訴 React：「<span class="good">props 沒有變就別重繪我</span>」。<br>
+  怎麼判斷「沒變」？用<b>淺比較（shallow compare）</b>：逐個 prop 用 <code>===</code> 比對上一次。
+</div>
+
+<div class="term">
+  <b class="name">淺比較為什麼是關鍵</b><br>
+  只要有<b>任何一個 prop</b> 每次都是新的函式 / 物件 / 陣列，淺比較就判定「有變」→ <span class="bad">memo 白包了</span>。所以「讓 props 保持同一個參照」比「加 memo」更重要，這就是下面說的<b>穩定參照</b>。
+</div>
+
+<div class="term">
+  <b class="name">useCallback / useMemo</b><br>
+  讓函式（useCallback）或計算結果（useMemo）<b>在依賴沒變時，重繪後還是同一個參照</b>。<br>
+  只有<span class="key">要傳給 memo 子元件的值</span>才需要，其他地方不必到處加。
+</div>
+
+<div class="term">
+  <b class="name">用 ref 讀「最新值」</b><br>
+  <code>useRef</code> 存的東西改了<b>不會觸發重繪</b>，而且 <code>ref</code> 本身永遠是同一個參照。把會常變的資料放進 ref，函式裡讀 <code>ref.current</code>，函式的<b>依賴陣列就能保持空的</b>，函式身分永遠不變。
+</div>
+
+<h2><span class="badge good">解法</span> 拆成 CommitRow + React.memo</h2>
+<p><span class="good">props 沒變 → 這一列完全不重繪</span>。每列自己用 <code>commit</code> 建立事件處理，父元件不用為每列產生新函式。</p>
+<pre>const CommitRowImpl = ({ commit, branch, depth, onView, onContextMenu, onTipHide, … }) =&gt; {
+  <span class="c">// 這個函式「只在這一列重繪時」才重建；列用到的 commit 不變就不會重建</span>
+  const handleClick = useCallback(() =&gt; { onTipHide(); onView(commit) }, [onTipHide, onView, commit])
+  const handleContextMenu = useCallback(
+    (e) =&gt; { onTipHide(); onContextMenu(e, 'commit', commit) },
+    [onTipHide, onContextMenu, commit]
+  )
+  return &lt;div onClick={handleClick} onContextMenu={handleContextMenu}&gt;…&lt;/div&gt;
+}
+
+export const CommitRow = <span class="g">React.memo(CommitRowImpl)</span>      <span class="c">// props 淺比較沒變 → 跳過重繪</span></pre>
+<p class="sub">這裡的設計：父元件只傳「<b>所有列共用的</b>、穩定的函式」，每一列需要的 <code>() =&gt; handle(commit)</code> 由列自己用 <code>commit</code> 組出來。</p>
+
+<h2><span class="badge good">關鍵</span> 讓傳進去的 props 穩定</h2>
+<p>逐個檢查「傳給 memo 元件的每一個 prop」，每個都要是<b>同一個參照</b>：</p>
+<table>
+  <thead><tr><th>prop 的類型</th><th>容易出的錯</th><th>做法</th></tr></thead>
+  <tbody>
+    <tr><td>共用函式</td><td>內聯 <code>() =&gt; …</code>；依賴常變的 <code>useCallback</code></td><td><span class="good">useCallback</span>，依賴盡量少；常變的資料改用 ref 讀</td></tr>
+    <tr><td>可選的陣列 / 物件</td><td>預設值 <code>= []</code>、<code>|| []</code> 每次都是新的</td><td><span class="good">模組層級常數</span>當預設值</td></tr>
+    <tr><td>資料物件</td><td>每次重繪都重新 <code>.map</code> / <code>.filter</code> 出新物件</td><td>用 <span class="good">useMemo</span>，或直接傳 state / Redux 裡的原物件</td></tr>
+  </tbody>
+</table>
+<pre><span class="c">// 1) 函式：用 ref 讀最新資料，依賴陣列保持為空</span>
+const branchesRef = useRef(branches)
+branchesRef.current = branches
+const handleContextMenu = useCallback((e, type, target) =&gt; {
+  <span class="c">/* 需要 branches 時讀 branchesRef.current */</span>
+}, [])                                          <span class="g">// 依賴為空 → 這個函式永遠是同一個</span>
+
+<span class="c">// 2) 可選陣列：預設值不要寫 = []</span>
+const EMPTY_LIST = []                           <span class="g">// 模組層級，只建立一次</span>
+({ localOnlyTags = EMPTY_LIST, … }) =&gt; …
+
+<span class="c">// 3) 資料：commit 來自 state，重新載入前參照不變</span>
+&lt;CommitRow commit={commit} … /&gt;</pre>
+
+<h2><span class="badge good">判斷</span></h2>
+<ul>
+  <li>列數多、父元件又常重繪 → <span class="good">拆列 + memo</span></li>
+  <li>傳給 memo 元件的 prop 是內聯 <code>() =&gt; …</code>、<code>{…}</code>、<code>[]</code> → <span class="bad">memo 無效</span>，要先穩定它</li>
+  <li>只有「要傳給 memo 子元件」的函式才需要 useCallback，其他不用</li>
+  <li>列很少、父元件很少重繪 → <span class="key">不必加</span>，memo 本身也要花比對的成本</li>
+</ul>
+<div class="box good-box">
+  <span class="key">怎麼確認有效：</span>用 React DevTools 的 Profiler，勾選「Record why each component rendered」。memo 生效時，沒變的列會顯示「Did not render」；仍然重繪的列會告訴你<b>是哪個 prop 變了</b>，就是下一個要穩定的對象。
+</div>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>建置優化案例：Rollup 大型專案記憶體不足</title>
+<style>
+  :root {
+    --bg: #ffffff; --panel: #f5f6fa; --text: #1f2430; --muted: #6b7280; --border: #dfe3ec;
+    --bad: #d62f35; --bad-bg: rgba(229, 72, 77, .14);
+    --good: #12875a; --good-bg: rgba(31, 157, 99, .15);
+    --key: #8a5a00; --key-bg: rgba(255, 196, 0, .30);
+    --code-bg: #14161d; --code-text: #e6e9f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171e; --panel: #1e212b; --text: #e6e9f2; --muted: #9aa3b5; --border: #313646;
+      --bad: #ff7b80; --bad-bg: rgba(255, 107, 112, .18);
+      --good: #4cc38a; --good-bg: rgba(76, 195, 138, .18);
+      --key: #ffd666; --key-bg: rgba(255, 196, 0, .20);
+      --code-bg: #0e1015;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 56px; background: var(--bg); color: var(--text);
+    font: 15px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+  }
+  main { max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 24px; line-height: 1.3; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 30px 0 8px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; }
+  .badge.bad { background: var(--bad-bg); color: var(--bad); }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+  p { margin: 6px 0; }
+  .sub { color: var(--muted); margin: 0 0 6px; }
+  .bad  { color: var(--bad);  background: var(--bad-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .good { color: var(--good); background: var(--good-bg); padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .key  { color: var(--key);  background: var(--key-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .box { border: 1px solid var(--border); border-left-width: 4px; border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .box.bad-box { border-left-color: var(--bad); }
+  .box.good-box { border-left-color: var(--good); }
+  ol, ul { margin: 4px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92em; }
+  :not(pre) > code { background: var(--panel); border: 1px solid var(--border); padding: 0 5px; border-radius: 4px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text); border-radius: 10px;
+    padding: 12px 16px; overflow-x: auto; margin: 8px 0; font-size: 13px; line-height: 1.6;
+  }
+  pre .c { color: #7f8aa3; }
+  pre .r { color: #ff8a8f; font-weight: 700; }
+  pre .g { color: #7ee2a8; font-weight: 700; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; font-size: 13px; }
+  .flow span { padding: 4px 10px; border-radius: 6px; background: var(--bad-bg); color: var(--bad); font-weight: 600; }
+  .flow i { color: var(--muted); font-style: normal; }
+  .term { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .term b.name { color: var(--key); }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 10px 0; }
+  .steps li { counter-increment: s; position: relative; padding: 6px 0 6px 38px; margin: 0; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 6px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--good-bg); color: var(--good); font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .viewport { display: grid; grid-template-columns: 150px 1fr; gap: 14px; margin: 12px 0; align-items: stretch; }
+  .viewport .screen { border: 2px solid var(--good); border-radius: 8px; background: var(--bg); overflow: hidden; position: relative; min-height: 170px; }
+  .viewport .rowx { height: 22px; border-bottom: 1px solid var(--border); font-size: 11px; padding: 2px 8px; color: var(--muted); }
+  .viewport .rowx.off { opacity: .35; border-bottom-style: dashed; }
+  .viewport .sentinel { position: absolute; left: 0; right: 0; bottom: 20px; height: 22px; background: var(--key-bg); color: var(--key); font-size: 11px; font-weight: 700; text-align: center; line-height: 22px; border-top: 1px dashed var(--key); border-bottom: 1px dashed var(--key); }
+  .viewport .legend { font-size: 13px; }
+  .viewport .legend div { margin: 4px 0; }
+  @media (max-width: 560px) { .viewport { grid-template-columns: 1fr; } }
+  td, th { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+  th { background: var(--panel); }
+  .demo { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin: 12px 0; }
+  .demo button { font: inherit; font-size: 13px; padding: 5px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; margin-right: 6px; }
+  .demo button.primary { background: var(--good); border-color: var(--good); color: #fff; }
+  .demo button:disabled { opacity: .5; cursor: default; }
+  .counters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+  .counter { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; }
+  .counter .n { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .counter .l { font-size: 12px; color: var(--muted); }
+  .counter.bad .n { color: var(--bad); }
+  .counter.good .n { color: var(--good); }
+  .counter.key .n { color: var(--key); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>建置優化案例：Rollup 大型專案記憶體不足</h1>
+<p class="sub">建置時 JavaScript heap out of memory · 結論：<span class="key">先調高上限救急，再減少進入模組圖的內容</span></p>
+
+<h2><span class="badge bad">原因</span> </h2>
+<div class="flow"><span>大型專案 / monorepo 建置</span><i>→</i><span>bundler 把整個模組圖放進記憶體分析</span><i>→</i><span>分析越精細、模組越多越吃記憶體</span><i>→</i><span>Node heap 上限被打爆</span><i>→</i><span>JavaScript heap out of memory</span></div>
+<pre>FATAL ERROR: Ineffective mark-compacts near heap limit
+Allocation failed - <span class="r">JavaScript heap out of memory</span></pre>
+<div class="box bad-box"><ol><li><b>整張模組依賴圖都要裝進記憶體</b>：模組、第三方套件、跨檔案引用越多，圖越大。</li><li><b>Tree-shaking 追蹤得很細</b>：Rollup 會分析每個變數、函式是否被使用，連未執行的邏輯都要判斷能不能刪，換來更精準的輸出，也<span class="bad">吃更多記憶體</span>。</li><li><b>分包策略較保守</b>：多個動態載入共用的依賴可能被重複打包，monorepo 共用函式庫多時更明顯 → 圖更大、輸出也更大。</li><li><b>Node 的 heap 上限</b>：預設上限依 Node 版本與機器記憶體而異（常見約 2–4 GB），巨型建置容易碰到。</li></ol></div>
+<div class="box bad-box"><span class="key">更正原筆記：</span>原筆記把「一次載入整個模組圖」說成 Rollup 獨有。實際上各家 bundler（包含 webpack）都會在記憶體中建立完整模組圖；差別主要在<b>分析的細緻程度與輸出策略</b>，而不是「只有 Rollup 會一次全讀」。Vite 的正式建置底層用 Rollup，所以會遇到同樣的問題。</div>
+<h2><span class="badge good">名詞</span> 先看懂這幾個詞</h2>
+<div class="term"><b class="name">模組圖（module graph）</b><br>從入口檔出發，順著 <code>import</code> 展開的整張「誰依賴誰」的圖。bundler 要先讀完整張圖才能決定怎麼打包。</div>
+<div class="term"><b class="name">Heap（堆積記憶體）與 --max-old-space-size</b><br>Node 存放物件的記憶體區域，有上限。<code>--max-old-space-size=4096</code> 把上限調成 4096 MB。</div>
+<div class="term"><b class="name">Monorepo</b><br>把多個套件 / 專案放在同一個 repo。共用函式庫會被很多地方引用，bundler 要分析的內容更多。</div>
+<h2><span class="badge good">解法</span> </h2>
+<h3>① 暫時：提高 Node 記憶體上限（治標）</h3>
+<pre>node <span class="g">--max-old-space-size=4096</span> node_modules/vite/bin/vite.js build
+
+# 或用環境變數（對所有 node 子行程生效）
+NODE_OPTIONS=--max-old-space-size=4096 npm run build</pre>
+<p>這只是把天花板墊高，<span class="key">根本問題（圖太大）還在</span>。</p>
+<h3>② 治本方向：讓進入圖的東西變少</h3>
+<ul><li><b>externalize 大型依賴</b>：不要讓巨大的第三方套件進入分析（Rollup 的 <code>external</code>）。</li><li><b>共用函式庫先各自建置</b>（monorepo 先 build 套件，主專案引用產物而不是原始碼）。</li><li><b>降低 sourcemap 成本</b>：sourcemap 很吃記憶體，必要時關閉或只在需要的環境產生。</li><li><b>拆成多個較小的 build</b>，或升級 bundler 版本。</li></ul>
+<div class="box bad-box"><span class="key">說明：</span>原筆記只提供「暫時提高上限」這個解法；②是業界常見的緩解方向，<b>效果依專案而異，請實測</b>，並以 Node 的記憶體使用量（如 <code>--trace-gc</code> 或觀察峰值）確認有沒有改善。</div>
+<h2><span class="badge good">判斷</span> </h2>
+<table><thead><tr><th>情況</th><th>做法</th></tr></thead><tbody>
+<tr><td>剛好踩到上限、要先讓 CI 過</td><td>調高 <code>--max-old-space-size</code>（記得之後處理根因）</td></tr>
+<tr><td>專案持續長大</td><td>externalize、先建置共用套件、減少 sourcemap</td></tr>
+<tr><td>輸出有重複依賴</td><td>檢查動態 import 的共用模組，調整分包</td></tr>
+</tbody></table>
+
+
+</main>
+
+</body>
+</html>

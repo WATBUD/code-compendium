@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JavaScript 優化案例：防抖 (Debounce) 與節流 (Throttle)</title>
+<style>
+  :root {
+    --bg: #ffffff; --panel: #f5f6fa; --text: #1f2430; --muted: #6b7280; --border: #dfe3ec;
+    --bad: #d62f35; --bad-bg: rgba(229, 72, 77, .14);
+    --good: #12875a; --good-bg: rgba(31, 157, 99, .15);
+    --key: #8a5a00; --key-bg: rgba(255, 196, 0, .30);
+    --code-bg: #14161d; --code-text: #e6e9f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171e; --panel: #1e212b; --text: #e6e9f2; --muted: #9aa3b5; --border: #313646;
+      --bad: #ff7b80; --bad-bg: rgba(255, 107, 112, .18);
+      --good: #4cc38a; --good-bg: rgba(76, 195, 138, .18);
+      --key: #ffd666; --key-bg: rgba(255, 196, 0, .20);
+      --code-bg: #0e1015;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 56px; background: var(--bg); color: var(--text);
+    font: 15px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+  }
+  main { max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 24px; line-height: 1.3; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 30px 0 8px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; }
+  .badge.bad { background: var(--bad-bg); color: var(--bad); }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+  p { margin: 6px 0; }
+  .sub { color: var(--muted); margin: 0 0 6px; }
+  .bad  { color: var(--bad);  background: var(--bad-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .good { color: var(--good); background: var(--good-bg); padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .key  { color: var(--key);  background: var(--key-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .box { border: 1px solid var(--border); border-left-width: 4px; border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .box.bad-box { border-left-color: var(--bad); }
+  .box.good-box { border-left-color: var(--good); }
+  ol, ul { margin: 4px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92em; }
+  :not(pre) > code { background: var(--panel); border: 1px solid var(--border); padding: 0 5px; border-radius: 4px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text); border-radius: 10px;
+    padding: 12px 16px; overflow-x: auto; margin: 8px 0; font-size: 13px; line-height: 1.6;
+  }
+  pre .c { color: #7f8aa3; }
+  pre .r { color: #ff8a8f; font-weight: 700; }
+  pre .g { color: #7ee2a8; font-weight: 700; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; font-size: 13px; }
+  .flow span { padding: 4px 10px; border-radius: 6px; background: var(--bad-bg); color: var(--bad); font-weight: 600; }
+  .flow i { color: var(--muted); font-style: normal; }
+  .term { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .term b.name { color: var(--key); }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 10px 0; }
+  .steps li { counter-increment: s; position: relative; padding: 6px 0 6px 38px; margin: 0; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 6px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--good-bg); color: var(--good); font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .viewport { display: grid; grid-template-columns: 150px 1fr; gap: 14px; margin: 12px 0; align-items: stretch; }
+  .viewport .screen { border: 2px solid var(--good); border-radius: 8px; background: var(--bg); overflow: hidden; position: relative; min-height: 170px; }
+  .viewport .rowx { height: 22px; border-bottom: 1px solid var(--border); font-size: 11px; padding: 2px 8px; color: var(--muted); }
+  .viewport .rowx.off { opacity: .35; border-bottom-style: dashed; }
+  .viewport .sentinel { position: absolute; left: 0; right: 0; bottom: 20px; height: 22px; background: var(--key-bg); color: var(--key); font-size: 11px; font-weight: 700; text-align: center; line-height: 22px; border-top: 1px dashed var(--key); border-bottom: 1px dashed var(--key); }
+  .viewport .legend { font-size: 13px; }
+  .viewport .legend div { margin: 4px 0; }
+  @media (max-width: 560px) { .viewport { grid-template-columns: 1fr; } }
+  td, th { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+  th { background: var(--panel); }
+  .demo { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin: 12px 0; }
+  .demo button { font: inherit; font-size: 13px; padding: 5px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; margin-right: 6px; }
+  .demo button.primary { background: var(--good); border-color: var(--good); color: #fff; }
+  .demo button:disabled { opacity: .5; cursor: default; }
+  .counters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+  .counter { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; }
+  .counter .n { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .counter .l { font-size: 12px; color: var(--muted); }
+  .counter.bad .n { color: var(--bad); }
+  .counter.good .n { color: var(--good); }
+  .counter.key .n { color: var(--key); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>JavaScript 優化案例：防抖 (Debounce) 與節流 (Throttle)</h1>
+<p class="sub">高頻事件（輸入、捲動、resize）每次都執行處理函式 · 結論：<span class="key">防抖 = 停下來才執行；節流 = 固定間隔最多一次</span></p>
+
+<h2><span class="badge bad">原因</span></h2>
+<div class="flow"><span>事件每秒觸發數十～上百次</span><i>→</i><span>每次都執行處理函式</span><i>→</i><span>每次都打 API / 重算 / setState</span><i>→</i><span>請求爆量、畫面卡頓</span></div>
+<pre><span class="c">// 原本：事件一來就做事</span>
+input.addEventListener('input', (e) =&gt; <span class="r">fetchSuggestions(e.target.value)</span>)   <span class="c">// 每按一鍵送一次請求</span>
+window.addEventListener('resize', <span class="r">recalcLayout</span>)                              <span class="c">// 拖曳視窗每秒上百次</span></pre><div class="box bad-box"><ol>
+<li>使用者打字時，<span class="bad">每按一鍵就送一次請求</span>，絕大多數請求在回來前就已經過期。</li>
+<li><code>scroll</code>、<code>resize</code>、<code>mousemove</code> 是<span class="bad">高頻事件</span>，處理函式再重也會被連續呼叫。</li>
+<li>真正需要的只是「<b>停下來之後的結果</b>」或「<b>每隔一段時間的更新</b>」。</li>
+</ol></div>
+<h2><span class="badge good">名詞</span> 先看懂這幾個詞</h2>
+<div class="term"><b class="name">高頻事件</b><br>瀏覽器在使用者操作期間<b>不斷觸發</b>的事件，例如 <code>input</code>（每次輸入）、<code>scroll</code>、<code>resize</code>、<code>mousemove</code>。處理函式的執行次數 = 事件次數。</div>
+<div class="term"><b class="name">setTimeout / clearTimeout</b><br><code>setTimeout(fn, 300)</code> = 300ms 後執行 fn，會回傳一個計時器 id；<code>clearTimeout(id)</code> = 在它執行前取消。<span class="key">防抖就是靠「不斷取消、重新計時」做到的。</span></div>
+<div class="term"><b class="name">閉包（closure）</b><br>函式可以「記住」它被建立時外面的變數。<code>debounce</code> 回傳的函式一直記著 <code>timer</code> 這個變數，所以能在下一次呼叫時取消上一次的計時器。</div>
+<div class="term"><b class="name">...args 與 func.apply(this, args)</b><br>把收到的參數與 <code>this</code> 原封不動轉交給真正的處理函式，包裝後的行為才跟原本一致。</div>
+<h2><span class="badge good">解法 A</span> 防抖 Debounce：停下來才執行</h2>
+<p>每次觸發都<span class="good">取消上一次的計時、重新計時</span>；連續觸發時永遠等不到計時結束，直到<b>停止觸發 delay 毫秒後</b>才執行一次。</p>
+<pre>function debounce(func, delay) {
+  let timer                                      <span class="c">// 閉包記住上一次的計時器</span>
+  return function (...args) {
+    <span class="g">clearTimeout(timer)</span>                            <span class="c">// 取消上一次還沒執行的</span>
+    <span class="g">timer = setTimeout(() =&gt; func.apply(this, args), delay)</span>   <span class="c">// 重新計時</span>
+  }
+}
+
+const handleSearch = debounce((query) =&gt; fetchSuggestions(query), 500)
+input.addEventListener('input', (e) =&gt; handleSearch(e.target.value))</pre><h2><span class="badge good">解法 B</span> 節流 Throttle：固定間隔最多一次</h2>
+<p>不管觸發多頻繁，<span class="good">在 limit 毫秒內最多只執行一次</span>。適合「持續進行中、需要定期更新」的情況。</p>
+<pre>function throttle(func, limit) {
+  let lastCall = 0                               <span class="c">// 上次真正執行的時間</span>
+  return function (...args) {
+    const now = Date.now()
+    if (<span class="g">now - lastCall &gt;= limit</span>) {                  <span class="c">// 距離上次夠久了才放行</span>
+      lastCall = now
+      func.apply(this, args)
+    }
+  }
+}
+
+window.addEventListener('scroll', throttle(updateProgressBar, 200))</pre><div class="box good-box"><span class="key">注意：</span>這個簡易版只會在「間隔開始時」執行（leading），<b>最後一次觸發可能被丟掉</b>（例如停在頁面最底端時沒有最後一次更新）。需要保證最後一次也執行時，要加 trailing 處理，或直接用 lodash 的 <code>throttle</code> / <code>debounce</code>。</div>
+<h2><span class="badge good">互動示範</span> 同樣的 30 次觸發，各執行幾次？</h2>
+<div class="demo">
+  <button id="run" class="primary">連續觸發 30 次（每 50ms 一次）</button>
+  <button id="reset">重設</button>
+  <div class="counters">
+    <div class="counter"><div class="n" id="c_raw">0</div><div class="l">原始觸發</div></div>
+    <div class="counter good"><div class="n" id="c_deb">0</div><div class="l">防抖（delay 300ms）</div></div>
+    <div class="counter key"><div class="n" id="c_thr">0</div><div class="l">節流（limit 500ms）</div></div>
+  </div>
+  <p class="sub">防抖：全部觸發結束後 300ms 才執行 1 次。節流：1.5 秒內大約每 500ms 一次。</p>
+</div>
+<h2><span class="badge good">判斷</span> 該用哪個</h2>
+<table>
+<thead><tr><th>情境</th><th>用</th><th>原因</th></tr></thead>
+<tbody>
+<tr><td>搜尋框輸入、表單即時驗證</td><td><span class="good">防抖</span></td><td>只在乎「打完之後」的結果</td></tr>
+<tr><td>視窗 resize 後重新計算版面</td><td><span class="good">防抖</span></td><td>拖曳過程中間值沒有意義</td></tr>
+<tr><td>捲動進度、無限捲動判斷、拖曳中更新</td><td><span class="key">節流</span></td><td>過程中要定期更新，不能等停下來</td></tr>
+<tr><td>按鈕防連點（下單、送出）</td><td><span class="key">節流（只執行第一次）</span></td><td>第一次要立即生效，之後一段時間內忽略</td></tr>
+<tr><td>要「跟著游標走」的 UI（提示框）</td><td><span class="bad">都不適合</span></td><td>節流會顯得卡頓；應改為不經 React state 直接改 DOM</td></tr>
+</tbody></table>
+<h2><span class="badge good">React</span> 在元件裡的注意事項</h2>
+<pre><span class="c">// <span class="r">錯誤</span>：每次重繪都建立「新的」debounce 函式 → 計時器各自獨立，防抖失效</span>
+function Search() {
+  const onChange = debounce((v) =&gt; search(v), 500)
+  return &lt;input onChange={(e) =&gt; onChange(e.target.value)} /&gt;
+}
+
+<span class="c">// <span class="g">正確</span>：用 useMemo 讓同一個防抖函式跨重繪保持不變</span>
+function Search() {
+  const onChange = <span class="g">useMemo(() =&gt; debounce((v) =&gt; search(v), 500), [])</span>
+  return &lt;input onChange={(e) =&gt; onChange(e.target.value)} /&gt;
+}</pre><p class="sub">原因與「參照相等性」「React.memo」案例是同一件事：每次重繪都產生新的函式 = 新的參照。</p>
+
+
+</main>
+<script>
+(function () {
+  function debounce(fn, delay) { var t; return function () { clearTimeout(t); t = setTimeout(fn, delay); }; }
+  function throttle(fn, limit) { var last = 0; return function () { var n = Date.now(); if (n - last >= limit) { last = n; fn(); } }; }
+  var raw = 0, deb = 0, thr = 0, running = false;
+  var $ = function (id) { return document.getElementById(id); };
+  var onDeb = debounce(function () { deb++; paint(); }, 300);
+  var onThr = throttle(function () { thr++; paint(); }, 500);
+  function paint() { $('c_raw').textContent = raw; $('c_deb').textContent = deb; $('c_thr').textContent = thr; }
+  $('run').addEventListener('click', function () {
+    if (running) return;
+    running = true; $('run').disabled = true;
+    var i = 0;
+    var id = setInterval(function () {
+      raw++; onDeb(); onThr(); paint();
+      if (++i >= 30) { clearInterval(id); running = false; $('run').disabled = false; }
+    }, 50);
+  });
+  $('reset').addEventListener('click', function () { raw = deb = thr = 0; paint(); });
+})();
+</script>
+</body>
+</html>

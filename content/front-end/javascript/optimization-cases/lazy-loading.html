@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JavaScript 優化案例：延遲載入 (Lazy Loading)</title>
+<style>
+  :root {
+    --bg: #ffffff; --panel: #f5f6fa; --text: #1f2430; --muted: #6b7280; --border: #dfe3ec;
+    --bad: #d62f35; --bad-bg: rgba(229, 72, 77, .14);
+    --good: #12875a; --good-bg: rgba(31, 157, 99, .15);
+    --key: #8a5a00; --key-bg: rgba(255, 196, 0, .30);
+    --code-bg: #14161d; --code-text: #e6e9f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171e; --panel: #1e212b; --text: #e6e9f2; --muted: #9aa3b5; --border: #313646;
+      --bad: #ff7b80; --bad-bg: rgba(255, 107, 112, .18);
+      --good: #4cc38a; --good-bg: rgba(76, 195, 138, .18);
+      --key: #ffd666; --key-bg: rgba(255, 196, 0, .20);
+      --code-bg: #0e1015;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 56px; background: var(--bg); color: var(--text);
+    font: 15px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+  }
+  main { max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 24px; line-height: 1.3; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 30px 0 8px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; }
+  .badge.bad { background: var(--bad-bg); color: var(--bad); }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+  p { margin: 6px 0; }
+  .sub { color: var(--muted); margin: 0 0 6px; }
+  .bad  { color: var(--bad);  background: var(--bad-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .good { color: var(--good); background: var(--good-bg); padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .key  { color: var(--key);  background: var(--key-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .box { border: 1px solid var(--border); border-left-width: 4px; border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .box.bad-box { border-left-color: var(--bad); }
+  .box.good-box { border-left-color: var(--good); }
+  ol, ul { margin: 4px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92em; }
+  :not(pre) > code { background: var(--panel); border: 1px solid var(--border); padding: 0 5px; border-radius: 4px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text); border-radius: 10px;
+    padding: 12px 16px; overflow-x: auto; margin: 8px 0; font-size: 13px; line-height: 1.6;
+  }
+  pre .c { color: #7f8aa3; }
+  pre .r { color: #ff8a8f; font-weight: 700; }
+  pre .g { color: #7ee2a8; font-weight: 700; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; font-size: 13px; }
+  .flow span { padding: 4px 10px; border-radius: 6px; background: var(--bad-bg); color: var(--bad); font-weight: 600; }
+  .flow i { color: var(--muted); font-style: normal; }
+  .term { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .term b.name { color: var(--key); }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 10px 0; }
+  .steps li { counter-increment: s; position: relative; padding: 6px 0 6px 38px; margin: 0; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 6px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--good-bg); color: var(--good); font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .viewport { display: grid; grid-template-columns: 150px 1fr; gap: 14px; margin: 12px 0; align-items: stretch; }
+  .viewport .screen { border: 2px solid var(--good); border-radius: 8px; background: var(--bg); overflow: hidden; position: relative; min-height: 170px; }
+  .viewport .rowx { height: 22px; border-bottom: 1px solid var(--border); font-size: 11px; padding: 2px 8px; color: var(--muted); }
+  .viewport .rowx.off { opacity: .35; border-bottom-style: dashed; }
+  .viewport .sentinel { position: absolute; left: 0; right: 0; bottom: 20px; height: 22px; background: var(--key-bg); color: var(--key); font-size: 11px; font-weight: 700; text-align: center; line-height: 22px; border-top: 1px dashed var(--key); border-bottom: 1px dashed var(--key); }
+  .viewport .legend { font-size: 13px; }
+  .viewport .legend div { margin: 4px 0; }
+  @media (max-width: 560px) { .viewport { grid-template-columns: 1fr; } }
+  td, th { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+  th { background: var(--panel); }
+  .demo { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin: 12px 0; }
+  .demo button { font: inherit; font-size: 13px; padding: 5px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; margin-right: 6px; }
+  .demo button.primary { background: var(--good); border-color: var(--good); color: #fff; }
+  .demo button:disabled { opacity: .5; cursor: default; }
+  .counters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+  .counter { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; }
+  .counter .n { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .counter .l { font-size: 12px; color: var(--muted); }
+  .counter.bad .n { color: var(--bad); }
+  .counter.good .n { color: var(--good); }
+  .counter.key .n { color: var(--key); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>JavaScript 優化案例：延遲載入 (Lazy Loading)</h1>
+<p class="sub">一進頁面就載入全部資源 · 結論：<span class="key">首屏外、暫時用不到的，等快用到才載入</span></p>
+
+<h2><span class="badge bad">原因</span></h2>
+<div class="flow"><span>頁面一開啟</span><i>→</i><span>圖片 / JS / 影片 / 資料全部一起載入</span><i>→</i><span>搶頻寬、阻塞首屏</span><i>→</i><span>載入慢、浪費流量（使用者可能根本沒看到）</span></div>
+<pre><span class="c">// 原本：進頁面就全部載入</span>
+&lt;img src="photo-001.jpg"&gt; … &lt;img src="photo-200.jpg"&gt;     <span class="c">// <span class="r">200 張圖同時請求</span></span>
+import { HeavyChart } from './HeavyChart'                  <span class="c">// <span class="r">即使使用者不打開圖表也先下載</span></span></pre><div class="box bad-box"><ol><li>很多內容在<span class="bad">首屏之外</span>，使用者要捲很久才會看到，甚至永遠不會。</li><li>大量請求<span class="bad">跟首屏重要資源搶頻寬</span>，主要內容反而變慢。</li><li>行動網路下流量與電量都被浪費。</li></ol></div>
+<h2><span class="badge good">名詞</span> 先看懂這幾個詞</h2>
+<div class="term"><b class="name">首屏（above the fold）</b><br>使用者打開頁面<b>不用捲動就看得到</b>的範圍。首屏內的內容要盡快載入，首屏外的才適合延後。</div>
+<div class="term"><b class="name">Lazy Loading（延遲載入）</b><br>資源「<span class="key">快要用到時才載入</span>」，而不是一開始全部載入。</div>
+<div class="term"><b class="name">IntersectionObserver 與哨兵元素</b><br>瀏覽器內建的「某元素有沒有進入畫面」偵測器。在清單底部放一個<b>哨兵元素</b>（沒內容的小元素），哨兵進入畫面 = 快到底了，該載入下一批。比自己監聽 <code>scroll</code> 並計算位置省效能。</div>
+<div class="term"><b class="name">動態 import（code splitting）</b><br><code>import("./x.js")</code> 會回傳 Promise，<b>執行到這行才下載該模組</b>。打包工具會自動把它切成獨立的檔案。</div>
+<h2><span class="badge good">解法</span> 依資源類型選對方法</h2>
+<h3>① 圖片、iframe：原生 loading="lazy"</h3>
+<pre>&lt;img src="photo.jpg" <span class="g">loading="lazy"</span> width="400" height="300" alt="..."&gt;
+&lt;iframe src="map.html" <span class="g">loading="lazy"</span>&gt;&lt;/iframe&gt;</pre><p><span class="key">只有 <code>img</code> 和 <code>iframe</code> 支援</span>；請同時寫 <code>width</code> / <code>height</code>（或 <code>aspect-ratio</code>）預留空間，避免圖片載入後把版面撐開（版面位移 CLS）。</p>
+<h3>② 無限捲動：IntersectionObserver + 哨兵</h3>
+<pre><span class="c">// 原本：每個 scroll 事件都要量位置，高頻又吃效能</span>
+window.addEventListener('scroll', () =&gt; {
+  if (window.innerHeight + window.scrollY &gt;= document.body.offsetHeight) <span class="r">loadMore()</span>
+})
+
+<span class="c">// <span class="g">改用：哨兵進入畫面才載入</span></span>
+const io = new IntersectionObserver((entries) =&gt; {
+  if (entries.some((e) =&gt; e.isIntersecting)) loadMore()
+}, { rootMargin: '300px' })             <span class="c">// 提早 300px 開始載入，使用者不會看到空白</span>
+io.observe(document.querySelector('#sentinel'))</pre><h3>③ JavaScript 模組：動態 import</h3>
+<pre>button.addEventListener('click', async () =&gt; {
+  const { HeavyChart } = <span class="g">await import('./HeavyChart.js')</span>   <span class="c">// 按下才下載</span>
+  render(HeavyChart)
+})
+
+<span class="c">// React：const Chart = React.lazy(() =&gt; import('./HeavyChart'))  搭配 &lt;Suspense&gt;</span></pre><h3>④ 影片：preload="none" + poster</h3>
+<pre>&lt;video <span class="g">preload="none" poster="cover.jpg"</span> controls&gt;
+  &lt;source src="video.mp4" type="video/mp4"&gt;
+&lt;/video&gt;</pre><h3>⑤ 網頁字型：font-display，而不是 preload</h3>
+<pre>@font-face {
+  font-family: 'Roboto';
+  src: url('roboto.woff2') format('woff2');
+  <span class="g">font-display: swap;</span>      <span class="c">// 字型沒載好先用系統字型，載好再換，不阻塞文字顯示</span>
+}</pre><div class="box bad-box"><span class="key">更正：</span>常見的兩個錯誤寫法——<br>① <code>&lt;video loading="lazy"&gt;</code> <b>無效</b>，<code>loading</code> 屬性只支援 <code>img</code> 與 <code>iframe</code>；影片請用 <code>preload="none"</code>。<br>② <code>&lt;link rel="preload"&gt;</code> 是「<b>提早</b>載入」重要資源，<b>不是延遲</b>；想延後字型請用 <code>font-display</code>。</div>
+<h2><span class="badge good">判斷</span></h2>
+<table>
+<thead><tr><th>資源</th><th>做法</th></tr></thead>
+<tbody>
+<tr><td>首屏內的圖片（尤其最大那張）</td><td><span class="bad">不要</span> lazy，它是 LCP；要用 <code>fetchpriority="high"</code> 或提早載入</td></tr>
+<tr><td>首屏外的圖片 / iframe</td><td><span class="good">loading="lazy"</span></td></tr>
+<tr><td>長清單、無限捲動</td><td><span class="good">IntersectionObserver + 哨兵</span></td></tr>
+<tr><td>使用者不一定會用到的功能（圖表、編輯器、彈窗）</td><td><span class="good">動態 import / React.lazy</span></td></tr>
+<tr><td>影片</td><td><span class="good">preload="none"</span> + poster</td></tr>
+</tbody></table>
+<p class="sub">取捨：延遲載入會在「使用者捲到時才開始下載」造成短暫等待，可用 rootMargin 提早觸發、或用 poster / 骨架畫面（skeleton）緩衝。</p>
+
+
+</main>
+
+</body>
+</html>

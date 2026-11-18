@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>React 優化案例：長清單分批渲染（變動高度）</title>
+<style>
+  :root {
+    --bg: #ffffff; --panel: #f5f6fa; --text: #1f2430; --muted: #6b7280; --border: #dfe3ec;
+    --bad: #d62f35; --bad-bg: rgba(229, 72, 77, .14);
+    --good: #12875a; --good-bg: rgba(31, 157, 99, .15);
+    --key: #8a5a00; --key-bg: rgba(255, 196, 0, .30);
+    --code-bg: #14161d; --code-text: #e6e9f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171e; --panel: #1e212b; --text: #e6e9f2; --muted: #9aa3b5; --border: #313646;
+      --bad: #ff7b80; --bad-bg: rgba(255, 107, 112, .18);
+      --good: #4cc38a; --good-bg: rgba(76, 195, 138, .18);
+      --key: #ffd666; --key-bg: rgba(255, 196, 0, .20);
+      --code-bg: #0e1015;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 56px; background: var(--bg); color: var(--text);
+    font: 15px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+  }
+  main { max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 24px; line-height: 1.3; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 30px 0 8px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; }
+  .badge.bad { background: var(--bad-bg); color: var(--bad); }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+  p { margin: 6px 0; }
+  .sub { color: var(--muted); margin: 0 0 6px; }
+  .bad  { color: var(--bad);  background: var(--bad-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .good { color: var(--good); background: var(--good-bg); padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .key  { color: var(--key);  background: var(--key-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .box { border: 1px solid var(--border); border-left-width: 4px; border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .box.bad-box { border-left-color: var(--bad); }
+  .box.good-box { border-left-color: var(--good); }
+  ol, ul { margin: 4px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92em; }
+  :not(pre) > code { background: var(--panel); border: 1px solid var(--border); padding: 0 5px; border-radius: 4px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text); border-radius: 10px;
+    padding: 12px 16px; overflow-x: auto; margin: 8px 0; font-size: 13px; line-height: 1.6;
+  }
+  pre .c { color: #7f8aa3; }
+  pre .r { color: #ff8a8f; font-weight: 700; }
+  pre .g { color: #7ee2a8; font-weight: 700; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; font-size: 13px; }
+  .flow span { padding: 4px 10px; border-radius: 6px; background: var(--bad-bg); color: var(--bad); font-weight: 600; }
+  .flow i { color: var(--muted); font-style: normal; }
+  .term { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .term b.name { color: var(--key); }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 10px 0; }
+  .steps li { counter-increment: s; position: relative; padding: 6px 0 6px 38px; margin: 0; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 6px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--good-bg); color: var(--good); font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .viewport { display: grid; grid-template-columns: 150px 1fr; gap: 14px; margin: 12px 0; align-items: stretch; }
+  .viewport .screen { border: 2px solid var(--good); border-radius: 8px; background: var(--bg); overflow: hidden; position: relative; min-height: 170px; }
+  .viewport .rowx { height: 22px; border-bottom: 1px solid var(--border); font-size: 11px; padding: 2px 8px; color: var(--muted); }
+  .viewport .rowx.off { opacity: .35; border-bottom-style: dashed; }
+  .viewport .sentinel { position: absolute; left: 0; right: 0; bottom: 20px; height: 22px; background: var(--key-bg); color: var(--key); font-size: 11px; font-weight: 700; text-align: center; line-height: 22px; border-top: 1px dashed var(--key); border-bottom: 1px dashed var(--key); }
+  .viewport .legend { font-size: 13px; }
+  .viewport .legend div { margin: 4px 0; }
+  @media (max-width: 560px) { .viewport { grid-template-columns: 1fr; } }
+  td, th { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+  th { background: var(--panel); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>React 優化案例：長清單分批渲染（變動高度）</h1>
+<p class="sub">展開 branch 一次掛上最多 1000 筆 commit · 結論：<span class="key">高度不固定時，用分批掛載 + content-visibility</span></p>
+
+<h2><span class="badge bad">原因</span></h2>
+<div class="flow">
+  <span>展開 branch</span><i>→</i>
+  <span>一次掛上最多 1000 個列</span><i>→</i>
+  <span>每列含多個子元件</span><i>→</i>
+  <span>掛載慢、之後每次重繪也慢</span>
+</div>
+<pre><span class="c">// 原本：全部直接 map 出來</span>
+<span class="r">commits.map((c) =&gt; &lt;CommitRow key={c.hash} commit={c} … /&gt;)</span>   <span class="c">// 最多 1000 個</span></pre>
+<div class="box bad-box">
+  <ol>
+    <li>畫面一次只看得到幾十列，卻<span class="bad">先把 1000 列都建出來</span>。</li>
+    <li>DOM 節點多 → <span class="bad">排版、繪製、記憶體</span>都變重。</li>
+    <li>固定列高的「虛擬列表」（REMOTE 列表用的）<span class="bad">不能直接套</span>：commit 列有時一行、有時因標籤換行變兩三行，<b>高度不固定</b>，算不出第 N 列在哪。</li>
+  </ol>
+</div>
+
+<h2><span class="badge good">名詞</span> 先看懂這幾個詞</h2>
+
+<div class="term">
+  <b class="name">掛載（mount）</b><br>
+  React 把元件真的建成 DOM 放到頁面上。掛得越多，建立、排版、繪製的成本越高。「只掛看得到的」就是這份優化的核心。
+</div>
+
+<div class="term">
+  <b class="name">固定高度 vs 變動高度</b><br>
+  每列一樣高 → 可以用數學算出「捲到 520px 就是第 20 列」，只畫那幾列（真正的<b>虛擬列表</b>）。<br>
+  每列高度不一 → 算不出來，只能換個做法：<span class="good">先少掛一點，需要時再加</span>。
+</div>
+
+<div class="term">
+  <b class="name">哨兵元素（sentinel）</b><br>
+  清單最底下<b>放一個沒內容的小元素</b>，它的唯一任務是「站崗」：<span class="key">當它被使用者捲到看得見時，就代表「快到底了，該多載入一批」</span>。
+  就像排隊隊尾舉著「隊伍結束」的牌子：牌子出現在視線裡，就知道要補人了。
+  <div class="viewport">
+    <div class="screen">
+      <div class="rowx">commit 1</div><div class="rowx">commit 2</div><div class="rowx">commit 3</div>
+      <div class="rowx">commit 4</div><div class="rowx">commit 5</div><div class="rowx">commit 6</div>
+      <div class="sentinel">哨兵（40 / 1000）</div>
+    </div>
+    <div class="legend">
+      <div><span class="good">綠框</span> = 使用者看得到的範圍（視窗）</div>
+      <div><span class="key">黃色橫條</span> = 哨兵，放在已掛載的列的最後面</div>
+      <div>哨兵一進入綠框 → 觸發「再掛 40 列」→ 新列把哨兵往下推 → 哨兵又離開視窗，等下次再進來</div>
+    </div>
+  </div>
+</div>
+
+<div class="term">
+  <b class="name">IntersectionObserver</b><br>
+  瀏覽器內建的「<b>某元素有沒有進入畫面</b>」偵測器。你告訴它要盯哪個元素，進出視窗時它會<span class="good">主動通知你</span>（呼叫你的函式）。<br>
+  為什麼不用 <code>scroll</code> 事件自己算？<span class="bad">scroll 事件每捲一下就觸發，要自己量位置、很吃效能</span>（正是前一個案例的問題）；IntersectionObserver 由瀏覽器在底層處理，只在「進入 / 離開」那一刻才通知。
+</div>
+
+<div class="term">
+  <b class="name">rootMargin: '300px 0px'</b><br>
+  把偵測範圍<b>往外擴 300px</b>（上下各 300px，左右 0）。哨兵還差 300px 才進入畫面時就先通知，所以<span class="good">新的列在使用者捲到之前就掛好了</span>，不會看到空白等待。
+</div>
+
+<div class="term">
+  <b class="name">slice(0, visibleCount)</b><br>
+  只取清單的前 <code>visibleCount</code> 筆來畫。<code>visibleCount</code> 是 state：一開始 40，每次加 40，直到等於總數。<span class="key">資料 1000 筆都已經在記憶體裡，只是「畫」的數量被限制。</span>
+</div>
+
+<h2><span class="badge good">解法 A</span> 分批掛載：捲到底才多掛一批</h2>
+<p>運作流程：</p>
+<ol class="steps">
+  <li>一開始 <code>visibleCount = 40</code>，只畫前 40 列，最後放一個哨兵。</li>
+  <li>IntersectionObserver 盯著哨兵。</li>
+  <li>使用者往下捲，哨兵（加上 300px 的提早量）進入畫面 → 瀏覽器通知我們。</li>
+  <li>通知時 <code>setVisibleCount(c + 40)</code>，再多畫 40 列，哨兵被往下推。</li>
+  <li>重複，直到 <code>visibleCount ≥ 總數</code>，此時不再放哨兵，也不再偵測。</li>
+</ol>
+<pre>const INITIAL_COUNT = 40, CHUNK_SIZE = 40
+
+function CommitList({ commits, ...rowProps }) {
+  const [visibleCount, setVisibleCount] = useState(INITIAL_COUNT)   <span class="c">// 目前畫幾列</span>
+  const sentinelRef = useRef(null)                                  <span class="c">// 指向哨兵元素</span>
+  const hasMore = visibleCount &lt; commits.length                    <span class="c">// 還有沒畫的嗎</span>
+
+  useEffect(() =&gt; {
+    const el = sentinelRef.current
+    if (!el || !hasMore) return                                     <span class="c">// 全畫完了就不用盯</span>
+
+    <span class="c">// 建立偵測器：哨兵「進入畫面」時執行這個函式</span>
+    const io = new <span class="g">IntersectionObserver</span>((entries) =&gt; {
+      if (entries.some((e) =&gt; e.isIntersecting))                    <span class="c">// isIntersecting = 現在看得到</span>
+        setVisibleCount((c) =&gt; Math.min(c + CHUNK_SIZE, commits.length))   <span class="c">// 多畫一批（不超過總數）</span>
+    }, { <span class="g">rootMargin: '300px 0px'</span> })                              <span class="c">// 提早 300px 通知</span>
+
+    io.observe(el)                                                  <span class="c">// 開始盯哨兵</span>
+    return () =&gt; io.disconnect()                                    <span class="c">// 元件卸載 / 重新訂閱前停止盯</span>
+  }, [hasMore, commits.length, visibleCount])                       <span class="c">// 每掛完一批就重新訂閱</span>
+
+  return (&lt;&gt;
+    {commits.slice(0, visibleCount).map((c) =&gt;                      <span class="c">// 只畫前 visibleCount 筆</span>
+      &lt;CommitRow key={c.hash} commit={c} {...rowProps} /&gt;)}
+    {hasMore &amp;&amp; &lt;div ref={sentinelRef}&gt;{visibleCount} / {commits.length}&lt;/div&gt;}   <span class="c">// 哨兵</span>
+  &lt;/&gt;)
+}</pre>
+
+<div class="box good-box">
+  <span class="key">為什麼依賴陣列要包含 <code>visibleCount</code>？</span><br>
+  IntersectionObserver 只在「<b>狀態改變</b>（沒看到 → 看到）」時通知。如果新掛上 40 列之後，哨兵<b>仍然在畫面內</b>（例如螢幕很高、列很矮），狀態沒變就不會再通知，清單會卡住。
+  每掛完一批就<span class="good">重新訂閱</span>，新的 observer 一開始會立刻回報「哨兵目前看不看得到」，看得到就會接著再載下一批。
+</div>
+
+<h2><span class="badge good">解法 B</span> content-visibility：已掛載但看不到的列不排版不繪製</h2>
+<p>解法 A 控制「掛幾個」；解法 B 讓<b>已經掛上、但在視窗外</b>的列變便宜。</p>
+<pre><span class="g">.commitItem {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 34px;
+}</span></pre>
+<div class="term">
+  <b class="name">content-visibility: auto</b><br>
+  告訴瀏覽器：「這個元素<b>不在畫面內時，可以跳過它內部的排版與繪製</b>」。捲到附近才真的畫。<br>
+  <b>代價：</b>瀏覽器會對它套用「paint containment」，<span class="bad">超出元素範圍的內容會被裁掉</span>（例如伸到外面的陰影、光暈）。
+</div>
+<div class="term">
+  <b class="name">contain-intrinsic-size: auto 34px</b><br>
+  元素被跳過繪製時，瀏覽器不知道它多高，捲軸會亂跳。這行給一個<b>預留高度 34px</b>；前面的 <code>auto</code> 表示「一旦真的渲染過，就記住真實高度」，之後用真實高度，捲軸就穩了。
+</div>
+
+<div class="box good-box">
+  <span class="key">兩個一起用：</span>
+  A 減少<b>掛載數量</b>（React 與 DOM 的成本）；B 讓已掛載但在視窗外的列<b>跳過排版與繪製</b>（瀏覽器的成本）。
+</div>
+
+<h2><span class="badge good">判斷</span></h2>
+<table>
+  <thead><tr><th>列高</th><th>做法</th></tr></thead>
+  <tbody>
+    <tr><td>固定</td><td><span class="good">真正的虛擬列表</span>：只掛視窗內的列，捲動時換（REMOTE 列表）</td></tr>
+    <tr><td>不固定</td><td><span class="good">分批掛載 + content-visibility</span>（本案例）</td></tr>
+    <tr><td>不固定、且上萬筆</td><td>需量測高度的虛擬列表套件（如 react-window 的可變高度版本）</td></tr>
+  </tbody>
+</table>
+<div class="box bad-box">
+  <span class="key">取捨（誠實說明）：</span>這不是嚴格的虛擬化——已經掛上的列<b>不會</b>在捲走後卸載，捲得越深記憶體越多。
+  <code>content-visibility: auto</code> 的 paint containment 會裁掉列邊界外的內容，使用前要確認列的視覺效果（陰影、光暈）都在邊界內。
+</div>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>優化案例：互不相關的非同步指令改成同時執行</title>
+<style>
+  :root {
+    --bg: #ffffff; --panel: #f5f6fa; --text: #1f2430; --muted: #6b7280; --border: #dfe3ec;
+    --bad: #d62f35; --bad-bg: rgba(229, 72, 77, .14);
+    --good: #12875a; --good-bg: rgba(31, 157, 99, .15);
+    --key: #8a5a00; --key-bg: rgba(255, 196, 0, .30);
+    --code-bg: #14161d; --code-text: #e6e9f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171e; --panel: #1e212b; --text: #e6e9f2; --muted: #9aa3b5; --border: #313646;
+      --bad: #ff7b80; --bad-bg: rgba(255, 107, 112, .18);
+      --good: #4cc38a; --good-bg: rgba(76, 195, 138, .18);
+      --key: #ffd666; --key-bg: rgba(255, 196, 0, .20);
+      --code-bg: #0e1015;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 56px; background: var(--bg); color: var(--text);
+    font: 15px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+  }
+  main { max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 24px; line-height: 1.3; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 30px 0 8px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; }
+  .badge.bad { background: var(--bad-bg); color: var(--bad); }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+  p { margin: 6px 0; }
+  .sub { color: var(--muted); margin: 0 0 6px; }
+  .bad  { color: var(--bad);  background: var(--bad-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .good { color: var(--good); background: var(--good-bg); padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .key  { color: var(--key);  background: var(--key-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .box { border: 1px solid var(--border); border-left-width: 4px; border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .box.bad-box { border-left-color: var(--bad); }
+  .box.good-box { border-left-color: var(--good); }
+  ol, ul { margin: 4px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92em; }
+  :not(pre) > code { background: var(--panel); border: 1px solid var(--border); padding: 0 5px; border-radius: 4px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text); border-radius: 10px;
+    padding: 12px 16px; overflow-x: auto; margin: 8px 0; font-size: 13px; line-height: 1.6;
+  }
+  pre .c { color: #7f8aa3; }
+  pre .r { color: #ff8a8f; font-weight: 700; }
+  pre .g { color: #7ee2a8; font-weight: 700; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; font-size: 13px; }
+  .flow span { padding: 4px 10px; border-radius: 6px; background: var(--bad-bg); color: var(--bad); font-weight: 600; }
+  .flow i { color: var(--muted); font-style: normal; }
+  .term { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .term b.name { color: var(--key); }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 10px 0; }
+  .steps li { counter-increment: s; position: relative; padding: 6px 0 6px 38px; margin: 0; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 6px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--good-bg); color: var(--good); font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .viewport { display: grid; grid-template-columns: 150px 1fr; gap: 14px; margin: 12px 0; align-items: stretch; }
+  .viewport .screen { border: 2px solid var(--good); border-radius: 8px; background: var(--bg); overflow: hidden; position: relative; min-height: 170px; }
+  .viewport .rowx { height: 22px; border-bottom: 1px solid var(--border); font-size: 11px; padding: 2px 8px; color: var(--muted); }
+  .viewport .rowx.off { opacity: .35; border-bottom-style: dashed; }
+  .viewport .sentinel { position: absolute; left: 0; right: 0; bottom: 20px; height: 22px; background: var(--key-bg); color: var(--key); font-size: 11px; font-weight: 700; text-align: center; line-height: 22px; border-top: 1px dashed var(--key); border-bottom: 1px dashed var(--key); }
+  .viewport .legend { font-size: 13px; }
+  .viewport .legend div { margin: 4px 0; }
+  @media (max-width: 560px) { .viewport { grid-template-columns: 1fr; } }
+  td, th { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+  th { background: var(--panel); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>優化案例：互不相關的非同步指令改成同時執行</h1>
+<p class="sub">展開一個 branch 要依序跑 5 個 git 指令 · 結論：<span class="key">彼此不依賴的 await，用 Promise.all 同時發出</span></p>
+
+<h2><span class="badge bad">原因</span></h2>
+<div class="flow">
+  <span>for-each-ref</span><i>→ 等 →</i>
+  <span>rev-parse</span><i>→ 等 →</i>
+  <span>rev-list（未 push）</span><i>→ 等 →</i>
+  <span>rev-list（未 pull）</span><i>→ 等 →</i>
+  <span>git log</span>
+</div>
+<pre><span class="c">// 原本：一個接一個 await，總時間 = 5 個指令時間相加</span>
+const ref      = <span class="r">await</span> exec('git for-each-ref …')
+await exec('git rev-parse --verify upstream')
+const unpushed = <span class="r">await</span> exec('git rev-list branch --not upstream')
+const unpulled = <span class="r">await</span> exec('git rev-list upstream --not branch')
+const log      = <span class="r">await</span> exec('git log branch upstream …')</pre>
+<div class="box bad-box">
+  <ol>
+    <li>後 3 個查詢<span class="bad">不需要彼此的結果</span>，卻排隊等前一個做完。</li>
+    <li>總耗時 = <span class="bad">每個指令時間相加</span>，每多一個功能就多一份延遲。</li>
+    <li>展開多個 branch 或「搜尋 tag」時會一次載入全部，延遲被放大。</li>
+  </ol>
+</div>
+
+<h2><span class="badge good">名詞</span> 先看懂這幾個詞</h2>
+
+<div class="term">
+  <b class="name">非同步（async）與 await</b><br>
+  執行 git 指令要花時間（要啟動行程、讀硬碟）。<code>exec(...)</code> 不會卡住程式，而是<b>回傳一個 Promise</b>（「承諾：做完會通知你」）。
+  <code>await</code> 的意思是：<span class="key">在這一行等它做完，再往下執行</span>。
+  <br>連續寫三個 <code>await</code> = 排隊：第一個做完才開始第二個。
+</div>
+
+<div class="term">
+  <b class="name">依賴關係</b><br>
+  B 需要 A 的<b>結果</b> → 必須等 A 做完（有依賴，要排隊）。<br>
+  B 和 C 彼此不看對方的結果 → <span class="good">可以同時開始</span>（沒依賴，可並行）。<br>
+  做法：先畫出誰需要誰，沒有箭頭相連的就能一起跑。
+</div>
+
+<div class="term">
+  <b class="name">Promise.all</b><br>
+  把一組 Promise <b>同時啟動</b>，<span class="good">全部做完才回傳結果陣列（順序和你傳入的順序一致）</span>。總耗時 ≈ <b>最慢的那一個</b>，而不是全部相加。
+  <pre style="margin:6px 0"><span class="c">// 序列：100 + 100 + 100 = 300ms</span>
+await a(); await b(); await c()
+
+<span class="c">// 並行：max(100, 100, 100) ≈ 100ms</span>
+await Promise.all([a(), b(), c()])</pre>
+  <b>注意：</b>只要其中<span class="bad">一個失敗，整個 <code>Promise.all</code> 就會失敗</span>，其他的結果也拿不到。
+</div>
+
+<div class="term">
+  <b class="name">Promise.allSettled</b><br>
+  跟 <code>Promise.all</code> 一樣同時跑，但<b>不管成敗都等全部結束</b>，回傳每個的結果（成功或失敗）。適合「某個失敗不該影響其他」的情況。
+</div>
+
+<div class="term">
+  <b class="name">upstream（上游分支）與 [gone]</b><br>
+  本地 branch 通常對應一個遠端 branch（例如 <code>feature/x</code> ↔ <code>origin/feature/x</code>），那個遠端 branch 就叫它的 upstream。
+  如果遠端已經把它刪掉，git 會標成 <code>[gone]</code>。
+</div>
+
+<div class="term">
+  <b class="name">rev-list A --not B</b><br>
+  列出「<b>在 A 裡、但不在 B 裡</b>」的 commit。<br>
+  <code>branch --not upstream</code> = 本地有、遠端沒有 = <span class="key">還沒 push</span>；<br>
+  <code>upstream --not branch</code> = 遠端有、本地沒有 = <span class="key">還沒 pull</span>。
+</div>
+
+<h2><span class="badge good">解法</span> 分成「有依賴」與「無依賴」兩輪</h2>
+<p>先畫依賴：只有<b>第 1 步的結果</b>（upstream 名稱）被後面用到，後面 3 個彼此獨立 → <span class="good">2 輪，第 2 輪同時跑</span></p>
+<div class="flow" style="margin-top:6px">
+  <span style="background:var(--key-bg);color:var(--key)">第 1 輪：for-each-ref</span><i>→</i>
+  <span style="background:var(--good-bg);color:var(--good)">第 2 輪（同時）：git log ＋ rev-list 未 push ＋ rev-list 未 pull</span>
+</div>
+<pre><span class="c">// 第 1 輪：一次拿到 是否本地 / upstream / upstream 是否已被遠端刪除</span>
+const { stdout } = await exec(
+  'git for-each-ref --format="%(refname)|%(upstream:short)|%(upstream:track)" refs/heads/&lt;branch&gt;')
+const [refname, up, track] = stdout.trim().split('|')
+const upstream = up &amp;&amp; !track.includes('gone') ? up : ''    <span class="c">// [gone] = 遠端已刪除，不必再 rev-parse 驗證</span>
+
+<span class="c">// 輔助標記失敗不該拖垮主清單：每個各自吞掉錯誤，回傳空集合</span>
+const markerSet = async (cmd) =&gt; {
+  try { return toSet((await exec(cmd)).stdout) } catch { return new Set() }
+}
+
+<span class="c">// 第 2 輪：互不相關 → 同時執行</span>
+const [{ stdout: log }, unpushed, unpulled] = <span class="g">await Promise.all([</span>
+  exec(`git log ${revs} …`),                                                    <span class="c">// 主要資料：失敗要丟錯</span>
+  markerSet(`git rev-list ${branch} --not ${upstream || '--remotes'}`),          <span class="c">// 未 push</span>
+  upstream ? markerSet(`git rev-list ${upstream} --not ${branch}`) : Promise.resolve(new Set())  <span class="c">// 未 pull</span>
+<span class="g">])</span></pre>
+<div class="box good-box">
+  <span class="key">兩個重點：</span><br>
+  ① 用 <code>%(upstream:track)</code> 取代額外的 <code>rev-parse</code>，<span class="good">少跑一個指令</span>。<br>
+  ② <code>git log</code> 是主要資料，失敗就該丟錯；粉色 / 白色標記只是輔助，各自 <code>try/catch</code> 回傳空集合，<b>失敗不會讓整個清單消失</b>。
+</div>
+
+<h2><span class="badge good">判斷</span></h2>
+<table>
+  <thead><tr><th>情況</th><th>做法</th></tr></thead>
+  <tbody>
+    <tr><td>B 需要 A 的<b>結果</b></td><td>保持順序：<code>await A</code> 再 <code>B</code></td></tr>
+    <tr><td>B、C 都只需要 A 的結果，彼此無關</td><td><span class="good">A 之後 <code>Promise.all([B, C])</code></span></td></tr>
+    <tr><td>某個失敗不能影響其他</td><td>各自 <code>try/catch</code>，或用 <code>Promise.allSettled</code></td></tr>
+    <tr><td>要同時跑的數量很多（幾十個以上）</td><td><span class="key">限制並行數</span>，避免同時啟動太多行程互搶資源</td></tr>
+  </tbody>
+</table>
+<p class="sub">這個案例只有 3 個並行指令，不需要限流。</p>
+
+</main>
+</body>
+</html>

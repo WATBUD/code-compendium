@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>React 優化案例：useEffect 請求競態與 AbortController</title>
+<style>
+  :root {
+    --bg: #ffffff; --panel: #f5f6fa; --text: #1f2430; --muted: #6b7280; --border: #dfe3ec;
+    --bad: #d62f35; --bad-bg: rgba(229, 72, 77, .14);
+    --good: #12875a; --good-bg: rgba(31, 157, 99, .15);
+    --key: #8a5a00; --key-bg: rgba(255, 196, 0, .30);
+    --code-bg: #14161d; --code-text: #e6e9f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171e; --panel: #1e212b; --text: #e6e9f2; --muted: #9aa3b5; --border: #313646;
+      --bad: #ff7b80; --bad-bg: rgba(255, 107, 112, .18);
+      --good: #4cc38a; --good-bg: rgba(76, 195, 138, .18);
+      --key: #ffd666; --key-bg: rgba(255, 196, 0, .20);
+      --code-bg: #0e1015;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 56px; background: var(--bg); color: var(--text);
+    font: 15px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+  }
+  main { max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 24px; line-height: 1.3; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 30px 0 8px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; }
+  .badge.bad { background: var(--bad-bg); color: var(--bad); }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+  p { margin: 6px 0; }
+  .sub { color: var(--muted); margin: 0 0 6px; }
+  .bad  { color: var(--bad);  background: var(--bad-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .good { color: var(--good); background: var(--good-bg); padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .key  { color: var(--key);  background: var(--key-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .box { border: 1px solid var(--border); border-left-width: 4px; border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .box.bad-box { border-left-color: var(--bad); }
+  .box.good-box { border-left-color: var(--good); }
+  ol, ul { margin: 4px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92em; }
+  :not(pre) > code { background: var(--panel); border: 1px solid var(--border); padding: 0 5px; border-radius: 4px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text); border-radius: 10px;
+    padding: 12px 16px; overflow-x: auto; margin: 8px 0; font-size: 13px; line-height: 1.6;
+  }
+  pre .c { color: #7f8aa3; }
+  pre .r { color: #ff8a8f; font-weight: 700; }
+  pre .g { color: #7ee2a8; font-weight: 700; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; font-size: 13px; }
+  .flow span { padding: 4px 10px; border-radius: 6px; background: var(--bad-bg); color: var(--bad); font-weight: 600; }
+  .flow i { color: var(--muted); font-style: normal; }
+  .term { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .term b.name { color: var(--key); }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 10px 0; }
+  .steps li { counter-increment: s; position: relative; padding: 6px 0 6px 38px; margin: 0; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 6px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--good-bg); color: var(--good); font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .viewport { display: grid; grid-template-columns: 150px 1fr; gap: 14px; margin: 12px 0; align-items: stretch; }
+  .viewport .screen { border: 2px solid var(--good); border-radius: 8px; background: var(--bg); overflow: hidden; position: relative; min-height: 170px; }
+  .viewport .rowx { height: 22px; border-bottom: 1px solid var(--border); font-size: 11px; padding: 2px 8px; color: var(--muted); }
+  .viewport .rowx.off { opacity: .35; border-bottom-style: dashed; }
+  .viewport .sentinel { position: absolute; left: 0; right: 0; bottom: 20px; height: 22px; background: var(--key-bg); color: var(--key); font-size: 11px; font-weight: 700; text-align: center; line-height: 22px; border-top: 1px dashed var(--key); border-bottom: 1px dashed var(--key); }
+  .viewport .legend { font-size: 13px; }
+  .viewport .legend div { margin: 4px 0; }
+  @media (max-width: 560px) { .viewport { grid-template-columns: 1fr; } }
+  td, th { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+  th { background: var(--panel); }
+  .demo { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin: 12px 0; }
+  .demo button { font: inherit; font-size: 13px; padding: 5px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; margin-right: 6px; }
+  .demo button.primary { background: var(--good); border-color: var(--good); color: #fff; }
+  .demo button:disabled { opacity: .5; cursor: default; }
+  .counters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+  .counter { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; }
+  .counter .n { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .counter .l { font-size: 12px; color: var(--muted); }
+  .counter.bad .n { color: var(--bad); }
+  .counter.good .n { color: var(--good); }
+  .counter.key .n { color: var(--key); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>React 優化案例：useEffect 請求競態與 AbortController</h1>
+<p class="sub">舊請求晚回來蓋掉新資料 · 結論：<span class="key">effect 清理時 abort 上一個請求，並略過 AbortError</span></p>
+
+<h2><span class="badge bad">原因</span> </h2>
+<div class="flow"><span>使用者快速切換條件（id / 搜尋字 / 分頁）</span><i>→</i><span>連續發出多個請求</span><i>→</i><span>回來的順序不一定</span><i>→</i><span>舊請求晚回來 → 蓋掉新資料（競態）</span></div>
+<pre>useEffect(() =&gt; {
+  fetch(`/api/user/${id}`)
+    .then((r) =&gt; r.json())
+    .then(<span class="r">(data) =&gt; setUser(data)</span>)       <span class="c">// 不管這是不是「最新那次」的請求，回來就寫入</span>
+}, [id])
+<span class="c">// id: 1 → 2 → 3，請求 1 最慢，最後才回來 → 畫面顯示的是 1 的資料，但目前選的是 3</span></pre>
+<div class="box bad-box"><ol><li><span class="bad">競態（race condition）</span>：請求回來的順序不等於發出的順序，慢的舊請求會覆蓋新結果。</li><li>元件卸載、條件已經改變，<span class="bad">請求還在跑</span>，浪費頻寬，回來還會去更新已經不需要的 state。</li></ol></div>
+<h2><span class="badge good">名詞</span> 先看懂這幾個詞</h2>
+<div class="term"><b class="name">AbortController / signal</b><br>瀏覽器內建，用來「取消尚未完成的非同步操作」。<code>controller.signal</code> 交給 <code>fetch</code>，之後呼叫 <code>controller.abort()</code> 就能中止該請求。</div>
+<div class="term"><b class="name">AbortError</b><br>請求被 abort 時，<code>fetch</code> 會丟出名稱為 <code>AbortError</code> 的錯誤。這是「我們主動取消」，<b>不是真正的錯誤</b>，要略過。</div>
+<div class="term"><b class="name">effect 清理函式（cleanup）</b><br><code>useEffect</code> 回傳的函式。<b>下一次 effect 執行之前、或元件卸載時</b>會先執行它。這正好是「取消上一個請求」的時機。</div>
+<div class="term"><b class="name">競態（race condition）</b><br>結果取決於兩件事「誰先完成」，而這個順序不可控。</div>
+<h2><span class="badge good">解法</span> 在 effect 裡建立 controller，清理時 abort</h2>
+<pre>useEffect(() =&gt; {
+  const controller = <span class="g">new AbortController()</span>          <span class="c">// 每次 effect 一個新的（不可重複使用）</span>
+
+  async function load() {
+    try {
+      const res = await fetch(`/api/user/${id}`, { <span class="g">signal: controller.signal</span> })
+      setUser(await res.json())
+    } catch (err) {
+      if (err.name === 'AbortError') return               <span class="c">// 主動取消，不是錯誤</span>
+      setError(err)
+    } finally {
+      <span class="g">if (!controller.signal.aborted)</span> setLoading(false)   <span class="c">// 已被取消的請求不要動 loading</span>
+    }
+  }
+  setLoading(true)
+  load()
+
+  return () =&gt; <span class="g">controller.abort()</span>                        <span class="c">// id 改變 / 卸載時，取消上一個請求</span>
+}, [id])</pre>
+<div class="box bad-box"><span class="key">更正原筆記：</span>原筆記的 <code>finally { setLoading(false) }</code> 對「被取消的請求」也會執行：舊請求被取消後，它的 <code>finally</code> 會在新請求還在進行時把 <code>loading</code> 設回 false。上面的寫法用 <code>signal.aborted</code> 擋掉。</div>
+<h2><span class="badge good">判斷</span> </h2>
+<table><thead><tr><th>情況</th><th>做法</th></tr></thead><tbody>
+<tr><td>effect 內發請求，依賴會變</td><td><span class="good">一定要在清理函式 abort</span></td></tr>
+<tr><td>多個請求同時進行</td><td>每個請求<b>各用一個</b> controller（abort 後不能再用）</td></tr>
+<tr><td>不能取消的非同步（沒有 signal 的函式）</td><td>用區域旗標 <code>let ignore = false</code>，清理時設 <code>true</code>，回來時 <code>if (!ignore)</code> 才寫入</td></tr>
+<tr><td>要快取、重試、去重</td><td>改用資料請求庫（React Query / SWR / RTK Query），它們已處理好</td></tr>
+</tbody></table>
+<p class="sub">注意：開發模式的 StrictMode 會刻意把 effect 執行兩次（掛載 → 清理 → 再掛載），所以你會看到第一個請求被取消，這是正常的，不是 bug。</p>
+
+
+</main>
+
+</body>
+</html>

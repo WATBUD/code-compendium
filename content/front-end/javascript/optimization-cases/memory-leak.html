@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JavaScript 優化案例：記憶體洩漏 (Memory Leak)</title>
+<style>
+  :root {
+    --bg: #ffffff; --panel: #f5f6fa; --text: #1f2430; --muted: #6b7280; --border: #dfe3ec;
+    --bad: #d62f35; --bad-bg: rgba(229, 72, 77, .14);
+    --good: #12875a; --good-bg: rgba(31, 157, 99, .15);
+    --key: #8a5a00; --key-bg: rgba(255, 196, 0, .30);
+    --code-bg: #14161d; --code-text: #e6e9f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171e; --panel: #1e212b; --text: #e6e9f2; --muted: #9aa3b5; --border: #313646;
+      --bad: #ff7b80; --bad-bg: rgba(255, 107, 112, .18);
+      --good: #4cc38a; --good-bg: rgba(76, 195, 138, .18);
+      --key: #ffd666; --key-bg: rgba(255, 196, 0, .20);
+      --code-bg: #0e1015;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 56px; background: var(--bg); color: var(--text);
+    font: 15px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+  }
+  main { max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 24px; line-height: 1.3; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 30px 0 8px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; }
+  .badge.bad { background: var(--bad-bg); color: var(--bad); }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+  p { margin: 6px 0; }
+  .sub { color: var(--muted); margin: 0 0 6px; }
+  .bad  { color: var(--bad);  background: var(--bad-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .good { color: var(--good); background: var(--good-bg); padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .key  { color: var(--key);  background: var(--key-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .box { border: 1px solid var(--border); border-left-width: 4px; border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .box.bad-box { border-left-color: var(--bad); }
+  .box.good-box { border-left-color: var(--good); }
+  ol, ul { margin: 4px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92em; }
+  :not(pre) > code { background: var(--panel); border: 1px solid var(--border); padding: 0 5px; border-radius: 4px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text); border-radius: 10px;
+    padding: 12px 16px; overflow-x: auto; margin: 8px 0; font-size: 13px; line-height: 1.6;
+  }
+  pre .c { color: #7f8aa3; }
+  pre .r { color: #ff8a8f; font-weight: 700; }
+  pre .g { color: #7ee2a8; font-weight: 700; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; font-size: 13px; }
+  .flow span { padding: 4px 10px; border-radius: 6px; background: var(--bad-bg); color: var(--bad); font-weight: 600; }
+  .flow i { color: var(--muted); font-style: normal; }
+  .term { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .term b.name { color: var(--key); }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 10px 0; }
+  .steps li { counter-increment: s; position: relative; padding: 6px 0 6px 38px; margin: 0; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 6px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--good-bg); color: var(--good); font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .viewport { display: grid; grid-template-columns: 150px 1fr; gap: 14px; margin: 12px 0; align-items: stretch; }
+  .viewport .screen { border: 2px solid var(--good); border-radius: 8px; background: var(--bg); overflow: hidden; position: relative; min-height: 170px; }
+  .viewport .rowx { height: 22px; border-bottom: 1px solid var(--border); font-size: 11px; padding: 2px 8px; color: var(--muted); }
+  .viewport .rowx.off { opacity: .35; border-bottom-style: dashed; }
+  .viewport .sentinel { position: absolute; left: 0; right: 0; bottom: 20px; height: 22px; background: var(--key-bg); color: var(--key); font-size: 11px; font-weight: 700; text-align: center; line-height: 22px; border-top: 1px dashed var(--key); border-bottom: 1px dashed var(--key); }
+  .viewport .legend { font-size: 13px; }
+  .viewport .legend div { margin: 4px 0; }
+  @media (max-width: 560px) { .viewport { grid-template-columns: 1fr; } }
+  td, th { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+  th { background: var(--panel); }
+  .demo { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin: 12px 0; }
+  .demo button { font: inherit; font-size: 13px; padding: 5px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; margin-right: 6px; }
+  .demo button.primary { background: var(--good); border-color: var(--good); color: #fff; }
+  .demo button:disabled { opacity: .5; cursor: default; }
+  .counters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+  .counter { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; }
+  .counter .n { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .counter .l { font-size: 12px; color: var(--muted); }
+  .counter.bad .n { color: var(--bad); }
+  .counter.good .n { color: var(--good); }
+  .counter.key .n { color: var(--key); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>JavaScript 優化案例：記憶體洩漏 (Memory Leak)</h1>
+<p class="sub">用完的物件被「看不見的引用」抓著 · 結論：<span class="key">活得比物件久的地方，都要有對應的清理</span></p>
+
+<h2><span class="badge bad">原因</span></h2>
+<div class="flow"><span>物件已經不需要了</span><i>→</i><span>但某處「還抓著它的參照」</span><i>→</i><span>垃圾回收（GC）判定它還在用</span><i>→</i><span>無法回收 → 記憶體越用越多 → 變慢 / 當機</span></div>
+<div class="box bad-box"><ol>
+<li>JavaScript 的記憶體由 GC 自動回收，<span class="bad">但只回收「沒有任何地方引用」的東西</span>。</li>
+<li>洩漏不是「忘了 free」，而是<span class="bad">不小心還留著一條引用</span>，讓 GC 以為你還要用。</li>
+<li>通常發生在「<b>活得比物件久</b>」的地方：全域、計時器、事件監聽、快取、閉包。</li>
+</ol></div>
+<h2><span class="badge good">名詞</span> 先看懂這幾個詞</h2>
+<div class="term"><b class="name">垃圾回收（GC）與可達性</b><br>GC 從「根」（全域變數、目前的呼叫堆疊）出發，<b>走得到的物件就保留，走不到的才回收</b>。所以只要還有一條路走得到，物件就不會被回收。</div>
+<div class="term"><b class="name">引用（reference）</b><br>變數、陣列元素、物件屬性、閉包捕捉的變數、事件監聽的回呼……都是引用。<span class="key">洩漏 = 還有一條你沒注意到的引用。</span></div>
+<div class="term"><b class="name">閉包（closure）</b><br>函式會記住它建立時外面的變數。如果這個函式被長期保留（例如當成事件回呼），它<b>捕捉到的大物件也跟著被保留</b>。</div>
+<div class="term"><b class="name">WeakMap / WeakSet</b><br>把物件當 key 但<b>不算作引用</b>：物件在別處都沒人用了，就會被回收，條目自動消失。適合「依附在物件上的快取 / 標記」。</div>
+<div class="term"><b class="name">Heap Snapshot</b><br>Chrome DevTools 的 Memory 分頁可以為「當下的記憶體」拍照。比較前後兩張，就能看到<b>哪些物件越來越多</b>。</div>
+<h2><span class="badge good">解法</span> 常見洩漏點與修法</h2>
+<table>
+<thead><tr><th>洩漏來源</th><th>為什麼回收不了</th><th>修法</th></tr></thead>
+<tbody>
+<tr><td>意外的全域變數</td><td>全域永遠可達</td><td><span class="good">let / const</span>、<code>'use strict'</code></td></tr>
+<tr><td>計時器沒清</td><td>計時器持有回呼，回呼持有外部物件</td><td><span class="good">clearInterval / clearTimeout</span></td></tr>
+<tr><td>事件監聽沒移除</td><td>DOM 持有監聽函式，函式持有外部物件</td><td><span class="good">removeEventListener / AbortController</span></td></tr>
+<tr><td>閉包捕捉大物件</td><td>長壽函式連帶保留大資料</td><td><span class="good">只捕捉需要的值</span>，不需要的不要放進閉包</td></tr>
+<tr><td>已移除的 DOM 仍被 JS 引用</td><td>陣列 / 變數還抓著節點</td><td><span class="good">移除時一併清掉引用</span></td></tr>
+<tr><td>Map 當快取無限成長</td><td>key 一直被 Map 強引用</td><td><span class="good">WeakMap</span>，或設上限（LRU）</td></tr>
+</tbody></table>
+<h3>計時器與事件監聽</h3>
+<pre>const timer = setInterval(tick, 1000)
+const ac = new AbortController()
+window.addEventListener('resize', onResize, { <span class="g">signal: ac.signal</span> })   <span class="c">// 一次取消所有綁了 signal 的監聽</span>
+
+function dispose() {
+  <span class="g">clearInterval(timer)</span>
+  <span class="g">ac.abort()</span>
+}</pre><h3>React：useEffect 的清理函式</h3>
+<pre>useEffect(() =&gt; {
+  const id = setInterval(tick, 1000)
+  window.addEventListener('resize', onResize)
+  return () =&gt; {                          <span class="c">// 元件卸載（或依賴變動）時執行</span>
+    <span class="g">clearInterval(id)</span>
+    <span class="g">window.removeEventListener('resize', onResize)</span>
+  }
+}, [])</pre><h3>WeakMap 與 Map 的差別</h3>
+<pre>let key = { id: 1 }
+const map = new Map(), weak = new WeakMap()
+map.set(key, 'data')        <span class="c">// Map 強引用 key</span>
+weak.set(key, 'data')       <span class="c">// WeakMap 不算引用</span>
+
+key = null                  <span class="c">// 外面不再使用 key</span>
+<span class="c">// Map：條目還在 → key 物件 <span class="r">無法回收</span></span>
+<span class="c">// WeakMap：key 物件可被 <span class="g">回收</span>，條目自動消失</span></pre><h2><span class="badge good">偵測</span> 用 DevTools 找洩漏</h2>
+<ol class="steps"><li>打開 DevTools → <b>Memory</b> 分頁，選 <b>Heap snapshot</b>，拍第 1 張。</li><li>重複操作你懷疑會洩漏的功能幾次（例如開關某個頁面 10 次），按垃圾桶圖示先手動 GC。</li><li>拍第 2 張，切到 <b>Comparison</b> 比較：<span class="key">數量與大小持續增加的物件</span>就是嫌疑犯，點開看 Retainers（是誰抓著它）。</li></ol>
+<h2><span class="badge good">判斷</span></h2>
+<ul><li>物件活得<b>比它的擁有者久</b>（計時器、監聽、全域快取）→ <span class="good">一定要有對應的清理</span></li><li>一般區域變數離開作用域就會自動回收 → <span class="key">不需要刻意設成 <code>null</code></span>；只有「長壽物件持有它」時，才需要斷開那條引用</li><li>用 React → 把每個 <code>useEffect</code> 裡的「訂閱 / 計時器 / 監聽」都配一個清理函式</li></ul>
+
+
+</main>
+
+</body>
+</html>

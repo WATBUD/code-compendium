@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>React 優化案例：useEffect 依賴物件造成重複執行 / 無限渲染</title>
+<style>
+  :root {
+    --bg: #ffffff; --panel: #f5f6fa; --text: #1f2430; --muted: #6b7280; --border: #dfe3ec;
+    --bad: #d62f35; --bad-bg: rgba(229, 72, 77, .14);
+    --good: #12875a; --good-bg: rgba(31, 157, 99, .15);
+    --key: #8a5a00; --key-bg: rgba(255, 196, 0, .30);
+    --code-bg: #14161d; --code-text: #e6e9f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171e; --panel: #1e212b; --text: #e6e9f2; --muted: #9aa3b5; --border: #313646;
+      --bad: #ff7b80; --bad-bg: rgba(255, 107, 112, .18);
+      --good: #4cc38a; --good-bg: rgba(76, 195, 138, .18);
+      --key: #ffd666; --key-bg: rgba(255, 196, 0, .20);
+      --code-bg: #0e1015;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 56px; background: var(--bg); color: var(--text);
+    font: 15px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+  }
+  main { max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 24px; line-height: 1.3; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 30px 0 8px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; }
+  .badge.bad { background: var(--bad-bg); color: var(--bad); }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+  p { margin: 6px 0; }
+  .sub { color: var(--muted); margin: 0 0 6px; }
+  .bad  { color: var(--bad);  background: var(--bad-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .good { color: var(--good); background: var(--good-bg); padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .key  { color: var(--key);  background: var(--key-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .box { border: 1px solid var(--border); border-left-width: 4px; border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .box.bad-box { border-left-color: var(--bad); }
+  .box.good-box { border-left-color: var(--good); }
+  ol, ul { margin: 4px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92em; }
+  :not(pre) > code { background: var(--panel); border: 1px solid var(--border); padding: 0 5px; border-radius: 4px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text); border-radius: 10px;
+    padding: 12px 16px; overflow-x: auto; margin: 8px 0; font-size: 13px; line-height: 1.6;
+  }
+  pre .c { color: #7f8aa3; }
+  pre .r { color: #ff8a8f; font-weight: 700; }
+  pre .g { color: #7ee2a8; font-weight: 700; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; font-size: 13px; }
+  .flow span { padding: 4px 10px; border-radius: 6px; background: var(--bad-bg); color: var(--bad); font-weight: 600; }
+  .flow i { color: var(--muted); font-style: normal; }
+  .term { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .term b.name { color: var(--key); }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 10px 0; }
+  .steps li { counter-increment: s; position: relative; padding: 6px 0 6px 38px; margin: 0; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 6px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--good-bg); color: var(--good); font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .viewport { display: grid; grid-template-columns: 150px 1fr; gap: 14px; margin: 12px 0; align-items: stretch; }
+  .viewport .screen { border: 2px solid var(--good); border-radius: 8px; background: var(--bg); overflow: hidden; position: relative; min-height: 170px; }
+  .viewport .rowx { height: 22px; border-bottom: 1px solid var(--border); font-size: 11px; padding: 2px 8px; color: var(--muted); }
+  .viewport .rowx.off { opacity: .35; border-bottom-style: dashed; }
+  .viewport .sentinel { position: absolute; left: 0; right: 0; bottom: 20px; height: 22px; background: var(--key-bg); color: var(--key); font-size: 11px; font-weight: 700; text-align: center; line-height: 22px; border-top: 1px dashed var(--key); border-bottom: 1px dashed var(--key); }
+  .viewport .legend { font-size: 13px; }
+  .viewport .legend div { margin: 4px 0; }
+  @media (max-width: 560px) { .viewport { grid-template-columns: 1fr; } }
+  td, th { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+  th { background: var(--panel); }
+  .demo { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin: 12px 0; }
+  .demo button { font: inherit; font-size: 13px; padding: 5px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; margin-right: 6px; }
+  .demo button.primary { background: var(--good); border-color: var(--good); color: #fff; }
+  .demo button:disabled { opacity: .5; cursor: default; }
+  .counters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+  .counter { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; }
+  .counter .n { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .counter .l { font-size: 12px; color: var(--muted); }
+  .counter.bad .n { color: var(--bad); }
+  .counter.good .n { color: var(--good); }
+  .counter.key .n { color: var(--key); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>React 優化案例：useEffect 依賴物件造成重複執行 / 無限渲染</h1>
+<p class="sub">effect 每次重繪都重跑 · 結論：<span class="key">依賴陣列要放「穩定」的值，物件函式用 useMemo / useCallback 或改放原始值</span></p>
+
+<h2><span class="badge bad">原因</span> </h2>
+<div class="flow"><span>依賴陣列放了物件 / 陣列 / 函式</span><i>→</i><span>每次重繪都建立「新的」</span><i>→</i><span>React 判定依賴「變了」</span><i>→</i><span>effect 每次重繪都重跑</span><i>→</i><span>若 effect 內又 setState → 無限循環</span></div>
+<pre>function App() {
+  const [count, setCount] = useState(0)
+  const <span class="r">obj = { value: count }</span>               <span class="c">// 每次重繪都是新物件</span>
+
+  useEffect(() =&gt; {
+    setResult(compute(obj))                    <span class="c">// effect 內更新 state</span>
+  }, [<span class="r">obj</span>])                                  <span class="c">// 依賴每次都「變」→ 重跑 → setState → 重繪 → 再重跑…</span>
+}</pre>
+<div class="box bad-box"><ol><li>物件、陣列、函式用「參照」比較，每次重繪產生的都是<span class="bad">新參照</span>，就算內容一樣也算變了。</li><li>effect 因此<span class="bad">每次重繪都重跑</span>。</li><li>如果 effect 內<span class="bad">又更新 state</span>，就會「重繪 → effect → setState → 重繪」無限循環。</li></ol></div>
+<div class="box bad-box"><span class="key">更正原筆記：</span>範例若 effect 只做 <code>console.log</code>，結果是「每次重繪都多印一次」，<b>並不會</b>無限循環；只有 effect 內會更新 state 時才會變成無限渲染。</div>
+<h2><span class="badge good">名詞</span> 先看懂這幾個詞</h2>
+<div class="term"><b class="name">依賴陣列（dependency array）</b><br><code>useEffect(fn, [a, b])</code> 的第二個參數。React 重繪時會逐項比對 <code>a</code>、<code>b</code> 和上次是否相同，<b>有任何一項不同才重跑 fn</b>。</div>
+<div class="term"><b class="name">Object.is 比較</b><br>React 比對依賴用的規則，行為接近 <code>===</code>：原始值比「值」，物件 / 陣列 / 函式比「是不是同一個」（參照）。所以 <code>{ a: 1 }</code> 和另一個 <code>{ a: 1 }</code> 算不同。</div>
+<div class="term"><b class="name">useMemo / useCallback</b><br>讓物件（useMemo）或函式（useCallback）<b>在依賴沒變時保持同一個參照</b>，這樣依賴陣列才不會誤判。</div>
+<h2><span class="badge good">解法</span> 由好到普通</h2>
+<h3>① 依賴改成原始值（最簡單）</h3>
+<pre>useEffect(() =&gt; {
+  setResult(compute({ value: count }))         <span class="c">// 物件在 effect 裡面才建立</span>
+}, [<span class="g">count</span>])                                  <span class="c">// 依賴只放原始值，只有 count 變才重跑</span></pre>
+<h3>② 物件用 useMemo 固定參照</h3>
+<pre>const obj = <span class="g">useMemo(() =&gt; ({ value: count }), [count])</span>   <span class="c">// count 沒變就是同一個物件</span>
+useEffect(() =&gt; { setResult(compute(obj)) }, [obj])</pre>
+<h3>③ 函式用 useCallback，或直接搬進 effect 裡</h3>
+<pre>const logCount = <span class="g">useCallback(() =&gt; console.log(count), [count])</span>
+useEffect(() =&gt; { logCount() }, [logCount])
+
+<span class="c">// 更簡單：只有這個 effect 用到，就直接寫在裡面，不用當依賴</span>
+useEffect(() =&gt; { console.log(count) }, [count])</pre>
+<h2><span class="badge good">判斷</span> </h2>
+<table><thead><tr><th>情況</th><th>做法</th></tr></thead><tbody>
+<tr><td>依賴是物件 / 陣列</td><td><span class="good">改放它裡面的原始值</span>，或 <code>useMemo</code></td></tr>
+<tr><td>依賴是函式</td><td><span class="good">搬進 effect 裡</span>，或 <code>useCallback</code></td></tr>
+<tr><td>只是把函式傳給<b>沒有 memo</b> 的子元件</td><td><span class="key">useCallback 沒有效果</span>（子元件本來就會跟著重繪）</td></tr>
+</tbody></table>
+<p class="sub">補充：不要為了消除警告而把依賴從陣列拿掉；要讓依賴「穩定」，而不是「隱藏」。</p>
+
+
+</main>
+
+</body>
+</html>

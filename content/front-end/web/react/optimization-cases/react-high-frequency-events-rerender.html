@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>React 優化案例：高頻事件造成的整頁重繪</title>
+<style>
+  :root {
+    --bg: #ffffff; --panel: #f5f6fa; --text: #1f2430; --muted: #6b7280; --border: #dfe3ec;
+    --bad: #d62f35; --bad-bg: rgba(229, 72, 77, .14);
+    --good: #12875a; --good-bg: rgba(31, 157, 99, .15);
+    --key: #8a5a00; --key-bg: rgba(255, 196, 0, .30);
+    --code-bg: #14161d; --code-text: #e6e9f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171e; --panel: #1e212b; --text: #e6e9f2; --muted: #9aa3b5; --border: #313646;
+      --bad: #ff7b80; --bad-bg: rgba(255, 107, 112, .18);
+      --good: #4cc38a; --good-bg: rgba(76, 195, 138, .18);
+      --key: #ffd666; --key-bg: rgba(255, 196, 0, .20);
+      --code-bg: #0e1015;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 56px; background: var(--bg); color: var(--text);
+    font: 15px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+  }
+  main { max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 24px; line-height: 1.3; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 30px 0 8px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; }
+  .badge.bad { background: var(--bad-bg); color: var(--bad); }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+  p { margin: 6px 0; }
+  .sub { color: var(--muted); margin: 0 0 6px; }
+  .bad  { color: var(--bad);  background: var(--bad-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .good { color: var(--good); background: var(--good-bg); padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .key  { color: var(--key);  background: var(--key-bg);  padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .box { border: 1px solid var(--border); border-left-width: 4px; border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .box.bad-box { border-left-color: var(--bad); }
+  .box.good-box { border-left-color: var(--good); }
+  ol, ul { margin: 4px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .92em; }
+  :not(pre) > code { background: var(--panel); border: 1px solid var(--border); padding: 0 5px; border-radius: 4px; }
+  pre {
+    background: var(--code-bg); color: var(--code-text); border-radius: 10px;
+    padding: 12px 16px; overflow-x: auto; margin: 8px 0; font-size: 13px; line-height: 1.6;
+  }
+  pre .c { color: #7f8aa3; }
+  pre .r { color: #ff8a8f; font-weight: 700; }
+  pre .g { color: #7ee2a8; font-weight: 700; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; font-size: 13px; }
+  .flow span { padding: 4px 10px; border-radius: 6px; background: var(--bad-bg); color: var(--bad); font-weight: 600; }
+  .flow i { color: var(--muted); font-style: normal; }
+  .term { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 10px 0; background: var(--panel); }
+  .term b.name { color: var(--key); }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 10px 0; }
+  .steps li { counter-increment: s; position: relative; padding: 6px 0 6px 38px; margin: 0; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 6px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--good-bg); color: var(--good); font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .viewport { display: grid; grid-template-columns: 150px 1fr; gap: 14px; margin: 12px 0; align-items: stretch; }
+  .viewport .screen { border: 2px solid var(--good); border-radius: 8px; background: var(--bg); overflow: hidden; position: relative; min-height: 170px; }
+  .viewport .rowx { height: 22px; border-bottom: 1px solid var(--border); font-size: 11px; padding: 2px 8px; color: var(--muted); }
+  .viewport .rowx.off { opacity: .35; border-bottom-style: dashed; }
+  .viewport .sentinel { position: absolute; left: 0; right: 0; bottom: 20px; height: 22px; background: var(--key-bg); color: var(--key); font-size: 11px; font-weight: 700; text-align: center; line-height: 22px; border-top: 1px dashed var(--key); border-bottom: 1px dashed var(--key); }
+  .viewport .legend { font-size: 13px; }
+  .viewport .legend div { margin: 4px 0; }
+  @media (max-width: 560px) { .viewport { grid-template-columns: 1fr; } }
+  td, th { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+  th { background: var(--panel); }
+  .demo { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin: 12px 0; }
+  .demo button { font: inherit; font-size: 13px; padding: 5px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; margin-right: 6px; }
+  .demo button.primary { background: var(--good); border-color: var(--good); color: #fff; }
+  .demo button:disabled { opacity: .5; cursor: default; }
+  .counters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+  .counter { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; }
+  .counter .n { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .counter .l { font-size: 12px; color: var(--muted); }
+  .counter.bad .n { color: var(--bad); }
+  .counter.good .n { color: var(--good); }
+  .counter.key .n { color: var(--key); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>React 優化案例：高頻事件造成的整頁重繪</h1>
+<p class="sub">滑鼠提示框 / 虛擬列表捲動卡頓 · 結論：<span class="key">高頻、只影響位置的值，不要放進 state</span></p>
+
+<h2><span class="badge bad">原因</span> </h2>
+<div class="flow"><span>mousemove / scroll 每秒數十～上百次</span><i>→</i><span>setState（值每次都不同）</span><i>→</i><span>最上層大元件整個重繪</span><i>→</i><span>所有列與子元件重新比對</span><i>→</i><span>主執行緒被佔滿 → 卡</span></div>
+<pre><span class="c">// 提示框：位置存在 state</span>
+onMouseMove={(e) =&gt; <span class="r">setRowTip({ text, x: e.clientX, y: e.clientY })</span>}
+
+<span class="c">// 虛擬列表：捲動位置存在 state</span>
+el.addEventListener('scroll', () =&gt; <span class="r">setRemoteScrollTop(el.scrollTop)</span>)</pre>
+<div class="box bad-box"><ol><li>值<span class="bad">每次都不同</span>（座標、scrollTop），React 的「值相同就略過」派不上用場。</li><li>state 在最上層，<span class="bad">重繪範圍 = 整個元件</span>（所有 branch 列、commit 列、子元件）。</li><li>列元件<span class="bad">沒有 React.memo</span>，每次都重新建立元素與 onClick / style 物件。</li></ol></div>
+<h2><span class="badge good">名詞</span> 先看懂這幾個詞</h2>
+<div class="term"><b class="name">高頻事件</b><br>使用者操作期間<b>不斷觸發</b>的事件：<code>mousemove</code>（滑鼠每動一下）、<code>scroll</code>（每捲一下）。每秒可能幾十到上百次，處理函式也跟著被呼叫這麼多次。</div>
+<div class="term"><b class="name">state 與重繪（re-render）</b><br><code>setState</code> 一呼叫，React 就會<b>重新執行該元件的函式</b>（以及它底下的子元件），再把結果和上次比較、更新畫面。重新執行函式本身就有成本，即使最後畫面沒變。</div>
+<div class="term"><b class="name">為什麼「值相同就略過」幫不上忙</b><br>React 發現新舊 state <b>完全相同</b>時會直接略過這次更新。但座標、<code>scrollTop</code> 幾乎每次都不同，傳物件也每次是新參照，所以<span class="bad">永遠略不過</span>。</div>
+<div class="term"><b class="name">ref（useRef）</b><br>一個「<b>改了不會觸發重繪</b>」的盒子，<code>ref.current</code> 可以存任何東西（常用來存 DOM 元素）。拿到 DOM 元素後，就能繞過 React 直接改它。</div>
+<div class="term"><b class="name">transform / translate3d</b><br>CSS 的位移屬性。<span class="good">只改 transform 不會重新計算版面</span>（不用重新排版，由 GPU 合成），所以拿來做「跟著游標移動」最便宜。<code>top / left</code> 則會觸發排版。</div>
+<div class="term"><b class="name">will-change</b><br>提示瀏覽器「這個屬性等一下會一直變」，讓它預先準備（建立獨立圖層）。只該用在真的會頻繁變動的元素。</div>
+<div class="term"><b class="name">虛擬列表（virtualization）</b><br>清單很長時，只把「畫面上看得到的幾列」畫出來，其餘不畫；捲動時換掉那幾列。畫面上要<b>換哪幾列</b>是由 React 決定的，所以捲動位置必須讓 React 知道。</div>
+<div class="term"><b class="name">overscan（緩衝列數）</b><br>在可視範圍的上下<b>多畫幾列</b>，讓捲動時不會看到空白。</div>
+<div class="term"><b class="name">量化（snap）與 bail out</b><br>把連續的值「對齊」成階梯（每 4 列才算一階）。React 看到<b>同一階的值相同</b>就略過更新（bail out）。</div>
+<div class="term"><b class="name">Portal</b><br><code>createPortal</code> 讓元件把內容畫到 DOM 的另一個位置（如 <code>document.body</code>），不受原本父層的位置、裁切影響。提示框用它，才不會被側邊欄蓋住。</div>
+<h2><span class="badge good">解法 A</span> 提示框：不進 state，用 ref 直接改 DOM</h2>
+<p>位置只影響提示框自己 → <span class="good">ref + transform，零次重繪</span></p>
+<pre>const rowTipRef = useRef(null)                       <span class="c">// 指向提示框的 DOM 元素</span>
+
+const moveRowTip = useCallback((e) =&gt; {
+  const el = rowTipRef.current
+  if (!el) return
+  const x = Math.min(e.clientX + 12, window.innerWidth - 300)      <span class="c">// 不超出右邊界</span>
+  el.style.transform = <span class="g">`translate3d(${x}px, ${e.clientY + 18}px, 0)`</span>   <span class="c">// 只改位置，不觸發排版</span>
+}, [])
+
+const showRowTip = useCallback((e, text) =&gt; {
+  const el = rowTipRef.current
+  if (!el) return
+  el.textContent = text                                <span class="c">// 換文字</span>
+  moveRowTip(e)
+  el.style.display = 'block'
+}, [moveRowTip])
+
+const hideRowTip = useCallback(() =&gt; {
+  if (rowTipRef.current) rowTipRef.current.style.display = 'none'
+}, [])
+
+<span class="c">// 列上：進入時換文字，移動時只改位置，離開時隱藏</span>
+&lt;div onMouseEnter={(e) =&gt; showRowTip(e, text)} onMouseMove={moveRowTip} onMouseLeave={hideRowTip} /&gt;
+
+<span class="c">// 全域只渲染一次（portal 到 body，不被側邊欄蓋住）</span>
+&lt;ModalPortal&gt;&lt;div ref={rowTipRef} className="rowTip" /&gt;&lt;/ModalPortal&gt;</pre>
+<pre>/* 用 transform 定位，並預先告知瀏覽器 */
+.rowTip { position: fixed; top: 0; left: 0; display: none;
+          pointer-events: none; will-change: transform; z-index: 6000; }</pre>
+<h2><span class="badge good">解法 B</span> 虛擬列表：state 量化，讓 React 能略過</h2>
+<p>畫哪幾列必須由 React 決定，不能純 ref → <span class="good">state 只存「對齊 N 列的視窗起點」</span>，N 列才變一次</p>
+<pre>const ROW_H = 26, OVERSCAN_ROWS = 8
+const STEP = Math.floor(OVERSCAN_ROWS / 2)                 <span class="c">// 4 列</span>
+
+const [windowStart, setWindowStart] = useState(0)
+el.addEventListener('scroll', () =&gt;
+  setWindowStart(<span class="g">Math.floor(el.scrollTop / ROW_H / STEP) * STEP</span>))   <span class="c">// 值相同 → React 略過</span>
+
+<span class="c">// 繪製範圍：往前多畫 OVERSCAN，往後多畫「視窗高度 + OVERSCAN」</span>
+const first = Math.max(0, windowStart - OVERSCAN_ROWS)
+const last  = Math.min(total - 1,
+  windowStart + STEP + Math.ceil(viewportH / ROW_H) + OVERSCAN_ROWS)</pre>
+<div class="box good-box"><span class="key">STEP 必須 ≤ OVERSCAN_ROWS</span>，否則量化誤差吃掉緩衝，邊緣會露白。<br>為什麼不會露白：真正的可視起點落在 <code>[start, start + STEP)</code> 之間，往前多畫 <code>OVERSCAN</code> 列一定涵蓋；往後同理。</div>
+<h2><span class="badge good">判斷</span> </h2>
+<ul><li>改變<b>畫什麼</b> → <span class="key">state</span></li><li>只改變某元素的<b>位置 / 樣式</b> → <span class="good">ref + 直接改 DOM</span></li><li>高頻又必須影響畫面 → <span class="good">量化 / 節流後再進 state</span></li></ul>
+<p class="sub">補充：先用 React DevTools Profiler 量測，再動手（此案例的原因是從程式結構推論，並非實測）；其餘可再做：列元件 <code>React.memo</code>、避免每次新建 <code>[]</code>、長清單分批渲染。</p>
+
+
+</main>
+
+</body>
+</html>
